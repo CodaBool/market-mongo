@@ -1,7 +1,10 @@
 stage: ${env.STAGE}
 name: ${env.REPO}
 
-Serverless:
+name: ${env.STAGE}
+domain: ${env.DOMAIN}
+
+dev:
   component: '@sls-next/serverless-component@1.18.0'
   inputs:
     memory: 128
@@ -10,7 +13,7 @@ Serverless:
     name:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
-    domain: codattest.com
+    domain: ['dev', 'codattest.com']
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     build:

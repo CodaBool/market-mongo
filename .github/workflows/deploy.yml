@@ -20,36 +20,45 @@ jobs:
           echo Repo = ${repo,,}
           echo stage = ${GITHUB_REF#refs/heads/}
         id: extract # ${{ steps.extract.outputs.stage }}
-        
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
 
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: '12'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Serverless AWS authentication
-        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Download `.serverless` state from S3
-        run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
-
-      - name: Deploy to AWS
-        run: npx serverless
+      - name: conditional env
+        run: |
+          echo "I ran"
+          echo "This job has ${{ job.status == 'success' && 'passed!' || 'failed. :(' }}"
         env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          STAGE: ${{ steps.extract.outputs.stage }}
-          REPO: ${{ steps.extract.outputs.repo }}
-          NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-          STRIPE_SK: ${{ secrets.STRIPE_SK }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'good' || 'danger' }}
+        
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - name: Upload `.serverless` state to S3
-        run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
+      # - uses: actions/setup-node@v2-beta
+      #   with:
+      #     node-version: '12'
+
+      # - name: Install dependencies
+      #   run: npm ci
+
+      # - name: Serverless AWS authentication
+      #   run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # # - name: Download `.serverless` state from S3
+      # #   run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+
+      # - name: Deploy to AWS
+      #   run: npx serverless
+      #   env:
+      #     NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
+      #     NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
+      #     STAGE: ${{ steps.extract.outputs.stage }}
+      #     REPO: ${{ steps.extract.outputs.repo }}
+      #     DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'good' || 'danger' }}
+
+
+      # - name: Upload `.serverless` state to S3
+      #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
