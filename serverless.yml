@@ -1,6 +1,6 @@
 sub: ${env.SUB_DOMAIN}
 stage: ${env.STAGE}
-name: ${env.STAGE}
+name: ${env.REPO}
 
 serverless:
   component: '@sls-next/serverless-component@1.18.0'
