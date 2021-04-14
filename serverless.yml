@@ -1,6 +1,7 @@
 sub: ${env.SUB_DOMAIN}
 stage: ${env.STAGE}
 name: ${env.REPO}
+# url: ${env.URL}
 
 serverless:
   component: '@sls-next/serverless-component@1.19.0-alpha.43'
@@ -11,7 +12,8 @@ serverless:
     name:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
-    # domain: codattest.com # ['${sub}', codattest.com]
+      imageLambda: ${name}-${stage}-image
+    domain: ['${sub}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     build:
@@ -21,3 +23,4 @@ serverless:
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
         STRIPE_SK: ${env.STRIPE_SK}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
+        NEXTAUTH_URL: https://${sub}.codattest.com
