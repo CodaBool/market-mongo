@@ -1,0 +1,19 @@
+stage: ${env.STAGE}
+name: ${env.REPO}
+
+Serverless:
+  component: '@sls-next/serverless-component@1.18.0'
+  inputs:
+    memory: 128
+    bucketRegion: us-east-1
+    bucketName: ${name}-${stage}
+    name:
+      defaultLambda: ${name}-${stage}-default
+      apiLambda: ${name}-${stage}-api
+    domain: ${stage}.codattest.com
+    publicDirectoryCache: false
+    useServerlessTraceTarget: true
+    build:
+      env:
+        MONGODB_URI: ${env.MONGODB_URI}
+        NEXT_PUBLIC_STAGE: ${stage}

@@ -1,0 +1,148 @@
+/* Pins footer bottom of the page regardless of page size */
+.site {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+}
+/* Override Bootstrap Nav */
+.nav-link, .navbar-brand {
+  cursor: pointer;
+  font-size: 1.5em !important;
+  margin: 0 15px 0 15px;
+}
+
+
+/* Form */
+.form-label {
+  font-size: 1.3em;
+  margin: 30px 0 12px 0;
+}
+.signupText {
+  color: rgb(2, 117, 216);
+  margin: 0 auto 0 auto;
+  width: 250px;
+  cursor: pointer;
+  transition: font-size 0.2s, text-shadow 1s;
+}
+.signupText:hover {
+  color: rgb(10, 98, 175);
+  font-size: 1.2em;
+  text-shadow: 0 0 30px rgba(122, 165, 190, 0.3);
+}
+/* Form error messages */
+/* .errMsg {
+  margin: 3px 0 3px 0;
+  color: #b41724;
+}
+.errMsg::before  {
+  display: inline;
+  content: "⚠ ";
+}
+.redBack {
+  background-color: rgba(190, 29, 29, 0.55) !important;
+} */
+
+
+/* ================ */
+/* Other common CSS */
+/* ================ */
+
+@media (max-width: 991px) {
+  .navBox {
+    width:20%;
+  }
+  .navBox-btn {
+    color: black;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+}
+@keyframes gradient {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+/*override Bootstrap Accordian Style */
+.card-header {
+  font-weight: 500;
+  font-size: 1.4em;
+  cursor: pointer;
+  background: linear-gradient(-45deg, #2a85d450, #527da350, #0d11ee50, #2fe0e050);
+	background-size: 400% 400%;
+  animation: gradient 20s ease infinite;
+}
+.fadeIn {
+  opacity: 1;
+  transition: opacity 1s;
+}
+@keyframes fadein {
+  0% { opacity: 0; }
+  80% { opacity: 0; }
+  100% { opacity: 1; }
+}
+/* Sway */
+.sway {
+  animation: sway 5s infinite;
+}
+@keyframes sway { 
+  0% { transform: rotate(0deg); } 
+  50% { transform: rotate(10deg); } 
+  100% { transform: rotate(0deg); } 
+}
+
+
+
+/* Products */
+
+.money {
+  color: rgb(177, 39, 4);
+}
+
+.box img {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 0.1; /* toast modal is z-index: 1 so this must be below that */
+}
+.box .shine {
+  width: 100%;
+}
+.shine {
+  background: white;
+  background-image: linear-gradient(to right, white 0%, rgb(240, 236, 236) 20%, white 40%, white 100%);
+  background-size: 800px 800px; 
+  animation: linear shine 1s infinite;
+}
+@keyframes shine {
+  0% { background-position: -800px 0; }
+  100% { background-position: 800px 0; }
+}
+
+@media (max-width: 576px) { /* Small devices (landscape phones, 576px and DOWN) */ 
+  .box .shine, .box img {
+    height: 232px;
+    width: 232px;
+  }
+}
+@media (min-width: 576px) { /* Small devices (landscape phones, 576px and UP) */ 
+  .box .shine, .box img {
+    height: 412px;
+  }
+}
+@media (min-width: 768px) { /* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
+  .box .shine, .box img {
+    height: 232px;
+  }
+}
+@media (min-width: 992px) { /* Large devices (desktops, 992px and up) */
+  .box .shine, .box img {
+    height: 352px;
+  }
+}
+@media (min-width: 1200px) { /* Extra large devices (large desktops, 1200px and up) */
+  .box .shine, .box img {
+    height: 443px;
+  }
+}

@@ -1,0 +1,52 @@
+name: next-market
+on:
+  push:
+    branches: [dev, prod]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # The stage is extracted from the branch name, since deploys are only ran on dev and prod branch
+      # WARNING: if deployments are done differently then this needs to be edited (hardcoded or from github event context)
+      # The repo name must be validated since it will be used in the S3 Bucket creation when saving Serverless state
+      # Repo name must follow S3 Naming conventions, no space + no uppercase
+      - name: Extract Pipline Vars
+        run: |
+          repo=${GITHUB_REPOSITORY#CodaBool/}
+          echo "##[set-output name=repo;]${repo,,}" # Lower Cases the Repo name, Github already removes space
+          echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
+          echo Repo = ${repo,,}
+          echo stage = ${GITHUB_REF#refs/heads/}
+        id: extract # ${{ steps.extract.outputs.stage }}
+        
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Serverless AWS authentication
+        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # - name: Download `.serverless` state from S3
+      #   run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+
+      - name: Deploy to AWS
+        run: npx serverless
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          STAGE: ${{ steps.extract.outputs.stage }}
+          REPO: ${{ steps.extract.outputs.repo }}
+
+      - name: Upload `.serverless` state to S3
+        run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete

@@ -1,0 +1,51 @@
+{
+  "name": "next",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --fix . && echo 'Lint Complete.'",
+    "dev": "cross-env NEXT_PUBLIC_STAGE=dev next dev",
+    "build": "cross-env NEXT_PUBLIC_STAGE=dev next build",
+    "build:dev": "cross-env NEXT_PUBLIC_STAGE=dev next build",
+    "build:prod": "cross-env NEXT_PUBLIC_STAGE=prod next build",
+    "start": "next start",
+    "export": "next export",
+    "watch": "watch 'clear && npm run -s test | tap-nirvana && npm run -s lint' src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@stripe/react-stripe-js": "^1.4.0",
+    "@stripe/stripe-js": "^1.13.2",
+    "atob": "^2.1.2",
+    "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^4.6.0",
+    "mongoose": "^5.12.1",
+    "next": "^10.0.9",
+    "next-auth": "^3.13.2",
+    "nookies": "^2.5.2",
+    "react": "^16.8.0",
+    "react-bootstrap": "^1.5.2",
+    "react-bootstrap-icons": "^1.4.0",
+    "react-dom": "^17.0.1",
+    "react-google-recaptcha": "^2.1.0",
+    "react-hook-form": "^6.15.5",
+    "stripe": "^8.140.0",
+    "timeago.js": "^4.0.2",
+    "use-shopping-cart": "^2.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.23.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "^2.2.1",
+    "cross-env": "^7.0.3",
+    "tap-nirvana": "^1.1.0",
+    "watch": "^1.0.2"
+  }
+}
