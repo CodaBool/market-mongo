@@ -9,9 +9,6 @@ export default function Index({ user }) {
   const [email, setEmail] = useState('')
   const [session, loading] = useSession()
 
-  console.log('MONGODB_URI =', process.env.MONGODB_URI)
-  console.log('NEXT_PUBLIC_STAGE =', process.env.NEXT_PUBLIC_STAGE)
-
   console.log(cartDetails)
 
   function handleUser() {
@@ -30,10 +27,17 @@ export default function Index({ user }) {
       .catch(err => console.log(err.response.data)) // .response.data
   }
 
+  function test() {
+    axios.post('/api/test2')
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+  }
+
   return (
     <div>
       <button onClick={handleUser} >get user</button>
       <button onClick={postUser} >post user</button>
+      <button onClick={test}>test</button>
       <input onChange={e => setEmail(e.target.value)} value={email} />
       {user?.length ? user.map(user => (
         <h1 key={user.email}>{user.email}</h1>
