@@ -3,7 +3,7 @@ stage: ${env.STAGE}
 name: ${env.REPO}
 
 serverless:
-  component: '@sls-next/serverless-component@1.18.0'
+  component: '@sls-next/serverless-component@1.19.0-alpha.43'
   inputs:
     memory: 128
     bucketRegion: us-east-1

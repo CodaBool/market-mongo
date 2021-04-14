@@ -11,16 +11,16 @@ export default function Index(props) {
 
   // console.log(cartDetails)
 
-  // function handleUser() {
-  //   axios.get('/api/user', { params: { email } })
-  //     .then(res => {
-  //       console.log('get =', res.data)
-  //       if (res.data === 'User not found') {
-  //         console.log('Could not find the user')
-  //       }
-  //     })
-  //     .catch(err => console.log(err.response.data)) // .response.data
-  // }
+  function handleUser() {
+    axios.get('/api/user', { params: { email } })
+      .then(res => {
+        console.log('get =', res.data)
+        if (res.data === 'User not found') {
+          console.log('Could not find the user')
+        }
+      })
+      .catch(err => console.log(err.response.data)) // .response.data
+  }
   // function postUser() {
   //   axios.post('/api/user', { email, password: 'beans' })
   //     .then(res => console.log('posted =', res.data))
@@ -35,8 +35,8 @@ export default function Index(props) {
 
   return (
     <div>
-      {/* <button onClick={handleUser} >get user</button>
-      <button onClick={postUser} >post user</button> */}
+      <button onClick={handleUser} >get user</button>
+      {/* <button onClick={postUser} >post user</button> */}
       <button onClick={test}>test</button> 
       <input onChange={e => setEmail(e.target.value)} value={email} />
       {/* {user?.length ? user.map(user => (
