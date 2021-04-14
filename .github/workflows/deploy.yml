@@ -23,10 +23,10 @@ jobs:
 
       - name: conditional env
         run: |
-          echo "I ran"
-          echo "This job has ${{ job.status == 'success' && 'passed!' || 'failed. :(' }}"
+          echo "I ran env ="${env.DOMAIN}
+          echo "Flip Env ${{ steps.extract.outputs.stage == 'dev' && 'True' || 'False' }}"
         env:
-          DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'good' || 'danger' }}
+          DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'True' || 'False' }}
         
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v1
