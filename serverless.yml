@@ -17,7 +17,8 @@ serverless:
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     build:
-      args: build:${stage} # replaces the default 'build' argument passed to next 
+      # cmd: node_modules/.bin/next
+      args: ['build:${stage}'] # replaces the default 'build' argument passed to next 
       env:
         MONGODB_URI: ${env.MONGODB_URI}
         NEXT_PUBLIC_STAGE: ${stage}
