@@ -48,27 +48,16 @@ jobs:
       # - name: Download `.serverless` state from S3
       #   run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
 
-      # - name: Deploy to AWS
-      #   run: npx serverless
-      #   env:
-      #     NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-      #     NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
-      #     STAGE: ${{ steps.extract.outputs.stage }}
-      #     REPO: ${{ steps.extract.outputs.repo }}
-      #     DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'good' || 'danger' }}
+      - name: Deploy to AWS
+        run: npx serverless
+        env:
+          NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          STAGE: ${{ steps.extract.outputs.stage }}
+          REPO: ${{ steps.extract.outputs.repo }}
+          SUB_DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'dev' || 'www' }}
 
-      # - name: Deploy to AWS
-      #   run: npx serverless
-      #   env:
-      #     NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-      #     NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
-      #     STAGE: ${{ steps.extract.outputs.stage }}
-      #     REPO: ${{ steps.extract.outputs.repo }}
-      #     SUB_DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'dev' || 'www' }}
-
-      # - name: Upload `.serverless` state to S3
-      #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
+      - name: Upload `.serverless` state to S3
+        run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
