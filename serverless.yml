@@ -10,7 +10,7 @@ Serverless:
     name:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
-    domain: ${stage}.codattest.com
+    domain: codattest.com
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     build:
