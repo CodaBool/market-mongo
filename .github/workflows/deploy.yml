@@ -23,8 +23,8 @@ jobs:
 
       - name: conditional env
         run: |
-          echo "I ran env ="${{env.DOMAIN}}
-          echo "Flip Env ${{ steps.extract.outputs.stage == 'dev' && 'True' || 'False' }}"
+          echo "is Dev ="${{env.DOMAIN}}
+          echo "is Prod ${{ steps.extract.outputs.stage == 'prod' && 'True' || 'False' }}"
         env:
           DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'True' || 'False' }}
         
