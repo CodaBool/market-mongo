@@ -17,3 +17,6 @@ Serverless:
       env:
         MONGODB_URI: ${env.MONGODB_URI}
         NEXT_PUBLIC_STAGE: ${stage}
+        NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
+        STRIPE_SK: ${env.STRIPE_SK}
+        NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
