@@ -62,6 +62,7 @@ jobs:
           # hacky = https://stackoverflow.com/questions/63020039/serverless-framework-and-workaround-for-conditional-value
           # || use an if plugin
           SUB_DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'dev' || 'www' }}
+          NEXTAUTH_URL: ${{ steps.extract.outputs.stage == 'dev' && 'https://dev.codattest.com' || 'https://www.codattest.com' }}
           # URL: ${{ steps.extract.outputs.stage == 'dev' && 'https://dev.codattest.com' || 'https://www.codattest.com' }} # WARNING: hardcoded url for next-auth
 
       - name: Upload `.serverless` state to S3

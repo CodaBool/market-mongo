@@ -56,7 +56,7 @@ export default async (req, res) => {
       throw 'No response'
     }
   } catch (err) {
-    res.status(500).send(err)
+    res.status(500).send(err.message)
   }
 }
 

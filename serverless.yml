@@ -17,10 +17,11 @@ serverless:
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     build:
+      cmd: next build:${stage}
       env:
         MONGODB_URI: ${env.MONGODB_URI}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
         STRIPE_SK: ${env.STRIPE_SK}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
-        NEXTAUTH_URL: https://${sub}.codattest.com
+        NEXTAUTH_URL: ${env.NEXTAUTH_URL}

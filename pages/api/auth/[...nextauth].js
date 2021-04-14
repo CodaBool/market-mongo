@@ -3,14 +3,14 @@ import Providers from 'next-auth/providers'
 import { compare } from 'bcryptjs'
 import { getUser } from '../user'
 
-export const config = {
-  // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
-  api: {
-    // was getting warning that API resolved without sending a response for /api/auth/session, this may result in stalled requests.
-    // following stackoverflow answer I set this config but may be dangerous since I may not always return a response
-    externalResolver: true
-  }
-}
+// export const config = {
+//   // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
+//   api: {
+//     // was getting warning that API resolved without sending a response for /api/auth/session, this may result in stalled requests.
+//     // following stackoverflow answer I set this config but may be dangerous since I may not always return a response
+//     externalResolver: true
+//   }
+// }
 
 export default (req, res) => {
   NextAuth(req, res, {

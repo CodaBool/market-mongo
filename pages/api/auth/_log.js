@@ -1,6 +1,6 @@
 export default async (req, res) => {
   try {
-    console.log('/api/auth/_log', req)
+    console.log('/api/auth/_log NEXT_AUTH LOG:', req)
     res.status(200).json({ message: 'log recieved, check cloudwatch'})
   } catch (err) {
     console.log('/api/auth/_log catch', err)

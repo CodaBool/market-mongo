@@ -28,7 +28,12 @@ export default function Index(props) {
   // }
 
   function test() {
-    axios.post('/api/test2')
+    axios.get('/api/test2')
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+  }
+  function testError() {
+    axios.get('/api/logError')
       .then(res => console.log(res))
       .catch(err => console.log(err))
   }
@@ -38,6 +43,7 @@ export default function Index(props) {
       <button onClick={handleUser} >get user</button>
       {/* <button onClick={postUser} >post user</button> */}
       <button onClick={test}>test</button> 
+      <button onClick={testError}>testError</button> 
       <input onChange={e => setEmail(e.target.value)} value={email} />
       {/* {user?.length ? user.map(user => (
         <h1 key={user.email}>{user.email}</h1>
