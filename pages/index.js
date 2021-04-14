@@ -36,8 +36,8 @@ export default function Index(props) {
   return (
     <div>
       {/* <button onClick={handleUser} >get user</button>
-      <button onClick={postUser} >post user</button>
-      // <button onClick={test}>test</button> */}
+      <button onClick={postUser} >post user</button> */}
+      <button onClick={test}>test</button> 
       <input onChange={e => setEmail(e.target.value)} value={email} />
       {/* {user?.length ? user.map(user => (
         <h1 key={user.email}>{user.email}</h1>
