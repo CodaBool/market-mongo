@@ -76,7 +76,7 @@ export default (req, res) => {
       maxAge: 30 * 24 * 60 * 60 // 30 days
     },
     debug: true,
-    secret: process.env.SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     database: process.env.MONGODB_URI
   })
 }

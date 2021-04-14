@@ -14,6 +14,8 @@ export default function Login({ csrfToken }) {
   const { handleSubmit, errors, control, register } = useForm()
   const router = useRouter()
 
+  console.log('csrfToken', csrfToken)
+
   useEffect(() => {
     if (router.query.error === 'nonexistant') setError('No user found by that email')
     if (router.query.error === 'invalid') setError('Invalid login')
