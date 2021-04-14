@@ -10,6 +10,7 @@ export default function Index({ user }) {
   const [session, loading] = useSession()
 
   console.log('MONGODB_URI =', process.env.MONGODB_URI)
+  console.log('NEXT_PUBLIC_STAGE =', process.env.NEXT_PUBLIC_STAGE)
 
   console.log(cartDetails)
 

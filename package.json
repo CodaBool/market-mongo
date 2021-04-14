@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix . && echo 'Lint Complete.'",
-    "dev": "cross-env NEXT_PUBLIC_STAGE=dev next dev",
-    "build": "cross-env NEXT_PUBLIC_STAGE=dev next build",
-    "build:dev": "cross-env NEXT_PUBLIC_STAGE=dev next build",
-    "build:prod": "cross-env NEXT_PUBLIC_STAGE=prod next build",
+    "dev": "cross-env NEXT_PUBLIC_STAGE=dev NEXTAUTH_URL=http://localhost:3000 next dev",
+    "build": "cross-env NEXT_PUBLIC_STAGE=dev NEXTAUTH_URL=http://dev.codattest.com next build",
+    "build:dev": "cross-env NEXT_PUBLIC_STAGE=dev NEXTAUTH_URL=http://dev.codattest.com next build",
+    "build:prod": "cross-env NEXT_PUBLIC_STAGE=prod NEXTAUTH_URL=http://prod.codattest.com next build",
     "start": "next start",
     "export": "next export",
     "watch": "watch 'clear && npm run -s test | tap-nirvana && npm run -s lint' src"
