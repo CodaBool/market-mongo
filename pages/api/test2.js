@@ -6,6 +6,7 @@ export default async (req, res) => {
 
     res.status(200).send('wowee')
   } catch (err) {
-    res.status(500).send(err)
+    console.log('test2 catch', err)
+    res.status(400).json({ success: false })
   }
 }

@@ -10,6 +10,8 @@ export default async (req, res) => {
       .catch(err => console.log(err))
     res.status(200).json(resp)
   } catch (err) {
-    res.status(500).send(err)
+    console.log('test catch', err)
+    // res.status(500).send(err)
+    res.status(400).json({ success: false })
   }
 }

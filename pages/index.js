@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/client'
+// import { useSession } from 'next-auth/client'
 import axios from 'axios'
 // import { getUser } from './api/user'
-import { useShoppingCart } from 'use-shopping-cart'
+// import { useShoppingCart } from 'use-shopping-cart'
 
 export default function Index(props) {
   // const { cartDetails } = useShoppingCart()
@@ -14,12 +14,12 @@ export default function Index(props) {
   function handleUser() {
     axios.get('/api/user', { params: { email } })
       .then(res => {
-        console.log('get =', res.data)
-        if (res.data === 'User not found') {
-          console.log('Could not find the user')
-        }
+        console.log('get =', res)
+        // if (res.data === 'User not found') {
+        //   console.log('Could not find the user')
+        // }
       })
-      .catch(err => console.log(err.response.data)) // .response.data
+      .catch(err => console.log(err)) // .response.data
   }
   // function postUser() {
   //   axios.post('/api/user', { email, password: 'beans' })
