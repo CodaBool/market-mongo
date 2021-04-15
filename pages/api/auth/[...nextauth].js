@@ -84,6 +84,7 @@ export default (req, res) => {
     },
     debug: true,
     secret: process.env.NEXTAUTH_SECRET,
+    site: process.env.NEXTAUTH_URL
     // database: process.env.MONGODB_URI,
     // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
   })
