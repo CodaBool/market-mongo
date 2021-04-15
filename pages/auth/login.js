@@ -108,7 +108,16 @@ export default function Login({ csrf }) {
 }
 
 export async function getServerSideProps(context) {
+  console.log('environment check', {
+    NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
+    NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE, 
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET, 
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL, 
+    MONGODB_URI: process.env.MONGODB_URI, 
+    STRIPE_SK: process.env.STRIPE_SK
+  })
   console.log('grabbing csrfToken')
+  console.log('getServerSideProps CONTEXT =', context)
   let csrf = null
   await csrfToken(context)
     .then(res => {
@@ -117,14 +126,7 @@ export async function getServerSideProps(context) {
     })
     .catch(err => {
       console.log('error in getting csrf Token')
-      console.log('environment check', {
-        NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
-        NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE, 
-        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET, 
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL, 
-        MONGODB_URI: process.env.MONGODB_URI, 
-        STRIPE_SK: process.env.STRIPE_SK
-      })
+      
       console.log('raw error', err)
     })
   return {
