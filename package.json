@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NEXTAUTH_URL=https://codattest.com next dev",
-    "build": "cross-env NEXTAUTH_URL=https://codattest.com next build",
-    "start": "cross-env NEXTAUTH_URL=https://codattest.com next start",
-    "export": "cross-env NEXTAUTH_URL=https://codattest.com next export"
+    "dev": "cross-env NEXTAUTH_URL=d33isfp79lbv81.cloudfront.net next dev",
+    "build": "cross-env NEXTAUTH_URL=d33isfp79lbv81.cloudfront.net next build",
+    "start": "cross-env NEXTAUTH_URL=d33isfp79lbv81.cloudfront.net next start",
+    "export": "cross-env NEXTAUTH_URL=d33isfp79lbv81.cloudfront.net next export"
   },
   "keywords": [],
   "author": "",

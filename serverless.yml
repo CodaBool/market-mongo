@@ -19,7 +19,7 @@ serverless:
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     env:
-      NEXTAUTH_URL: ${env.NEXTAUTH_URL}
+      NEXTAUTH_URL: d33isfp79lbv81.cloudfront.net
     build:
       cmd: npm # default = node_modules/.bin/next
       args: [run, 'build'] # default = ['build']
