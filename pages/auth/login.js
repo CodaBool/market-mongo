@@ -8,13 +8,13 @@ import { useRouter } from 'next/router'
 import { Load } from '../../components/Load'
 import { csrfToken, signIn, useSession } from 'next-auth/client'
 
-export default function Login({ csrfToken }) {
+export default function Login({ csrf }) {
   const [session, loading] = useSession()
   const [error, setError] = useState(null)
   const { handleSubmit, errors, control, register } = useForm()
   const router = useRouter()
 
-  console.log('csrfToken', csrfToken)
+  console.log('csrfToken', csrf)
 
   useEffect(() => {
     if (router.query.error === 'nonexistant') setError('No user found by that email')
@@ -24,7 +24,7 @@ export default function Login({ csrfToken }) {
 
   const onSubmit = (data) => {
     console.log(data, router.query.callbackUrl)
-    if (data.email && data.password && data.csrfToken) {
+    if (data.email && data.password && data.csrf) {
       const callback = router.query.callbackUrl || ''
       signIn('credentials', {
         email: data.email,
@@ -46,9 +46,9 @@ export default function Login({ csrfToken }) {
       <h1 className="my-4 display-3">Login</h1>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <input
-          name="csrfToken"
+          name="csrf"
           type="hidden"
-          defaultValue={csrfToken}
+          defaultValue={csrf}
           ref={register}
         />
         <Form.Group>
@@ -108,7 +108,26 @@ export default function Login({ csrfToken }) {
 }
 
 export async function getServerSideProps(context) {
+  console.log('grabbing csrfToken')
+  let csrf = null
+  await csrfToken(context)
+    .then(res => {
+      console.log('setting csrf token from successful response =', res)
+      csrf = res
+    })
+    .catch(err => {
+      console.log('error in getting csrf Token')
+      console.log('environment check', {
+        NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
+        NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE, 
+        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET, 
+        NEXTAUTH_URL: process.env.NEXTAUTH_URL, 
+        MONGODB_URI: process.env.MONGODB_URI, 
+        STRIPE_SK: process.env.STRIPE_SK
+      })
+      console.log('raw error', err)
+    })
   return {
-    props: { csrfToken: await csrfToken(context) }
+    props: { csrf  }
   }
 }
