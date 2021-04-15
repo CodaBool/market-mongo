@@ -1,9 +1,8 @@
-import dbConnect from '../../util/db'
+import applyMiddleware from '../../util'
 import { User } from '../../models'
 
-export default async (req, res) => {
+export default applyMiddleware(async (req, res) => {
   try {
-    await dbConnect()
     let resp = []
     await User.find({})
       .then(response => resp = response)
@@ -11,7 +10,6 @@ export default async (req, res) => {
     console.log('finished db query, sending back resp =', resp)
     res.status(200).json(resp)
   } catch (err) {
-    console.log('/api/test catch', err)
-    res.status(400).send('test endpoint err, see CloudWatch logs for api')
+    res.status(500).json({msg: '/test: ' + (err.message || err)})
   }
-}
+})

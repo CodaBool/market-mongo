@@ -1,7 +1,7 @@
-import dbConnect from '../../util/db'
+import applyMiddleware from '../../util'
 import { User } from '../../models'
 
-export default async (req, res) => {
+export default applyMiddleware(async (req, res) => {
   try {
     let response = null
     let error = null
@@ -47,15 +47,13 @@ export default async (req, res) => {
   } catch (err) {
     res.status(500).send(err)
   }
-}
+})
 
 // Seperated to allow for use in pages with getServerSideProps and in next-auth
 export async function getUser(email) { // always place in try catch, returns null when no user is found
-  await dbConnect()
   return User.findOne({ email }).then(res => res).catch(err => err)
 }
 
 export async function postUser(data) { // always place in try catch
-  await dbConnect()
   return User.create(data).then(res => res).catch(err => err)
 }

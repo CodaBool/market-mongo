@@ -1,8 +1,11 @@
 import { idFromReqOrCtx } from '../../util'
-import dbConnect from '../../util/db'
+// import { dbConnect } from '../../util/db'
+import applyMiddleware from '../../util'
 import { User } from '../../models'
 
-export default async (req, res) => {
+// export default async (req, res) => {
+export default applyMiddleware(async (req, res) => {
+// export default async (req, res) => {
   try {
     let response = null
     let error = null
@@ -19,6 +22,8 @@ export default async (req, res) => {
           .catch(err => error = err)
         break
       case 'GET':
+        console.log('query', req.query)
+        if (!req.query.email) throw 'No user provided'
         await getUser(req.query.email)
           .then(r => {
             if (r) {
@@ -27,7 +32,7 @@ export default async (req, res) => {
               error = 'User not found'
             }
           })
-          .catch(err => error = err)
+          .catch(err => {console.log(err); error = err})
         break
       case 'PUT':
         if (req.body.data.admin) { // admin is immutable
@@ -45,39 +50,41 @@ export default async (req, res) => {
             .catch(err => error = err)
         }
         break
-      default:
+      default: // 405
+        // res.setHeader('Allow', ['GET', 'PUT', 'POST']) // TODO: test this case, newly added
         throw `Cannot use method ${req.method} for this route`
     }
     if (response) {
       res.status(200).json(response)
     } else if (error) {
-      res.status(400).json(error)
+      res.status(400).json({ msg: error })
     } else {
       throw 'No response'
     }
   } catch (err) {
-    res.status(500).send(err.message)
+    console.log('')
+    res.status(500).json({msg: '/user: ' + (err.message || err)})
   }
-}
+})
 
 // Seperated to allow for use in pages with getServerSideProps and in next-auth
 export async function getUser(email) { // always place in try catch, returns null when no user is found
-  await dbConnect()
+  // await dbConnect()
   return User.findOne({ email }).then(res => res).catch(err => err)
 }
 
 export async function getUserFromContext(context) { // always place in try catch, returns null when no user is found
-  await dbConnect()
+  // await dbConnect()
   return User.findById(idFromReqOrCtx(null, context)).then(res => res).catch(err => err)
 }
 
 export async function postUser(data) { // always place in try catch
-  await dbConnect()
+  // await dbConnect()
   return User.create(data).then(res => res).catch(err => err)
 }
 
 export async function putUser(email, data) { // always place in try catch
-  await dbConnect()
+  // await dbConnect()
   // new: true => returns the updated document
   return User.findOneAndUpdate({ email }, data, { new: true }).then(res => res).catch(err => err)
 }

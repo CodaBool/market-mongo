@@ -18,12 +18,12 @@ export default function test() {
   function getUser() {
     axios.get('/api/user', { params: { email: selector } })
       .then(res => setUsers([res.data]))
-      .catch(err => console.log(err.response.data))
+      .catch(err => console.error(err.response.data.msg))
   }
   function getUsers() { // nothing in front end should be doing this operation
     axios.get('/api/test')
       .then(res => setUsers(res.data))
-      .catch(err => console.log(err.response.data))
+      .catch(err => console.error(err.response.data.msg))
     }
     function postUser() {
       bcrypt.hash('password', 10, (err, hash) => { // sets password to password
@@ -41,7 +41,7 @@ export default function test() {
             console.log('user added', res)
             getUsers() // gather all users
           })
-          .catch(err => console.log(err.response.data))
+          .catch(err => console.error(err.response.data.msg))
       })
   }
   function putUser(active = true) {
@@ -49,11 +49,11 @@ export default function test() {
     if (active) { // update the email put
       axios.put('/api/user', { email: selector, data: {email: newData, active}})
         .then(res => console.log('put res', res))
-        .catch(err => console.log('put err', err.response.data))
+        .catch(err => console.error('put err', err.response.data.msg))
     } else { // "delete" account (put active to false)
       axios.put('/api/user', { email: selector, data: { active }})
         .then(res => console.log('Delete res', res))
-        .catch(err => console.log('Delete err', err.response.data))
+        .catch(err => console.error('Delete err', err.response.data.msg))
     }
   }
 

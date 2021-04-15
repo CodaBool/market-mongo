@@ -1,3 +1,5 @@
+import nextConnect from 'next-connect'
+import dbMiddleware from './db'
 import { parseCookies } from 'nookies'
 import atob from 'atob'
 
@@ -26,4 +28,10 @@ export function parseJwt(token) {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
   }).join(''))
   return JSON.parse(jsonPayload)
+}
+
+
+
+export default function createHandler(...middlewares) {
+  return nextConnect().use(dbMiddleware, ...middlewares)
 }

@@ -13,17 +13,18 @@ serverless:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
       imageLambda: ${name}-${stage}-image
-    domain: ['${sub}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
+    # domain: ['${sub}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
+    domain: codattest.com
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     build:
-      cmd: npm # default = node_modules/.bin/next
-      args: [run, 'build:${stage}'] # default = ['build']
+      # cmd: npm # default = node_modules/.bin/next
+      # args: [run, 'build:${stage}'] # default = ['build']
       env:
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXTAUTH_URL: ${env.NEXTAUTH_URL}
         MONGODB_URI: ${env.MONGODB_URI}
-        JWT_SECRET: ${env.JWT_SECRET}
+        # JWT_SECRET: ${env.JWT_SECRET}
         STRIPE_SK: ${env.STRIPE_SK}
