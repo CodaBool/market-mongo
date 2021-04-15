@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "export": "next export"
+    "dev": "cross-env NEXTAUTH_URL=https://codattest.com next dev",
+    "build": "cross-env NEXTAUTH_URL=https://codattest.com next build",
+    "start": "cross-env NEXTAUTH_URL=https://codattest.com next start",
+    "export": "cross-env NEXTAUTH_URL=https://codattest.com next export"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.6.0",
+    "cross-env": "^7.0.3",
     "mongoose": "^5.12.1",
     "next": "^10.0.9",
     "next-auth": "^3.13.2",

@@ -21,8 +21,8 @@ serverless:
     env:
       NEXTAUTH_URL: ${env.NEXTAUTH_URL}
     build:
-      # cmd: npm # default = node_modules/.bin/next
-      # args: [run, 'build:${stage}'] # default = ['build']
+      cmd: npm # default = node_modules/.bin/next
+      args: [run, 'build'] # default = ['build']
       env:
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
         NEXT_PUBLIC_STAGE: ${stage}
