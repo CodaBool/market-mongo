@@ -57,7 +57,7 @@ export default (req, res) => {
     ],
     callbacks: {
       session: async (session, user) => {
-        console.log('in session callback')
+        console.log('in session callback', session, user)
         if (session) session.id = user.id
         return Promise.resolve(session)
       },
@@ -84,7 +84,7 @@ export default (req, res) => {
     },
     debug: true,
     secret: process.env.NEXTAUTH_SECRET,
-    site: process.env.NEXTAUTH_URL
+    site: 'https://codattest.com'
     // database: process.env.MONGODB_URI,
     // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
   })

@@ -26,6 +26,7 @@ export default applyMiddleware(async (req, res) => {
         if (!req.query.email) throw 'No user provided'
         await getUser(req.query.email)
           .then(r => {
+            console.log('GET /user RAW Mongo Response', r)
             if (r) {
               response = r
             } else { // null when nothing found

@@ -19,6 +19,9 @@ export default applyMiddleware(async (req, res) => {
       })
       .catch(err => {
         console.log('/test catch block', err)
+        if (err.message) {
+          console.log('/test catch block err.message =', err.message)
+        }
       })
     console.log('finished db query, sending back resp =', resp)
     res.status(200).json(resp)
