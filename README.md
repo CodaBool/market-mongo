@@ -19,7 +19,7 @@ if (!process.browser) {
 ## NEXTAUTH_URL Fix
 "lint": "eslint --fix . && echo 'Lint Complete.'",
 "dev": "cross-env NEXT_PUBLIC_STAGE=dev NEXTAUTH_URL=http://localhost:3000 next dev",
-"build": "cross-env NEXT_PUBLIC_STAGE=dev NEXTAUTH_URL=https://dev.codattest.com next build",
+"build": "cross-env NEXTAUTH_URL=https://dev.codattest.com next build",
 "build:dev": "cross-env NEXT_PUBLIC_STAGE=dev NEXTAUTH_URL=https://dev.codattest.com next build",
 "build:prod": "cross-env NEXT_PUBLIC_STAGE=prod NEXTAUTH_URL=https://www.codattest.com next build",
 "watch": "watch 'clear && npm run -s test | tap-nirvana && npm run -s lint' src",
