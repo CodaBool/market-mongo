@@ -146,8 +146,8 @@ const options = {
     jwt: true,
     maxAge: 30 * 24 * 60 * 60 // 30 days
   },
-  secret: 'justsomevalue',
   useSecureCookies: false,
-  site: 'https://www.google.com'
+  secret: 'justsomevalue',
+  site: 'https://d3dnulbm6gi6yu.cloudfront.net'
 };
 export default (req, res) => NextAuth(req, res, options);
