@@ -84,7 +84,7 @@ export default (req, res) => {
     },
     debug: true,
     secret: process.env.NEXTAUTH_SECRET,
-    site: 'https://codattest.com'
+    site: 'd33isfp79lbv81.cloudfront.net'
     // database: process.env.MONGODB_URI,
     // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
   })
