@@ -7,7 +7,7 @@ serverless:
   component: '@sls-next/serverless-component@1.19.0-alpha.43'
   inputs:
     memory: 2048
-    timeout: 40
+    timeout: 30
     bucketRegion: us-east-1
     bucketName: ${name}-${stage}
     name:
