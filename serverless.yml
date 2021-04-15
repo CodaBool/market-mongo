@@ -23,7 +23,7 @@ serverless:
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
-        JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
         NEXTAUTH_URL: ${env.NEXTAUTH_URL}
         MONGODB_URI: ${env.MONGODB_URI}
+        JWT_SECRET: ${env.JWT_SECRET}
         STRIPE_SK: ${env.STRIPE_SK}

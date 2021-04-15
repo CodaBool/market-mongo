@@ -77,12 +77,12 @@ export default (req, res) => {
     },
     jwt: {
       jwt: true,
-      secret: process.env.NEXTAUTH_SECRET, // defaults to NEXTAUTH_SECRET
-      signingKey: process.env.JWT_SIGNING_PK,
+      secret: process.env.JWT_SECRET, // defaults to NEXTAUTH_SECRET
+      // signingKey: process.env.JWT_SIGNING_PK,
     },
     debug: true,
     secret: process.env.NEXTAUTH_SECRET,
-    database: process.env.MONGODB_URI,
-    useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
+    // database: process.env.MONGODB_URI,
+    // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
   })
 }
