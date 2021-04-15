@@ -144,7 +144,6 @@ const options = {
   },
   session: {
     jwt: true,
-    maxAge: 30 * 24 * 60 * 60 // 30 days
   },
   useSecureCookies: false,
   secret: 'justsomevalue',
