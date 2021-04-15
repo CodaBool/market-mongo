@@ -44,8 +44,8 @@ export default function Index() {
       .then(res => console.log(res.data))
       .catch(err => console.error(err.response.data.msg))
   }
-  function testError() {
-    axios.get('/api/logError')
+  function testwoMiddleWare() {
+    axios.get('/api/testwoMiddleWare')
       .then(res => console.log(res.data))
       .catch(err => console.error(err.response.data.msg))
   }
@@ -60,7 +60,7 @@ export default function Index() {
       <button onClick={handleUser} >get user</button>
       {/* <button onClick={postUser} >post user</button> */}
       <button onClick={test}>test</button> 
-      <button onClick={testError}>testError</button> 
+      <button onClick={testwoMiddleWare}>Test without middleware but await instead</button> 
       <button onClick={testEnv}>test Env</button> 
       <input onChange={e => setEmail(e.target.value)} value={email} />
       {/* {user?.length ? user.map(user => (

@@ -45,14 +45,14 @@ jobs:
       - name: Serverless AWS authentication
         run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Download `.serverless` state from S3
-        run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+      # - name: Download `.serverless` state from S3
+      #   run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
 
       - name: Deploy to AWS
         run: npx serverless
         env:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          # NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           STRIPE_SK: ${{ secrets.STRIPE_SK }}
           STAGE: ${{ steps.extract.outputs.stage }}
@@ -61,8 +61,8 @@ jobs:
           # Only conditional solution found was either
           # hacky = https://stackoverflow.com/questions/63020039/serverless-framework-and-workaround-for-conditional-value
           # || use an if plugin
-          SUB_DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'dev' || 'www' }}
-          NEXTAUTH_URL: ${{ steps.extract.outputs.stage == 'dev' && 'd33isfp79lbv81.cloudfront.net' || 'd33isfp79lbv81.cloudfront.net' }}
+          # SUB_DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'dev' || 'www' }}
+          # NEXTAUTH_URL: ${{ steps.extract.outputs.stage == 'dev' && 'https://d33isfp79lbv81.cloudfront.net' || 'https://d33isfp79lbv81.cloudfront.net' }}
           # JWT_SECRET: ${{ secrets.JWT_SECRET }}
           # URL: ${{ steps.extract.outputs.stage == 'dev' && 'https://dev.codattest.com' || 'https://www.codattest.com' }} # WARNING: hardcoded url for next-auth
 
