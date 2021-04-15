@@ -76,11 +76,13 @@ export default (req, res) => {
       maxAge: 30 * 24 * 60 * 60 // 30 days
     },
     jwt: {
+      jwt: true,
+      secret: process.env.NEXTAUTH_SECRET, // defaults to NEXTAUTH_SECRET
       signingKey: process.env.JWT_SIGNING_PK,
     },
     debug: true,
     secret: process.env.NEXTAUTH_SECRET,
     database: process.env.MONGODB_URI,
-    // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
+    useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
   })
 }

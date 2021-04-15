@@ -10,6 +10,7 @@ export default function Index(props) {
   // const [session, loading] = useSession()
 
   // console.log(cartDetails)
+  console.log('NEXTAUTH_URL', process.env.NEXTAUTH_URL)
 
   function handleUser() {
     axios.get('/api/user', { params: { email } })
