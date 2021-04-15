@@ -3,14 +3,14 @@ import Providers from 'next-auth/providers'
 import { compare } from 'bcryptjs'
 import { getUser } from '../user'
 
-// export const config = {
-//   // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
-//   api: {
-//     // was getting warning that API resolved without sending a response for /api/auth/session, this may result in stalled requests.
-//     // following stackoverflow answer I set this config but may be dangerous since I may not always return a response
-//     externalResolver: true
-//   }
-// }
+export const config = {
+  // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
+  api: {
+    // was getting warning that API resolved without sending a response for /api/auth/session, this may result in stalled requests.
+    // following stackoverflow answer I set this config but may be dangerous since I may not always return a response
+    externalResolver: true
+  }
+}
 
 export default (req, res) => {
   NextAuth(req, res, {
@@ -75,8 +75,12 @@ export default (req, res) => {
       jwt: true,
       maxAge: 30 * 24 * 60 * 60 // 30 days
     },
+    jwt: {
+      signingKey: process.env.JWT_SIGNING_PK,
+    },
     debug: true,
     secret: process.env.NEXTAUTH_SECRET,
-    database: process.env.MONGODB_URI
+    database: process.env.MONGODB_URI,
+    // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
   })
 }

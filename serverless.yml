@@ -20,9 +20,10 @@ serverless:
       cmd: npm # default = node_modules/.bin/next
       args: [run, 'build:${stage}'] # default = ['build']
       env:
-        MONGODB_URI: ${env.MONGODB_URI}
-        NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
-        STRIPE_SK: ${env.STRIPE_SK}
+        NEXT_PUBLIC_STAGE: ${stage}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
+        JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
         NEXTAUTH_URL: ${env.NEXTAUTH_URL}
+        MONGODB_URI: ${env.MONGODB_URI}
+        STRIPE_SK: ${env.STRIPE_SK}
