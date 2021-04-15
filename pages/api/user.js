@@ -51,18 +51,20 @@ export default applyMiddleware(async (req, res) => {
         }
         break
       default: // 405
+        console.log('ERROR: wrong method')
         // res.setHeader('Allow', ['GET', 'PUT', 'POST']) // TODO: test this case, newly added
         throw `Cannot use method ${req.method} for this route`
     }
     if (response) {
       res.status(200).json(response)
     } else if (error) {
+      console.log('ERROR: custom error', error)
       res.status(400).json({ msg: error })
     } else {
       throw 'No response'
     }
   } catch (err) {
-    console.log('')
+    console.log('ERROR: catch', '/user: ' + (err.message || err))
     res.status(500).json({msg: '/user: ' + (err.message || err)})
   }
 })

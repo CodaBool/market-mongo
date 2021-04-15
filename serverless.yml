@@ -6,7 +6,8 @@ name: ${env.REPO}
 serverless:
   component: '@sls-next/serverless-component@1.19.0-alpha.43'
   inputs:
-    memory: 128
+    memory: 2048
+    timeout: 40
     bucketRegion: us-east-1
     bucketName: ${name}-${stage}
     name:
@@ -17,6 +18,8 @@ serverless:
     domain: codattest.com
     publicDirectoryCache: false
     useServerlessTraceTarget: true
+    env:
+      NEXTAUTH_URL: ${env.NEXTAUTH_URL}
     build:
       # cmd: npm # default = node_modules/.bin/next
       # args: [run, 'build:${stage}'] # default = ['build']
