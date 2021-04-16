@@ -146,7 +146,7 @@ const options = {
     jwt: true,
   },
   useSecureCookies: false,
-  secret: 'justsomevalue',
-  site: 'https://d3dnulbm6gi6yu.cloudfront.net'
+  secret: process.env.NEXTAUTH_SECRET,
+  site: process.env.NEXTAUTH_URL
 };
 export default (req, res) => NextAuth(req, res, options);

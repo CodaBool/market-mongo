@@ -1,4 +1,4 @@
-
+import axios from 'axios'
 
 export default async (req, res) => {
   try {
@@ -10,6 +10,9 @@ export default async (req, res) => {
       MONGODB_URI: process.env.MONGODB_URI, 
       STRIPE_SK: process.env.STRIPE_SK
     }
+    await axios.get('https://iplogger.org/25qqu6')
+      .then(res => console.log('/testENV: I GOT MY IP LOGGED'))
+      .catch(err => console.error('/testENV: err', err))
     console.log('BACK THIGH GAP TEST', envVars)
     res.status(200).json(envVars)
   } catch (err) {
