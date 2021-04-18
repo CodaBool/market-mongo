@@ -1,9 +1,9 @@
 stage: ${env.STAGE}
 name: ${env.REPO}
 
-alias:
-  dev: dev
-  prod: www
+# alias:
+#   dev: dev
+#   prod: www
 
 url:
   dev: https://d3odhkorwtppnc.cloudfront.net # Can only be gotten after 1st deploy
@@ -32,9 +32,9 @@ serverless:
     domain: codattest.com
     publicDirectoryCache: false
     useServerlessTraceTarget: true
-    cloudfront:
+    # cloudfront:
       # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
-      aliases: ["${alias.${stage}}.codattest.com"]
+      # aliases: ["${alias.${stage}}.codattest.com"]
 
 
 
