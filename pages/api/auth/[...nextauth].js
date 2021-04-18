@@ -89,14 +89,11 @@
 //     // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
 //   })
 // }
-import NextAuth from 'next-auth';
-import getConfig from 'next/config'
-import Providers from 'next-auth/providers';
+import NextAuth from 'next-auth'
+import Providers from 'next-auth/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'
-
-const { publicRuntimeConfig } = getConfig()
 
 const options = {
   providers: [
@@ -144,6 +141,6 @@ const options = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   useSecureCookies: false,
-  site: publicRuntimeConfig.NEXTAUTH_URL
+  site: process.env.NEXTAUTH_URL_INTERNAL
 };
 export default (req, res) => NextAuth(req, res, options);
