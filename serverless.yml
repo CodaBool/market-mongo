@@ -1,9 +1,9 @@
 stage: ${env.STAGE}
 name: ${env.REPO}
 
-domain:
-  dev: dev.codattest.com
-  prod: codattest.com
+sub_domain:
+  dev: dev.
+  prod: ''
 
 url:
   dev: https://d3odhkorwtppnc.cloudfront.net # Can only be gotten after 1st deploy
@@ -29,7 +29,7 @@ serverless:
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
     # domain: ['${env.SUB_DOMAIN}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
-    domain: ${domain.${stage}}
+    domain: ['${sub_domain.${stage}}', codattest.com]
     publicDirectoryCache: false
     useServerlessTraceTarget: true
     # cloudfront:
