@@ -1,9 +1,9 @@
 stage: ${env.STAGE}
 name: ${env.REPO}
 
-sub_domain:
-  dev: dev.
-  prod: ''
+alias:
+  dev: dev
+  prod: www
 
 url:
   dev: https://d3odhkorwtppnc.cloudfront.net # Can only be gotten after 1st deploy
@@ -29,12 +29,12 @@ serverless:
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
     # domain: ['${env.SUB_DOMAIN}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
-    domain: ['${sub_domain.${stage}}', codattest.com]
+    domain: codattest.com
     publicDirectoryCache: false
     useServerlessTraceTarget: true
-    # cloudfront:
+    cloudfront:
       # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
-      # aliases: ["example.com", "bar.example.com"]
+      aliases: ["${alias.${stage}}.codattest.com"]
 
 
 
