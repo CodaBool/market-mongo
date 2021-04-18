@@ -118,22 +118,32 @@ export async function getServerSideProps(context) {
     MONGODB_URI: process.env.MONGODB_URI, 
     STRIPE_SK: process.env.STRIPE_SK
   })
-  console.log('grabbing csrfToken')
-  console.log('getServerSideProps CONTEXT =', context)
-  console.log('getServerSideProps ENV =', process.env)
+  // console.log('before', process.env.NEXTAUTH_URL)
+  // process.env.NEXTAUTH_URL = 'beanss'
+  // console.log('after', process.env.NEXTAUTH_URL)
+  // console.log('getServerSideProps CONTEXT =', context)
+  // console.log('getServerSideProps ENV =', process.env)
   console.log('getServerSideProps RUNTIME_ENV =', publicRuntimeConfig.NEXTAUTH_URL)
   let csrf = null
   await csrfToken(context)
     .then(res => {
       console.log('setting csrf token from successful response =', res)
-      csrf = res
+      if (res) {
+        csrf = res
+      }
     })
     .catch(err => {
       console.log('error in getting csrf Token')
       
       console.log('raw error', err)
     })
-  return {
-    props: { csrf  }
+  if (csrf) {
+    return {
+      props: { csrf  }
+    }
+  } else {
+    return {
+      props: { csrf: 'not working'  }
+    }
   }
 }

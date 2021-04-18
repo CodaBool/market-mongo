@@ -141,6 +141,6 @@ const options = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   useSecureCookies: false,
-  site: process.env.NEXTAUTH_URL
+  site: process.env.NEXTAUTH_URL || 'http://localhost:3000'
 };
 export default (req, res) => NextAuth(req, res, options);

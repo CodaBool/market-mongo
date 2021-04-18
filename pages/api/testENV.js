@@ -15,7 +15,7 @@ export default async (req, res) => {
       envVars.NEXT_PUBLIC_STAGE = 'MISSING'
     }
     if (process.env.NEXTAUTH_SECRET) {
-      envVars.NEXTAUTH_SECRET = process.env.NEXTAUTH_URL
+      envVars.NEXTAUTH_SECRET = 'found'
     } else {
       envVars.NEXTAUTH_SECRET = 'MISSING'
     }
@@ -43,6 +43,11 @@ export default async (req, res) => {
       envVars.RANDO = process.env.RANDO
     } else {
       envVars.RANDO = 'MISSING'
+    }
+    if (process.env.NEXTAUTH_URL_INTERNAL) {
+      envVars.NEXTAUTH_URL_INTERNAL = process.env.NEXTAUTH_URL_INTERNAL
+    } else {
+      envVars.NEXTAUTH_URL_INTERNAL = 'MISSING'
     }
     // console.log(envVars)
     res.status(200).json(envVars)
