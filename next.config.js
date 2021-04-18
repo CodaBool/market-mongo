@@ -6,7 +6,8 @@ module.exports = {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     MONGODB_URI: process.env.MONGODB_URI,
-    STRIPE_SK: process.env.STRIPE_SK
+    STRIPE_SK: process.env.STRIPE_SK,
+    RANDO: 'this rando env var exists'
   },
   publicRuntimeConfig: {
     // Will be available on both server and client

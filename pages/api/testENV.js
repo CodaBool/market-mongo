@@ -39,6 +39,11 @@ export default async (req, res) => {
     } else {
       envVars.NEXTAUTH_URL = 'MISSING'
     }
+    if (process.env.RANDO) {
+      envVars.RANDO = process.env.RANDO
+    } else {
+      envVars.RANDO = 'MISSING'
+    }
     // console.log(envVars)
     res.status(200).json(envVars)
   } catch (err) {
