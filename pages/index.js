@@ -57,6 +57,11 @@ export default function Index() {
   //     .catch(err => console.log(err.response.data)) // .response.data
   // }
 
+  function getCSRF() {
+    axios.get('/api/getCSRF')
+      .then(res => console.log(res.data))
+      .catch(err => console.error(err.response.data.msg))
+  }
   function test() {
     axios.get('/api/test')
       .then(res => console.log(res.data))
@@ -78,6 +83,7 @@ export default function Index() {
       <button onClick={handleUser} >get user</button>
       {/* <button onClick={postUser} >post user</button> */}
       <button onClick={test}>test</button> 
+      <button onClick={getCSRF}>getCSRF</button> 
       <button onClick={testwoMiddleWare}>Test without middleware but await instead</button> 
       <button onClick={testEnv}>test Env</button> 
       <input onChange={e => setEmail(e.target.value)} value={email} />

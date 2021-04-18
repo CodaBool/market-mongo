@@ -16,7 +16,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK)
 export default function app({ Component, pageProps }) {
   return (
     <div className="site">
-      <Provider session={pageProps.session}>
+      <Provider session={pageProps.session} options={{site: process.env.NEXTAUTH_URL_INTERNAL}}>
         <CartProvider
           stripe={stripePromise}
           mode="checkout-session"

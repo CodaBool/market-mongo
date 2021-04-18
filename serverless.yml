@@ -24,11 +24,13 @@ serverless:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
       imageLambda: ${name}-${stage}-image
+    env: 
+      NEXTAUTH_URL_INTERNAL: ${url.${stage}}
     build:
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
-        NEXTAUTH_URL: ${url.${stage}}
+        NEXTAUTH_URL_INTERNAL: ${url.${stage}}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
