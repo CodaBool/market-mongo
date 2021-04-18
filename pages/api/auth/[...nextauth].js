@@ -141,6 +141,6 @@ const options = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   useSecureCookies: false,
-  site: process.env.NEXTAUTH_URL_INTERNAL
+  site: process.env.NEXTAUTH_URL
 };
 export default (req, res) => NextAuth(req, res, options);
