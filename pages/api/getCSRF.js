@@ -6,9 +6,11 @@ export default async (req, res) => {
     let res1 = null
     let res2 = null
     const base = process.env.NEXTAUTH_URL || 'https://d1m7a4gmurbqh2.cloudfront.net'
+    console.log('/getCSRF process.env.NEXTAUTH_URL =', process.env.NEXTAUTH_URL)
+    console.log('/getCSRF base =', base)
     try {
       await getCsrfToken({req})
-        .then(response => {res1 = response.data; console.log('/getCSRF auto res', response)})
+        .then(response => {res1 = response; console.log('/getCSRF auto res', response)})
         .catch(err => console.log('/getCSRF auto err', err))
     } catch (error) {
       console.log('failed 1', error)

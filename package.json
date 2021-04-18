@@ -7,8 +7,8 @@
     "dev": "next dev",
     "custom": "node server.js",
     "build": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net next build",
-    "start": "next start",
-    "export": "next export"
+    "start": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net next start",
+    "export": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net next export"
   },
   "keywords": [],
   "author": "",
