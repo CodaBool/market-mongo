@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import { useRouter } from 'next/router'
+import getConfig from 'next/config'
 import { Load } from '../../components/Load'
 import { csrfToken, signIn, useSession } from 'next-auth/client'
 
@@ -108,6 +109,7 @@ export default function Login({ csrf }) {
 }
 
 export async function getServerSideProps(context) {
+  const { publicRuntimeConfig } = getConfig()
   console.log('environment check', {
     NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
     NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE, 
@@ -118,6 +120,8 @@ export async function getServerSideProps(context) {
   })
   console.log('grabbing csrfToken')
   console.log('getServerSideProps CONTEXT =', context)
+  console.log('getServerSideProps ENV =', process.env)
+  console.log('getServerSideProps RUNTIME_ENV =', publicRuntimeConfig.NEXTAUTH_URL)
   let csrf = null
   await csrfToken(context)
     .then(res => {
