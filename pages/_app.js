@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
 import Container from 'react-bootstrap/Container'
-import { Provider } from 'next-auth/client'
+import { Provider } from 'coda-auth/client'
 
 import { CartProvider } from 'use-shopping-cart'
 import { loadStripe } from '@stripe/stripe-js'

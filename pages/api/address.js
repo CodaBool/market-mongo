@@ -49,7 +49,7 @@ export default applyMiddleware(async (req, res) => {
   }
 })
 
-// Seperated to allow for use in pages with getServerSideProps and in next-auth
+// Seperated to allow for use in pages with getServerSideProps and in coda-auth
 export async function getUser(email) { // always place in try catch, returns null when no user is found
   return User.findOne({ email }).then(res => res).catch(err => err)
 }

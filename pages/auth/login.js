@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row'
 import { useRouter } from 'next/router'
 import getConfig from 'next/config'
 import { Load } from '../../components/Load'
-import { csrfToken, signIn, useSession } from 'next-auth/client'
+import { csrfToken, signIn, useSession } from 'coda-auth/client'
 
 export default function Login({ csrf }) {
   const [session, loading] = useSession()

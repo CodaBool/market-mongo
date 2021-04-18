@@ -1,5 +1,5 @@
-// import NextAuth from 'next-auth'
-// import Providers from 'next-auth/providers'
+// import NextAuth from 'coda-auth'
+// import Providers from 'coda-auth/providers'
 // import { compare } from 'bcryptjs'
 // import { getUser } from '../user'
 
@@ -89,8 +89,8 @@
 //     // useSecureCookies: false // TODO: remove this if this does not solve the client_fetch_error
 //   })
 // }
-import NextAuth from 'next-auth'
-import Providers from 'next-auth/providers'
+import NextAuth from 'coda-auth'
+import Providers from 'coda-auth/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'

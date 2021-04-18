@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getCsrfToken } from 'next-auth/client'
+import { getCsrfToken } from 'coda-auth/client'
 
 export default async (req, res) => {
   try {

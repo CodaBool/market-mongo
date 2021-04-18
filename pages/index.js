@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-// import { useSession } from 'next-auth/client'
+// import { useSession } from 'coda-auth/client'
 import axios from 'axios'
 // import { connectDB, jparse } from '../util/db'
 // import { getUser } from './api/user'
