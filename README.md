@@ -12,7 +12,7 @@
 - verify that code is on the server with this if
 ```js
 if (!process.browser) {
-   console.log("my secret", process.env.SECRET);
+  console.log("my secret", process.env.SECRET);
 }
 ```
 

@@ -1,7 +1,7 @@
+# Variables
 # sub: ${env.SUB_DOMAIN}
 stage: ${env.STAGE}
 name: ${env.REPO}
-# url: ${env.URL}
 
 serverless:
   component: '@sls-next/serverless-component@1.18.0'
@@ -18,21 +18,21 @@ serverless:
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
-        NEXTAUTH_URL: https://d3dnulbm6gi6yu.cloudfront.net
-    # domain: ['${sub}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
+        MONGODB_PASS: ${env.MONGODB_PASS}
+        NEXTAUTH_URL: ${env.NEXTAUTH_URL}
+        NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
+        NEXT_PUBLIC_STAGE: ${stage}
+        NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
+    domain: ['${env.SUB_DOMAIN}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
     # domain: codattest.com
-    # publicDirectoryCache: false
-    # useServerlessTraceTarget: true
-    # env:
-    #   NEXTAUTH_URL: https://https://d33isfp79lbv81.cloudfront.net # https://d33isfp79lbv81.cloudfront.net
-    # build:
-    #   cmd: npm # default = node_modules/.bin/next
-    #   args: [run, 'build'] # default = ['build']
-    #   env:
-    #     NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
-    #     NEXT_PUBLIC_STAGE: ${stage}
-    #     NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
-    #     NEXTAUTH_URL: ${env.NEXTAUTH_URL}
-    #     MONGODB_URI: ${env.MONGODB_URI}
-    #     # JWT_SECRET: ${env.JWT_SECRET}
-    #     STRIPE_SK: ${env.STRIPE_SK}
+    publicDirectoryCache: false
+    useServerlessTraceTarget: true
+
+
+
+
+
+
+# build:
+#   cmd: npm # default = node_modules/.bin/next
+#   args: [run, 'build'] # default = ['build']

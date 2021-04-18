@@ -10,12 +10,13 @@ jobs:
 
       # The stage is extracted from the branch name, since deploys are only ran on dev and prod branch
       # WARNING: if deployments are done differently then this needs to be edited (hardcoded or from github event context)
-      # The repo name must be validated since it will be used in the S3 Bucket creation when saving Serverless state
-      # Repo name must follow S3 Naming conventions, no space + no uppercase
       - name: Extract Pipline Vars
         run: |
           repo=${GITHUB_REPOSITORY#CodaBool/}
-          echo "##[set-output name=repo;]${repo,,}" # Lower Cases the Repo name, Github already removes space
+        # The repo name must be validated since it will be used in the S3 Bucket creation when saving Serverless state
+        # Repo name must follow S3 Naming conventions, no space + no uppercase
+        # Lower Cases the Repo name, Github already removes space
+          echo "##[set-output name=repo;]${repo,,}" 
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
           echo Repo = ${repo,,}
           echo stage = ${GITHUB_REF#refs/heads/}
@@ -45,26 +46,25 @@ jobs:
       - name: Serverless AWS authentication
         run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Download `.serverless` state from S3
-        run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+      # - name: Download `.serverless` state from S3
+      #   run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
 
       - name: Deploy to AWS
         run: npx serverless
         env:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
           STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          MONGODB_PASS: ${{ secrets.MONGODB_PASS }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
           STAGE: ${{ steps.extract.outputs.stage }}
           REPO: ${{ steps.extract.outputs.repo }}
-          # NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           # Best to do conditional statements here until proper conditionals/logic are implemented in the Serverless framework - 4/2021
-          # Only conditional solution found was either
-          # hacky = https://stackoverflow.com/questions/63020039/serverless-framework-and-workaround-for-conditional-value
-          # || use an if plugin
-          # SUB_DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'dev' || 'www' }}
-          # NEXTAUTH_URL: ${{ steps.extract.outputs.stage == 'dev' && 'https://d33isfp79lbv81.cloudfront.net' || 'https://d33isfp79lbv81.cloudfront.net' }}
-          # JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          # URL: ${{ steps.extract.outputs.stage == 'dev' && 'https://dev.codattest.com' || 'https://www.codattest.com' }} # WARNING: hardcoded url for next-auth
+          # Only Severless conditional solution found was either
+          # Hacky solution = https://stackoverflow.com/questions/63020039/serverless-framework-and-workaround-for-conditional-value
+          # Bloat solution = use the Severless if plugin
+          NEXTAUTH_URL: ${{ steps.extract.outputs.stage == 'dev' && 'https://dev.codattest.com' || 'https://codattest.com' }}
+          SUB_DOMAIN: ${{ steps.extract.outputs.stage == 'dev' && 'dev' || 'www' }}
 
       - name: Upload `.serverless` state to S3
         run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete

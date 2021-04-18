@@ -98,11 +98,7 @@ import { getUser } from '../user'
 const options = {
   providers: [
     Providers.Credentials({
-      // The name to display on the sign in form (e.g. 'Sign in w ith...')
       name: 'Credentials',
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
       credentials: {
         email: { label: 'Email', type: 'email', placeholder: 'Email' },
         password: {
@@ -121,11 +117,9 @@ const options = {
               clientData.password,
               user.password
             )
-            if (validPassword) {
-              // complete successful login
+            if (validPassword) { // complete successful login
               return { id: user._id, email: user.email }
-            } else {
-              // invalid password
+            } else { // invalid password
               return Promise.reject('/auth/login?error=invalid')
             }
           } else {
@@ -145,7 +139,6 @@ const options = {
   session: {
     jwt: true,
   },
-  useSecureCookies: false,
   secret: process.env.NEXTAUTH_SECRET,
   site: process.env.NEXTAUTH_URL
 };
