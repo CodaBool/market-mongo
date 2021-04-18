@@ -6,7 +6,7 @@ name: ${env.REPO}
 #   prod: www
 
 domain:
-  dev: dev.codattest.com
+  dev: ['dev', codattest.com]
   prod: codattest.com
 
 url:
