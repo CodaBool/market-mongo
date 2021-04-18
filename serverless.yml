@@ -18,7 +18,6 @@ serverless:
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
-        MONGODB_PASS: ${env.MONGODB_PASS}
         NEXTAUTH_URL: ${env.NEXTAUTH_URL}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXT_PUBLIC_STAGE: ${stage}

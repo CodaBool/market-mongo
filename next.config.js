@@ -5,7 +5,6 @@ module.exports = {
     NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    MONGODB_PASS: process.env.MONGODB_PASS,
     MONGODB_URI: process.env.MONGODB_URI,
     STRIPE_SK: process.env.STRIPE_SK
   }
