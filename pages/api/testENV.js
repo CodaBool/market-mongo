@@ -2,18 +2,33 @@ import axios from 'axios'
 
 export default async (req, res) => {
   try {
-    const envVars = {
-      NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
-      NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE, 
-      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET, 
-      NEXTAUTH_URL: process.env.NEXTAUTH_URL, 
-      MONGODB_URI: process.env.MONGODB_URI, 
-      STRIPE_SK: process.env.STRIPE_SK
+    let envVars = {}
+    if (process.env.NEXT_PUBLIC_STRIPE_PK) {
+      envVars.NEXT_PUBLIC_STRIPE_PK = 'found'
+    } else {
+      envVars.NEXT_PUBLIC_STRIPE_PK = 'MISSING'
     }
-    await axios.get('https://iplogger.org/25qqu6')
-      .then(res => console.log('/testENV: I GOT MY IP LOGGED'))
-      .catch(err => console.error('/testENV: err', err))
-    console.log('BACK THIGH GAP TEST', envVars)
+    if (process.env.NEXT_PUBLIC_STAGE) {
+      envVars.NEXT_PUBLIC_STAGE = process.env.NEXT_PUBLIC_STAGE
+    } else {
+      envVars.NEXT_PUBLIC_STAGE = 'MISSING'
+    }
+    if (process.env.NEXTAUTH_SECRET) {
+      envVars.NEXTAUTH_SECRET = process.env.NEXTAUTH_URL
+    } else {
+      envVars.NEXTAUTH_SECRET = 'MISSING'
+    }
+    if (process.env.MONGODB_URI) {
+      envVars.MONGODB_URI = 'found'
+    } else {
+      envVars.MONGODB_URI = 'MISSING'
+    }
+    if (process.env.STRIPE_SK) {
+      envVars.STRIPE_SK = 'found'
+    } else {
+      envVars.STRIPE_SK = 'MISSING'
+    }
+    // console.log(envVars)
     res.status(200).json(envVars)
   } catch (err) {
     res.status(500).json({msg: '/testENV: ' + (err.message || err)})

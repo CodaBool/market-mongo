@@ -10,18 +10,36 @@ export default function Index() {
   // const { cartDetails } = useShoppingCart()
   const [email, setEmail] = useState('')
 
-  console.log('FRONT THIGH GAP TEST', {
-    NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
-    NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE, 
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET, 
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL, 
-    MONGODB_URI: process.env.MONGODB_URI, 
-    STRIPE_SK: process.env.STRIPE_SK
-  })
-  // const [session, loading] = useSession()
-
-  // console.log(cartDetails)
-  console.log('NEXTAUTH_URL', process.env.NEXTAUTH_URL)
+  useEffect(() => {
+    let envVars = {}
+    if (process.env.NEXT_PUBLIC_STRIPE_PK) {
+      envVars.NEXT_PUBLIC_STRIPE_PK = 'found'
+    } else {
+      envVars.NEXT_PUBLIC_STRIPE_PK = 'MISSING'
+    }
+    if (process.env.NEXT_PUBLIC_STAGE) {
+      envVars.NEXT_PUBLIC_STAGE = process.env.NEXT_PUBLIC_STAGE
+    } else {
+      envVars.NEXT_PUBLIC_STAGE = 'MISSING'
+    }
+    if (process.env.NEXTAUTH_SECRET) {
+      envVars.NEXTAUTH_SECRET = process.env.NEXTAUTH_URL
+    } else {
+      envVars.NEXTAUTH_SECRET = 'MISSING'
+    }
+    if (process.env.MONGODB_URI) {
+      envVars.MONGODB_URI = 'found'
+    } else {
+      envVars.MONGODB_URI = 'MISSING'
+    }
+    if (process.env.STRIPE_SK) {
+      envVars.STRIPE_SK = 'found'
+    } else {
+      envVars.STRIPE_SK = 'MISSING'
+    }
+    console.log(envVars)
+    console.log('NEXTAUTH_URL = ', process.env.NEXTAUTH_URL)
+  }, [])
 
   function handleUser() {
     axios.get('/api/user', { params: { email }})
