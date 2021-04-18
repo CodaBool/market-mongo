@@ -140,6 +140,6 @@ const options = {
     jwt: true,
   },
   secret: process.env.NEXTAUTH_SECRET,
-  site: process.env.NEXTAUTH_URL
+  site: 'https://d1m7a4gmurbqh2.cloudfront.net'
 };
 export default (req, res) => NextAuth(req, res, options);
