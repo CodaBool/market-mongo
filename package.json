@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "custom": "node server.js",
+    "dev": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net next dev",
+    "custom": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net node server.js",
     "build": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net next build",
     "start": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net next start",
     "export": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net NEXTAUTH_URL_INTERNAL=https://d1m7a4gmurbqh2.cloudfront.net next export"
@@ -20,7 +20,7 @@
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.6.0",
-    "coda-auth": "^1.0.1",
+    "coda-auth": "^1.0.2",
     "mongoose": "^5.12.1",
     "next": "^10.0.9",
     "next-connect": "^0.10.1",
