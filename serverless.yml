@@ -24,10 +24,9 @@ serverless:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
       imageLambda: ${name}-${stage}-image
-    env: 
-      NEXTAUTH_URL: ${url.${stage}}
-      # NEXTAUTH_URL_INTERNAL: ${url.${stage}}
     build:
+      cmd: npm # default = node_modules/.bin/next
+      args: [run, 'build'] # default = ['build']
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
@@ -41,15 +40,11 @@ serverless:
     domain: ${domain.${stage}}
     publicDirectoryCache: false
     useServerlessTraceTarget: true
+    env: 
+      NEXTAUTH_URL: ${url.${stage}}
     # cloudfront:
       # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
       # aliases: ["${alias.${stage}}.codattest.com"]
 
 
-
-
-
-
 # build:
-#   cmd: npm # default = node_modules/.bin/next
-#   args: [run, 'build'] # default = ['build']
