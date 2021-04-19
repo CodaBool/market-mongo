@@ -23,9 +23,14 @@ export default function Index() {
       envVars.NEXT_PUBLIC_STAGE = 'MISSING'
     }
     if (process.env.NEXTAUTH_SECRET) {
-      envVars.NEXTAUTH_SECRET = process.env.NEXTAUTH_URL
+      envVars.NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET
     } else {
       envVars.NEXTAUTH_SECRET = 'MISSING'
+    }
+    if (process.env.NEXTAUTH_URL) {
+      envVars.NEXTAUTH_URL = process.env.NEXTAUTH_URL
+    } else {
+      envVars.NEXTAUTH_URL = 'MISSING'
     }
     if (process.env.MONGODB_URI) {
       envVars.MONGODB_URI = 'found'
