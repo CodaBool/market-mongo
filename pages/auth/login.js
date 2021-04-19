@@ -109,6 +109,8 @@ export default function Login({ csrf }) {
 }
 
 export async function getServerSideProps(context) {
+  // const { env } = process
+  // env.NEXTAUTH_URL = process.env.NEXTAUTH_URL
   const { publicRuntimeConfig } = getConfig()
   console.log('environment check', {
     NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
