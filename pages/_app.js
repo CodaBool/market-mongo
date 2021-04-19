@@ -11,20 +11,20 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../styles/globals.css'
 import { Provider } from 'coda-auth/client'
 
-// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK)
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK)
 
 export default function app({ Component, pageProps }) {
   return (
     <div className="site">
       <Provider session={pageProps.session}>
-        {/* <CartProvider
+        <CartProvider
           stripe={stripePromise}
           mode="checkout-session"
           currency="usd"
           // allowedCountries={['US']}
           // billingAddressCollection={true}
-        > */}
-          {/* <Elements stripe={stripePromise}> */}
+        >
+          <Elements stripe={stripePromise}>
             <Head>
               <title>E-Commerce App</title>
               <meta charSet="UTF-8" />
@@ -38,8 +38,8 @@ export default function app({ Component, pageProps }) {
               </Container>
             </main>
             <Footer />
-          {/* </Elements> */}
-        {/* </CartProvider> */}
+          </Elements>
+        </CartProvider>
       </Provider>
     </div>
   )
