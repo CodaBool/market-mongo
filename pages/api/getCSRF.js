@@ -1,11 +1,14 @@
-console.log('pre env', process.env)
+console.log('pre env 1', process.env)
 process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL 
-console.log('post env', process.env)
+console.log('post env 1', process.env)
 import axios from 'axios'
 import { getCsrfToken } from 'coda-auth/client'
 
 export default async (req, res) => {
   try {
+    console.log('pre env 2', process.env)
+    process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL 
+    console.log('post env 2', process.env)
     let res1 = null
     let res2 = null
     const base = process.env.NEXTAUTH_URL || 'https://d1m7a4gmurbqh2.cloudfront.net'
