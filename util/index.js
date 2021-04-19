@@ -11,7 +11,7 @@ export function idFromReqOrCtx(req, context) {
     cookies = parseCookies(context)
   }
   if (cookies) {
-    const token = cookies['__Secure-coda-auth.session-token'] || cookies['next-auth.session-token']
+    const token = cookies['__Secure-coda-auth.session-token'] || cookies['coda-auth.session-token']
     if (token) {
       return parseJwt(token).id
     } else {

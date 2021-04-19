@@ -1,17 +1,17 @@
-if (process.env.NEXTAUTH_URL) {
-  console.log('url set =', process.env.NEXTAUTH_URL)
-} else {
-  const copy = process
-  copy.env.NEXTAUTH_URL = process.env.NEXT_PUBLIC_URL
-  console.log('setting url =', process.env.NEXTAUTH_URL)
-}
+// if (process.env.NEXTAUTH_URL) {
+//   console.log('url set =', process.env.NEXTAUTH_URL)
+// } else {
+//   const copy = process
+//   copy.env.NEXTAUTH_URL = process.env.NEXT_PUBLIC_URL
+//   console.log('setting url =', process.env.NEXTAUTH_URL)
+// }
 
 // const dotenv = require('dotenv')
 // const dotenvExpand = require('dotenv-expand')
 // const { env } = process
 // env.NEXTAUTH_URL = process.env.NEXTAUTH_URL
 import axios from 'axios'
-import { getCsrfToken } from 'next-auth/client'
+import { getCsrfToken } from 'coda-auth/client'
 // dotenv.config({ path: '../../.env.dev' })
 
 // console.log('pre env 1', process.env)
@@ -29,13 +29,13 @@ import { getCsrfToken } from 'next-auth/client'
 
 export default async (req, res) => {
   try {
-    if (process.env.NEXTAUTH_URL) {
-      console.log('url set =', process.env.NEXTAUTH_URL)
-    } else {
-      const copy = process
-      copy.env.NEXTAUTH_URL = process.env.NEXT_PUBLIC_URL
-      console.log('setting url =', process.env.NEXTAUTH_URL)
-    }
+    // if (process.env.NEXTAUTH_URL) {
+    //   console.log('url set =', process.env.NEXTAUTH_URL)
+    // } else {
+    //   const copy = process
+    //   copy.env.NEXTAUTH_URL = process.env.NEXT_PUBLIC_URL
+    //   console.log('setting url =', process.env.NEXTAUTH_URL)
+    // }
     // console.log('pre env 1', process.env)
     // console.log('/getCSRF PRE ENV =', process.env)
     // const { env } = process

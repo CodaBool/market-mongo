@@ -1,7 +1,7 @@
 const environment = 'us-east-1.market-mongo-prod-api'
-if (thing.includes("-prod-")) {
+if (environment.includes("-prod-")) {
   console.log('prod')
 }
-if (thing.includes("-dev-")) {
+if (environment.includes("-dev-")) {
   console.log('dev')
 }

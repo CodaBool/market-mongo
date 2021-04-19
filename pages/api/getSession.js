@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getSession } from 'next-auth/client'
+import { getSession } from 'coda-auth/client'
 
 export default async (req, res) => {
   try {
