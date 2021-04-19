@@ -2,7 +2,7 @@
 // const dotenvExpand = require('dotenv-expand')
 
 import axios from 'axios'
-import { getCsrfToken } from 'coda-auth/client'
+import { getCsrfToken } from 'next-auth/client'
 // dotenv.config({ path: '../../.env.dev' })
 
 // console.log('pre env 1', process.env)
@@ -42,7 +42,7 @@ export default async (req, res) => {
     // console.log('/getCSRF base =', base)
     try {
       await getCsrfToken({req})
-        // .then(response => {res1 = response; console.log('/getCSRF auto res', response)})
+        .then(response => {res1 = response; console.log('/getCSRF auto res', response)})
         .catch(err => console.log('/getCSRF auto err', err))
     } catch (error) {
       console.log('failed 1', error)
