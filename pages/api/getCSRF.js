@@ -1,3 +1,6 @@
+console.log('pre env', process.env)
+process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL 
+console.log('post env', process.env)
 import axios from 'axios'
 import { getCsrfToken } from 'coda-auth/client'
 
