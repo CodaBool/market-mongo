@@ -95,6 +95,8 @@ import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'
 
+console.log('/auth/[...nextauth] NEXTAUTH_URL=', process.env.NEXTAUTH_URL)
+
 const options = {
   providers: [
     Providers.Credentials({
