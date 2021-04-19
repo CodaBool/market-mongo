@@ -37,8 +37,8 @@ export default function Index() {
     } else {
       envVars.STRIPE_SK = 'MISSING'
     }
-    console.log(envVars)
-    console.log('NEXTAUTH_URL = ', process.env.NEXTAUTH_URL)
+    // console.log(envVars)
+    // console.log('NEXTAUTH_URL = ', process.env.NEXTAUTH_URL)
   }, [])
 
   function handleUser() {

@@ -1,28 +1,54 @@
-console.log('pre env 1', process.env)
-process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL 
-console.log('post env 1', process.env)
+// const dotenv = require('dotenv')
+// const dotenvExpand = require('dotenv-expand')
+
 import axios from 'axios'
 import { getCsrfToken } from 'coda-auth/client'
+// dotenv.config({ path: '../../.env.dev' })
+
+// console.log('pre env 1', process.env)
+// if (true) {
+//   // dotenvExpand(dotenv.config({ path: '../../.envdev' }))
+//   dotenv.config({ path: '../../.envdev' })
+// } else {
+//   require('dotenv').config({ path: '../../.env.prod' })
+// }
+// process.env.NEWONE = 'newEnvHereBaby'
+
+// console.log('post env 1', process.env)
+
+
 
 export default async (req, res) => {
   try {
-    console.log('pre env 2', process.env)
-    process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL 
-    console.log('post env 2', process.env)
+
+    // console.log('pre env 1', process.env)
+    console.log('/getCSRF PRE ENV =', process.env)
+    const { env } = process
+    env.NEXTAUTH_URL = process.env.NEXTAUTH_URL
+    console.log('/getCSRF POST ENV =', process.env)
+    // console.log('post env 1', process.env._NEWONE)
+    // process.env[''] = 'newEnvHereBaby'
+    // console.log('post env 1', process.env)
+
+    // dotenvExpand(dotenv.config({ path: '../../.envdev' }))
+    // console.log('post env 1', process.env._NEWONE)
+    // console.log('pre env 2', process.env)
+    // process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL 
+    // console.log('post env 2', process.env)
     let res1 = null
     let res2 = null
-    const base = process.env.NEXTAUTH_URL || 'https://d1m7a4gmurbqh2.cloudfront.net'
+    // const base = process.env.NEXTAUTH_URL || 'https://d1m7a4gmurbqh2.cloudfront.net'
     console.log('/getCSRF process.env.NEXTAUTH_URL =', process.env.NEXTAUTH_URL)
-    console.log('/getCSRF base =', base)
+    // console.log('/getCSRF base =', base)
     try {
       await getCsrfToken({req})
-        .then(response => {res1 = response; console.log('/getCSRF auto res', response)})
+        // .then(response => {res1 = response; console.log('/getCSRF auto res', response)})
         .catch(err => console.log('/getCSRF auto err', err))
     } catch (error) {
       console.log('failed 1', error)
     }
     try {
-      await axios.get(`${base}/api/auth/csrf`)
+      await axios.get(`${process.env.NEXTAUTH_URL}/api/auth/csrf`)
       .then(response => {res2 = response.data; console.log('/getCSRF manual res', response)})
       .catch(err => console.log('/getCSRF manual err', err))
     } catch (error) {

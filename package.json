@@ -21,6 +21,8 @@
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.6.0",
     "coda-auth": "^1.0.2",
+    "dotenv": "^8.2.0",
+    "dotenv-expand": "^5.1.0",
     "mongoose": "^5.12.1",
     "next": "^10.0.9",
     "next-connect": "^0.10.1",
