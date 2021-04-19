@@ -112,7 +112,10 @@ export default function Login({ csrf }) {
 
 export async function getServerSideProps(context) {
   // const csrf = await csrfToken(context)
-  const csrf = await getCsrfToken(context)
+  let csrf = undefined
+  await getCsrfToken(context)
+    .then(res => {csrf= res; console.log('csrf=', res)})
+    .catch(err => console.log(err))
   return {
     props: { csrf  }
   }
