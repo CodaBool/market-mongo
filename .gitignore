@@ -2,7 +2,6 @@
 .serverless/
 .next/
 
-.env.local
 .vercel
 .env
 
