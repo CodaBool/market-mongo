@@ -48,7 +48,7 @@ jobs:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           STAGE: ${{ steps.extract.outputs.stage }}
-          NEXT_PUBLIC_URL: https://d1m7a4gmurbqh2.cloudfront.net
+          NEXTAUTH_URL: https://d1m7a4gmurbqh2.cloudfront.net
           # NEXT_PUBLIC_URL: https://d1m7a4gmurbqh2.cloudfront.net
           REPO: ${{ steps.extract.outputs.repo }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
