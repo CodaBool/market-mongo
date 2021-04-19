@@ -20,7 +20,7 @@
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.6.0",
-    "coda-auth": "^1.0.16",
+    "coda-auth": "^1.0.17",
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
