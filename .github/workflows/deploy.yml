@@ -48,11 +48,10 @@ jobs:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           STAGE: ${{ steps.extract.outputs.stage }}
-          NEXTAUTH_URL: https://d1m7a4gmurbqh2.cloudfront.net
-          # NEXT_PUBLIC_URL: https://d1m7a4gmurbqh2.cloudfront.net
           REPO: ${{ steps.extract.outputs.repo }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          JWT_SIGNING_PK: ${{ secrets.JWT_SIGNING_PK }}
 
       - name: Upload `.serverless` state to S3
         run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete

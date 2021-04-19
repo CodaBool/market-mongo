@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
-// import { useSession } from 'coda-auth/client'
+import { useSession } from 'coda-auth/client'
 import axios from 'axios'
-// import { connectDB, jparse } from '../util/db'
-// import { getUser } from './api/user'
+import { connectDB, jparse } from '../util/db'
+import { getUser } from './api/user'
 
-// import { useShoppingCart } from 'use-shopping-cart'
-
-export default function Index() {
-  // const { cartDetails } = useShoppingCart()
+export default function Index({ user }) {
+  const [session, loading] = useSession()
   const [email, setEmail] = useState('')
+
+  console.log('session', session)
 
   useEffect(() => {
     let envVars = {}
@@ -46,22 +46,6 @@ export default function Index() {
     console.log('client side /pages/index NEXTAUTH_URL = ', process.env.NEXTAUTH_URL)
   }, [])
 
-  function handleUser() {
-    axios.get('/api/user', { params: { email }})
-      .then(res => {
-        console.log('get =', res.data)
-        // if (res.data === 'User not found') {
-        //   console.log('Could not find the user')
-        // }
-      })
-      .catch(err => console.error(err.response.data.msg)) // .response.data
-  }
-  // function postUser() {
-  //   axios.post('/api/user', { email, password: 'beans' })
-  //     .then(res => console.log('posted =', res.data))
-  //     .catch(err => console.log(err.response.data)) // .response.data
-  // }
-
   function getCSRF() {
     axios.get('/api/getCSRF')
       .then(res => console.log(res.data))
@@ -90,27 +74,21 @@ export default function Index() {
 
   return (
     <div>
-      <button onClick={handleUser} >get user</button>
-      {/* <button onClick={postUser} >post user</button> */}
       <button onClick={test}>test</button> 
       <button onClick={getCSRF}>getCSRF</button> 
       <button onClick={getSession}>getSession</button> 
       <button onClick={testwoMiddleWare}>Test without middleware but await instead</button> 
       <button onClick={testEnv}>test Env</button> 
       <input onChange={e => setEmail(e.target.value)} value={email} />
-      {/* {user?.length ? user.map(user => (
-        <h1 key={user.email}>{user.email}</h1>
-      ))
-      : <h1>Could not get users</h1>
-      } */}
+      <h1>{user?.email}</h1>
     </div>
   )
 }
 
-// export async function getServerSideProps() {
-//   connectDB()
-//   const user = await getUser('coda@bool.com')
-//   return {
-//     props: { user: jparse(user) }
-//   }
-// }
+export async function getServerSideProps() {
+  connectDB()
+  const user = await getUser('new@email.com')
+  return {
+    props: { user: jparse(user) }
+  }
+}

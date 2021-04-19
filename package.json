@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net next dev",
+    "dev": "cross-env NEXTAUTH_URL=https://dev.codattest.com next dev",
     "custom": "cross-env NEXTAUTH_URL=http://localhost:3001 node server.js",
-    "build": "cross-env NEXTAUTH_URL=https://d1m7a4gmurbqh2.cloudfront.net next build",
+    "build": "cross-env NEXTAUTH_URL=https://dev.codattest.com next build",
     "start": "next start",
     "export": "next export"
   },

@@ -1,23 +1,18 @@
 stage: ${env.STAGE}
 name: ${env.REPO}
 
-# alias:
-#   dev: dev
-#   prod: www
-
 domain:
   dev: ['dev', codattest.com]
   prod: codattest.com
 
 url: # Can only be gotten after 1st deploy
-  dev: https://d1m7a4gmurbqh2.cloudfront.net # GET_FROM_CLOUDFRONT_AFTER_ONE_DEPLOY 
+  dev: https://dev.codattest.com # GET_FROM_CLOUDFRONT_AFTER_ONE_DEPLOY 
   prod: GET_FROM_CLOUDFRONT_AFTER_ONE_DEPLOY
 
 serverless:
   component: '@sls-next/serverless-component@1.18.0'
   inputs:
-    # memory: 2048
-    # timeout: 30
+    memory: 128
     bucketRegion: us-east-1
     bucketName: ${name}-${stage}
     name:
@@ -31,20 +26,13 @@ serverless:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
         NEXTAUTH_URL: ${url.${stage}}
-        # NEXTAUTH_URL_INTERNAL: ${url.${stage}}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
-    # domain: ['${env.SUB_DOMAIN}', codattest.com] # sub = 'dev' || 'www' (depending on stage)
-    # domain: codattest.com # good if this was the prod 
+        JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
     domain: ${domain.${stage}}
     publicDirectoryCache: false
     useServerlessTraceTarget: true
-    env: 
-      NEXTAUTH_URL: ${url.${stage}}
     # cloudfront:
       # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
       # aliases: ["${alias.${stage}}.codattest.com"]
-
-
-# build:
