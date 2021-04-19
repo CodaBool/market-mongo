@@ -12,7 +12,8 @@ url: # Can only be gotten after 1st deploy
 serverless:
   component: '@sls-next/serverless-component@1.18.0'
   inputs:
-    memory: 128
+    memory: 2048
+    timeout: 30
     bucketRegion: us-east-1
     bucketName: ${name}-${stage}
     name:
