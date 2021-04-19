@@ -109,43 +109,8 @@ export default function Login({ csrf }) {
 }
 
 export async function getServerSideProps(context) {
-  // const { env } = process
-  // env.NEXTAUTH_URL = process.env.NEXTAUTH_URL
-  const { publicRuntimeConfig } = getConfig()
-  console.log('environment check', {
-    NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK, 
-    NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE, 
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET, 
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL, 
-    MONGODB_URI: process.env.MONGODB_URI, 
-    STRIPE_SK: process.env.STRIPE_SK
-  })
-  // console.log('before', process.env.NEXTAUTH_URL)
-  // process.env.NEXTAUTH_URL = 'beanss'
-  // console.log('after', process.env.NEXTAUTH_URL)
-  // console.log('getServerSideProps CONTEXT =', context)
-  // console.log('getServerSideProps ENV =', process.env)
-  console.log('getServerSideProps RUNTIME_ENV =', publicRuntimeConfig.NEXTAUTH_URL)
-  let csrf = null
-  await csrfToken(context)
-    .then(res => {
-      console.log('setting csrf token from successful response =', res)
-      if (res) {
-        csrf = res
-      }
-    })
-    .catch(err => {
-      console.log('error in getting csrf Token')
-      
-      console.log('raw error', err)
-    })
-  if (csrf) {
-    return {
-      props: { csrf  }
-    }
-  } else {
-    return {
-      props: { csrf: 'not working'  }
-    }
+  const csrf = await csrfToken(context)
+  return {
+    props: { csrf  }
   }
 }
