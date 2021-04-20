@@ -1,0 +1,9 @@
+[
+  {
+    "name": "market-mongo",
+    "urls": {
+      "dev": "https://dev.codattest.com",
+      "prod": "https://www.codattest.com"
+    }
+  }
+]
