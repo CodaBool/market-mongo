@@ -1,11 +1,7 @@
-import { idFromReqOrCtx } from '../../util'
-// import { dbConnect } from '../../util/db'
-import applyMiddleware from '../../util'
+import applyMiddleware, { jwtFromReqOrCtx } from '../../util'
 import { User } from '../../models'
 
-// export default async (req, res) => {
 export default applyMiddleware(async (req, res) => {
-// export default async (req, res) => {
   try {
     let response = null
     let error = null
@@ -53,7 +49,6 @@ export default applyMiddleware(async (req, res) => {
         break
       default: // 405
         console.log('ERROR: wrong method')
-        // res.setHeader('Allow', ['GET', 'PUT', 'POST']) // TODO: test this case, newly added
         throw `Cannot use method ${req.method} for this route`
     }
     if (response) {
@@ -70,24 +65,46 @@ export default applyMiddleware(async (req, res) => {
   }
 })
 
-// Seperated to allow for use in pages with getServerSideProps and in coda-auth
-export async function getUser(email) { // always place in try catch, returns null when no user is found
-  // await dbConnect()
-  return User.findOne({ email }).then(res => res).catch(err => err)
+// Seperated to allow for use in pages with getServerSideProps and in next-auth
+// WARNING: always place in try catch, returns null when no user is found
+// WARNING: does not wait for db connection! Intentional due to the use of 2 methods for connecting to db
+// - METHOD 1: applyMiddleware, bakes in the wait for connection, typically used in /api routes
+// - METHOD 2: await connectDB, waits for connection, typically used in getServerSideProps
+//   - NOTE: wrap result in jparse() if sending to client to properly serialize json, see example below
+
+export async function getUser(email) { // always place in try catch
+  return User.findOne({ email })
 }
 
-export async function getUserFromContext(context) { // always place in try catch, returns null when no user is found
-  // await dbConnect()
-  return User.findById(idFromReqOrCtx(null, context)).then(res => res).catch(err => err)
+export async function getUserFromContext(context) { // always place in try catch
+  const jwt = jwtFromReqOrCtx(context)
+  if (jwt?.id) {
+    return User.findById(jwt.id)
+  } else if (jwt) {
+    return User.findOne({email: jwt.email})
+  }
+  return Promise.reject('/user: No Session ID')
 }
 
 export async function postUser(data) { // always place in try catch
-  // await dbConnect()
-  return User.create(data).then(res => res).catch(err => err)
+  return User.create(data)
 }
 
 export async function putUser(email, data) { // always place in try catch
-  // await dbConnect()
   // new: true => returns the updated document
-  return User.findOneAndUpdate({ email }, data, { new: true }).then(res => res).catch(err => err)
+  return User.findOneAndUpdate({ email }, data, { new: true })
 }
+
+// EXAMPLE: getServerSideProps
+// export async function getServerSideProps(context) {
+//   await connectDB()
+//   const user = await getUserFromContext(context).catch(console.log)
+//   return {
+//     props: { user: jparse(user) }
+//   }
+// }
+
+// EXAMPLE: front end
+// axios.put('/api/user', { email: selector, data: {email: newData, active}})
+//   .then(res => console.log('put res', res))
+//   .catch(err => console.error('put err', err.response.data.msg))

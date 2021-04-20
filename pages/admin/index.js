@@ -7,13 +7,18 @@ import { format } from 'timeago.js'
 import axios from 'axios'
 import bcrypt from 'bcryptjs'
 
-export default function test() {
-  // const [session, loading] = useSession()
+// serverside
+import { connectDB, jparse } from '../../util/db'
+import { getUserFromContext } from '../api/user'
+
+export default function Index({ user }) {
   const [selector, setSelector] = useState('')
   const [newData, setNewData] = useState('')
   const [users, setUsers] = useState([])
   const [orders, setOrders] = useState([])
   const [reviews, setReviews] = useState([])
+
+  console.log('client user =', user)
   
   function getUser() {
     axios.get('/api/user', { params: { email: selector } })
@@ -165,4 +170,12 @@ export default function test() {
       </Card>
     </div>
   )
+}
+
+export async function getServerSideProps(context) {
+  await connectDB()
+  const user = await getUserFromContext(context).catch(console.log)
+  return {
+    props: { user: jparse(user) }
+  }
 }

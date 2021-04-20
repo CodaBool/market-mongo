@@ -5,11 +5,8 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import { useRouter } from 'next/router'
-import getConfig from 'next/config'
 import { Load } from '../../components/Load'
-// import { csrfToken, signIn, useSession } from 'coda-auth/client'
 import { getCsrfToken, signIn, useSession } from 'coda-auth/client'
-// import { getCsrfToken } from 'coda-auth/client'
 
 export default function Login({ csrf }) {
   const [session, loading] = useSession()
@@ -110,8 +107,9 @@ export default function Login({ csrf }) {
   )
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
+  const csrf = await getCsrfToken()
   return {
-    props: { csrf: await getCsrfToken(context)  }
+    props: { csrf }
   }
 }

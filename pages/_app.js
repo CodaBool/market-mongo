@@ -28,7 +28,9 @@ export default function app({ Component, pageProps }) {
             <Head>
               <title>E-Commerce App</title>
               <meta charSet="UTF-8" />
+              <meta name="description" content="An e-commerce site which integrates with Stripe built on Nextjs" />
               <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+              <link rel="apple-touch-icon" href="/image/favicon-32x32.gif"></link>
               <link rel="icon" href="/image/favicon-32x32.gif" />
             </Head>
             <Navigation />

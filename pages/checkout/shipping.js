@@ -11,8 +11,11 @@ import { SHIPPING_COST } from '../../constants'
 import { useRouter } from 'next/router'
 import { useShoppingCart } from 'use-shopping-cart'
 import useScreen from '../../constants/useScreen'
-import { getUserFromContext } from '../api/user'
 import { Load } from '../../components/Load'
+
+// serverside
+import { connectDB, jparse } from '../../util/db'
+import { getUserFromContext } from '../api/user'
 
 export default function CheckoutPage({ user }) {
   console.log('user', user)
@@ -69,6 +72,7 @@ export default function CheckoutPage({ user }) {
 }
 
 export async function getServerSideProps(context) {
-  const user = await getUserFromContext(context)
-  return { props: { user: JSON.parse(JSON.stringify(user)) } }
+  await connectDB()
+  const user = await getUserFromContext(context).catch(console.log)
+  return { props: { user: jparse(user) } }
 }

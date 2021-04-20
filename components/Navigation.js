@@ -15,21 +15,14 @@ export default function Navigation() {
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="ml-auto">
-          <Link href="/test">
-            <div className={`${router.asPath === '/test' && 'active'} nav-link`}>
-              test
+          <Link href="/admin">
+            <div className={`${router.asPath === '/admin' && 'active'} nav-link`}>
+              Admin
             </div>
           </Link>
           <Link href="/browse/1">
-            <div className={`${router.asPath === '/browse' && 'active'} nav-link`}>
-              browse
-            </div>
-          </Link>
-          <Link href="/other">
-            <div
-              className={`${router.asPath === '/other' && 'active'} nav-link`}
-            >
-              other
+            <div className={`${router.asPath.includes('/browse') && 'active'} nav-link`}>
+              Browse
             </div>
           </Link>
           {session ? (

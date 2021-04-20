@@ -1,7 +1,7 @@
 # Features
 - integrated with Stripe
 - MongoDB (via Mongoose)
-- coda-auth for authentication
+- next-auth for authentication
 - Dev and Prod Deployments
   - uses Github Actions
   - uses Serverless Framework for simple deploys to AWS

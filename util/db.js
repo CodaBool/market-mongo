@@ -1,8 +1,5 @@
 import mongoose from 'mongoose'
 
-// import fs from 'fs'
-// const ca = [fs.readFileSync('rds-combined-ca-bundle.pem')]
-
 export async function connectDB() {
   if (mongoose.connection.readyState >= 1) return
   return mongoose.connect(process.env.MONGODB_URI, {
