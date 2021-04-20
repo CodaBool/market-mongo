@@ -3,6 +3,7 @@ import Providers from 'coda-auth/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'
+import data from './data.json'
 
 export const config = {
   // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
@@ -14,7 +15,8 @@ export const config = {
 }
 
 export default (req, res) => {
-  console.log('/auth/[...nextauth] NEXTAUTH_URL=', process.env.NEXTAUTH_URL)
+  console.log('log data to get the import', typeof data)
+  // console.log('/auth/[...nextauth] NEXTAUTH_URL=', process.env.NEXTAUTH_URL)
   NextAuth(req, res, {
     providers: [
       Providers.Credentials({
