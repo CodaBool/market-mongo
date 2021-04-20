@@ -12,8 +12,7 @@ url: # Can only be gotten after 1st deploy
 serverless:
   component: '@sls-next/serverless-component@1.18.0'
   inputs:
-    memory: 2048
-    timeout: 30
+    memory: 248
     bucketRegion: us-east-1
     bucketName: ${name}-${stage}
     name:
@@ -26,7 +25,6 @@ serverless:
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
-        NEXTAUTH_URL: ${url.${stage}}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}

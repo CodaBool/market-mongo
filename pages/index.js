@@ -42,8 +42,8 @@ export default function Index({ user }) {
     } else {
       envVars.STRIPE_SK = 'MISSING'
     }
-    console.log(envVars)
-    console.log('client side /pages/index NEXTAUTH_URL = ', process.env.NEXTAUTH_URL)
+    // console.log(envVars)
+    // console.log('client side /pages/index NEXTAUTH_URL = ', process.env.NEXTAUTH_URL)
   }, [])
 
   function getCSRF() {

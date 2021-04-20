@@ -4,19 +4,8 @@ module.exports = {
     NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK,
     NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     JWT_SIGNING_PK: process.env.JWT_SIGNING_PK,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     MONGODB_URI: process.env.MONGODB_URI,
     STRIPE_SK: process.env.STRIPE_SK,
   },
-  webpack: (config, { isServer }) => {
-    // Fixes npm packages that depend on `fs` module
-    if (!isServer) {
-      config.node = {
-        fs: 'empty'
-      }
-    }
-    return config
-  }
 };
