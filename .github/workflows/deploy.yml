@@ -40,20 +40,28 @@ jobs:
         run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Download `.serverless` state from S3
-        run: aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+        run: |
+          aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
+          if [ !$not_exist ]; then
+            echo "bucket exists"
+            aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+          else
+            echo "bucket does not exists"
+          fi
+          
 
-      - name: Deploy to AWS
-        run: npx serverless
-        env:
-          NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          STAGE: ${{ steps.extract.outputs.stage }}
-          REPO: ${{ steps.extract.outputs.repo }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          STRIPE_SK: ${{ secrets.STRIPE_SK }}
-          JWT_SIGNING_PK: ${{ secrets.JWT_SIGNING_PK }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
+      # - name: Deploy to AWS
+      #   run: npx serverless
+      #   env:
+      #     NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
+      #     NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      #     STAGE: ${{ steps.extract.outputs.stage }}
+      #     REPO: ${{ steps.extract.outputs.repo }}
+      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
+      #     JWT_SIGNING_PK: ${{ secrets.JWT_SIGNING_PK }}
+      #     JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      #     RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
 
-      - name: Upload `.serverless` state to S3
-        run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
+      # - name: Upload `.serverless` state to S3
+      #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
