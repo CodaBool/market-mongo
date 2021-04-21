@@ -20,16 +20,14 @@ jobs:
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
           echo Repo = ${repo,,}
           echo stage = ${GITHUB_REF#refs/heads/}
-          echo "context"
-          echo ${GITHUB_CONTEXT}
-          echo "job"
-          echo ${JOB_CONTEXT}
-          echo "ref"
-          echo ${GITHUB_REF}
+          echo "SHA"
+          echo ${SHA}
+          echo "RUN_NUMBER"
+          echo ${RUN_NUMBER}
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
         env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-          JOB_CONTEXT: ${{ toJSON(job) }}
+          SHA: ${{ toJSON(github).sha }}
+          RUN_NUMBER: ${{ toJSON(job).run_number }}
         
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v1
