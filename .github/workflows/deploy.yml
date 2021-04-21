@@ -19,14 +19,15 @@ jobs:
           echo "##[set-output name=repo;]${repo,,}" 
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
           build_id="${SHA:0:7}.${RUN_NUMBER}"
-          echo "##[set-output name=build_id;]${build_id}"
+          echo $build_id
+          # echo "##[set-output name=build_id;]${build_id}"
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
         env:
           SHA: ${{ toJSON(github.sha) }}
           RUN_NUMBER: ${{ toJSON(github.run_number) }}
 
-      - name: PRINT
-        run: echo ${{ steps.extract.outputs.build_id }}
+      # - name: PRINT
+      #   run: echo ${{ steps.extract.outputs.build_id }}
 
         
       # - name: Configure AWS Credentials
