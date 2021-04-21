@@ -3,7 +3,6 @@ import Providers from 'coda-auth-static/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'
-import { BASE_URL } from '../../../constants'
 
 export const config = {
   // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
@@ -63,7 +62,7 @@ export default (req, res) => {
         return Promise.resolve(session)
       },
       redirect: async (url, baseUrl) => {
-        console.log('in redirect callback',url, baseUrl, '=>', process.env.NEXT_PUBLIC_NEXTAUTH_URL, '/', BASE_URL)
+        console.log('in redirect callback',url, baseUrl, '=>', process.env.NEXT_PUBLIC_NEXTAUTH_URL)
         return baseUrl
       },
       jwt: async (token, user, account, profile, isNewUser) => {
@@ -80,7 +79,7 @@ export default (req, res) => {
       error: '/' // Error code passed in query string as ?error=
     },
     secret: process.env.NEXTAUTH_SECRET,
-    callbackUrl: NEXT_PUBLIC_NEXTAUTH_URL,
+    baseUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL || "http://localhost:3000",
     debug: true
   })
 }
