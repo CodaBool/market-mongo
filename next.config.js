@@ -91,6 +91,7 @@ module.exports = {
     MONGODB_URI: process.env.MONGODB_URI,
     JWT_SECRET: process.env.JWT_SECRET,
     STRIPE_SK: process.env.STRIPE_SK,
+    BUILD_ID: process.env.BUILD_ID,
   },
   // async headers() {
   //   return [

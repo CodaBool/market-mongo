@@ -36,6 +36,7 @@ serverless:
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
         JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
         RECAPTCHA_SK: ${env.RECAPTCHA_SK}
+        BUILD_ID: ${env.BUILD_ID}
     # cloudfront:
       # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
       # aliases: ["${alias.${stage}}.codattest.com"]
