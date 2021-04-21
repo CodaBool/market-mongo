@@ -1,5 +1,5 @@
-import NextAuth from 'coda-auth-static'
-import Providers from 'coda-auth-static/providers'
+import NextAuth from 'coda-auth'
+import Providers from 'coda-auth/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'
@@ -57,18 +57,18 @@ export default (req, res) => {
     ],
     callbacks: {
       session: async (session, user) => {
-        console.log('in session callback', session, user)
+        // console.log('in session callback', session, user)
         if (session) session.id = user.id
         return Promise.resolve(session)
       },
       redirect: async (url, baseUrl) => {
-        console.log('in redirect callback',url, baseUrl, '=>', process.env.NEXT_PUBLIC_NEXTAUTH_URL)
+        // console.log('in redirect callback',url, baseUrl, '=>', process.env.NEXT_PUBLIC_NEXTAUTH_URL)
         return baseUrl
       },
       jwt: async (token, user, account, profile, isNewUser) => {
-        console.log('in jwt callback')
+        // console.log('in jwt callback')
         if (user) token.id = user.id
-        console.log(token)
+        // console.log(token)
         return Promise.resolve(token)
       }
     },

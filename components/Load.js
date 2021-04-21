@@ -1,5 +1,5 @@
 import Spinner from 'react-bootstrap/Spinner'
-// import { signin } from 'coda-auth-static/client'
+// import { signin } from 'coda-auth/client'
 
 export const Load = ({ msg }) => (
   <>

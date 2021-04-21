@@ -1,5 +1,5 @@
 // import React, { useState, useEffect, useRef } from 'react'
-// import { useSession, signIn } from 'coda-auth-static/client'
+// import { useSession, signIn } from 'coda-auth/client'
 // import Button from 'react-bootstrap/Button'
 // import Row from 'react-bootstrap/Row'
 // import Accordion from 'react-bootstrap/Accordion'

@@ -3,7 +3,7 @@ import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useSession } from 'coda-auth-static/client'
+import { useSession } from 'coda-auth/client'
 
 export default function Navigation() {
   const [session, loading] = useSession()

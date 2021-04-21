@@ -10,7 +10,7 @@ import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useRouter } from 'next/router'
-import { signIn, useSession } from 'coda-auth-static/client'
+import { signIn, useSession } from 'coda-auth/client'
 import ReCAPTCHA from "react-google-recaptcha"
 // import { Load, isLoad } from '../components/Load'
 import Toast from '../../components/Toast'
