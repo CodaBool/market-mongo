@@ -14,7 +14,6 @@ serverless:
   inputs:
     useServerlessTraceTarget: true
     publicDirectoryCache: false
-    bucketRegion: us-east-1
     bucketName: ${name}-${stage}
     domain: ${domain.${stage}}
     timeout: 10 # 1-900
