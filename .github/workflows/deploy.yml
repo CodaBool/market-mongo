@@ -18,7 +18,8 @@ jobs:
           repo=${GITHUB_REPOSITORY#CodaBool/}
           echo "##[set-output name=repo;]${repo,,}" 
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
-          echo "##[set-output name=build;]${RUN_NUMBER}.${SHA:0:7}"
+          build="${RUN_NUMBER}.${SHA:0:7}"
+          echo "##[set-output name=build;]${build}"
           echo "output build = ${build}"
           echo "SHA = ${SHA}"
           echo "RUN_NUMBER = ${RUN_NUMBER}"
