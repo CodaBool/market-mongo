@@ -20,47 +20,56 @@ jobs:
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
           echo Repo = ${repo,,}
           echo stage = ${GITHUB_REF#refs/heads/}
+          echo "context"
+          echo ${GITHUB_CONTEXT}
+          echo "job"
+          echo ${JOB_CONTEXT}
+          echo "ref"
+          echo ${GITHUB_REF}
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
-        
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: '12'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Serverless AWS authentication
-        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Download `.serverless` state from S3
-        run: |
-          aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
-          if [ !$not_exist ]; then
-            echo "bucket exists"
-            aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
-          else
-            echo "bucket does not exists"
-          fi
-          
-      - name: Deploy to AWS
-        run: npx serverless
         env:
-          NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          STAGE: ${{ steps.extract.outputs.stage }}
-          REPO: ${{ steps.extract.outputs.repo }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          STRIPE_SK: ${{ secrets.STRIPE_SK }}
-          JWT_SIGNING_PK: ${{ secrets.JWT_SIGNING_PK }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          JOB_CONTEXT: ${{ toJSON(job) }}
+        
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - name: Upload `.serverless` state to S3
-        run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
+      # - uses: actions/setup-node@v2-beta
+      #   with:
+      #     node-version: '12'
+
+      # - name: Install dependencies
+      #   run: npm ci
+
+      # - name: Serverless AWS authentication
+      #   run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # - name: Download `.serverless` state from S3
+      #   run: |
+      #     aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
+      #     if [ !$not_exist ]; then
+      #       echo "bucket exists"
+      #       aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+      #     else
+      #       echo "bucket does not exists"
+      #     fi
+          
+      # - name: Deploy to AWS
+      #   run: npx serverless
+      #   env:
+      #     NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
+      #     NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      #     STAGE: ${{ steps.extract.outputs.stage }}
+      #     REPO: ${{ steps.extract.outputs.repo }}
+      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
+      #     JWT_SIGNING_PK: ${{ secrets.JWT_SIGNING_PK }}
+      #     JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      #     RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
+
+      # - name: Upload `.serverless` state to S3
+      #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
