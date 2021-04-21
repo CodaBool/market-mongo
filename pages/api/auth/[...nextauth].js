@@ -79,6 +79,8 @@ export default (req, res) => {
       newUser: '/auth/signup',
       error: '/' // Error code passed in query string as ?error=
     },
-    secret: process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET,
+    callbackUrl: NEXT_PUBLIC_NEXTAUTH_URL,
+    debug: true
   })
 }

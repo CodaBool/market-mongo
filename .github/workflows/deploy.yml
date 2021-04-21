@@ -52,7 +52,7 @@ jobs:
           fi
           
       - name: Deploy to AWS
-        run: npx serverless >&1 # remove stdout
+        run: npx serverless > output.txt # remove stdout
         env:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
