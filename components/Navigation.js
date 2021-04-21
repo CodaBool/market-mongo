@@ -15,11 +15,6 @@ export default function Navigation() {
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="ml-auto">
-          <Link href="/admin">
-            <div className={`${router.asPath === '/admin' && 'active'} nav-link`}>
-              Admin
-            </div>
-          </Link>
           <Link href="/browse/1">
             <div className={`${router.asPath.includes('/browse') && 'active'} nav-link`}>
               Browse
@@ -27,6 +22,13 @@ export default function Navigation() {
           </Link>
           {session ? (
             <>
+              {session.user.email === 'coda@bool.com' &&
+                <Link href="/admin" >
+                  <div className={`${router.asPath === '/admin' && 'active'} nav-link`}>
+                    Admin
+                  </div>
+                </Link>
+              }
               <Link href="/checkout/cart">
                 <div className={`${router.asPath === '/checkout/cart' && 'active'} nav-link`}>
                   Cart

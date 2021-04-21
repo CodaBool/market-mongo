@@ -8,16 +8,16 @@ import { Envelope, Person, Key } from 'react-bootstrap-icons'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import { useRouter } from 'next/router'
 import { signIn, useSession } from 'coda-auth/client'
 import ReCAPTCHA from "react-google-recaptcha"
-// import { Load, isLoad } from '../components/Load'
+import { Load } from '../../components/Load'
 import Toast from '../../components/Toast'
 import axios from 'axios'
 
 export default function Signup() {
   const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [session, loading] = useSession()
   const [success, setSuccess] = useState(false)
   const [show, setShow] = useState(false)
@@ -26,6 +26,7 @@ export default function Signup() {
   const captcha = useRef(null)
 
   const onSubmit = (data) => {
+    setSubmitting(true)
     console.log(data)
     const token = captcha.current.getValue()
     if (token !== "") {
@@ -52,10 +53,14 @@ export default function Signup() {
               console.log('err', err.response.data)
             }
           })
-        .finally(
+        .finally(() => {
           captcha.current.reset()
-        )
+          setSubmitting(false)
+        })
       })
+    } else {
+      console.log('captcha has no value')
+      setSubmitting(false)
     }
   }
 
@@ -107,7 +112,7 @@ export default function Signup() {
           }}
         />
         {errors.password && (
-          <p className="errMsg">Your password must be at least 8 characters</p>
+          <p className="errMsg text-danger">Your password must be at least 8 characters</p>
         )}
         <Key className="mr-3 mb-1" size={30} />
         <Form.Label>Confirm Password</Form.Label>
@@ -126,22 +131,26 @@ export default function Signup() {
           }}
         />
         {errors.confirmPass && (
-          <p className="errMsg">Your password must match</p>
+          <p className="errMsg text-danger">Your password must match</p>
         )}
         <Row>
           <ReCAPTCHA
             className="mx-auto mt-3"
+            hidden={submitting}
             sitekey="6LdzfbIaAAAAAI0STn8vy1bTyG3qW0ECE06Untoh"
             ref={captcha}
           />
-          <Button
-            className="mx-auto my-5"
-            style={{ width: '97.3%' }}
-            variant="primary"
-            type="submit"
-          >
-            Sign Up
-          </Button>
+          {submitting 
+            ? <Load />
+            : <Button
+                className="mx-auto my-5"
+                style={{ width: '97.3%' }}
+                variant="primary"
+                type="submit"
+              >
+                Sign Up
+              </Button>
+          }
         </Row>
       </Form>
       <div style={{ position: 'fixed', top: '120px', right: '20px' }}>

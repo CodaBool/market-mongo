@@ -6,6 +6,9 @@ import Form from 'react-bootstrap/Form'
 import { format } from 'timeago.js'
 import axios from 'axios'
 import bcrypt from 'bcryptjs'
+import { useRouter } from 'next/router'
+import { useSession } from 'coda-auth/client'
+import { Load, isLoad } from '../../components/Load'
 
 // serverside
 import { connectDB, jparse } from '../../util/db'
@@ -17,6 +20,15 @@ export default function Index({ user }) {
   const [users, setUsers] = useState([])
   const [orders, setOrders] = useState([])
   const [reviews, setReviews] = useState([])
+  const [session, loading] = useSession()
+  const router = useRouter()
+
+  if (isLoad(session, loading, true)) return <Load />
+
+  if (session.user.email !== 'coda@bool.com') {
+    router.push('/')
+    return <Load />
+  }
 
   if (user) {
     console.log('client user =', user)
