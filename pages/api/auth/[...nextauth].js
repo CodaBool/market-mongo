@@ -57,18 +57,11 @@ export default (req, res) => {
     ],
     callbacks: {
       session: async (session, user) => {
-        // console.log('in session callback', session, user)
         if (session) session.id = user.id
         return Promise.resolve(session)
       },
-      redirect: async (url, baseUrl) => {
-        // console.log('in redirect callback',url, baseUrl, '=>', process.env.NEXT_PUBLIC_NEXTAUTH_URL)
-        return baseUrl
-      },
       jwt: async (token, user, account, profile, isNewUser) => {
-        // console.log('in jwt callback')
         if (user) token.id = user.id
-        // console.log(token)
         return Promise.resolve(token)
       }
     },
@@ -78,8 +71,7 @@ export default (req, res) => {
       newUser: '/auth/signup',
       error: '/' // Error code passed in query string as ?error=
     },
-    secret: process.env.NEXTAUTH_SECRET,
-    baseUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL || "http://localhost:3000",
-    debug: true
+    baseUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
+    secret: process.env.NEXTAUTH_SECRET
   })
 }

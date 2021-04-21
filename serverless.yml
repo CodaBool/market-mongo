@@ -18,9 +18,9 @@ serverless:
     domain: ${domain.${stage}}
     timeout: 10 # 1-900
     memory: # 128-10240
-      defaultLambda: 704 #384 got err
-      apiLambda: 704 #448 got err
-      imageLambda: 704 #384
+      defaultLambda: 384 #384 got err
+      apiLambda: 448 #448 got err
+      imageLambda: 384 #384
     name:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
