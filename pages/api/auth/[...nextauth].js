@@ -3,6 +3,7 @@ import Providers from 'coda-auth-static/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'
+import { BASE_URL } from '../../../constants'
 
 export const config = {
   // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
@@ -60,6 +61,10 @@ export default (req, res) => {
         console.log('in session callback', session, user)
         if (session) session.id = user.id
         return Promise.resolve(session)
+      },
+      redirect: async (url, baseUrl) => {
+        console.log('in redirect callback',url, baseUrl, '=>', process.env.NEXT_PUBLIC_NEXTAUTH_URL, '/', BASE_URL)
+        return baseUrl
       },
       jwt: async (token, user, account, profile, isNewUser) => {
         console.log('in jwt callback')

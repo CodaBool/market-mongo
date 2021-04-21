@@ -1,6 +1,7 @@
 export const PRODUCTS_PER_PAGE = 10
 export const SHIPPING_COST = 7.99
 export const SHIPPING_EST = '2-4 Business Days'
+export const BASE_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL
 export const USA_STATES = [
   'AL','AK','AS','AZ','AR','CA','CO','CT','DE','DC','FM','FL','GA',
   'GU','HI','ID','IL','IN','IA','KS','KY','LA','ME','MH','MD','MA',
