@@ -18,12 +18,13 @@ jobs:
           repo=${GITHUB_REPOSITORY#CodaBool/}
           echo "##[set-output name=repo;]${repo,,}" 
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
-          build="${RUN_NUMBER}.${SHA:0:7}"
+          short_sha=${SHA:0:7}
+          build="$RUN_NUMBER.$short_sha"
           echo "##[set-output name=build;]${build}"
           echo "output build = ${build}"
           echo "SHA = ${SHA}"
           echo "RUN_NUMBER = ${RUN_NUMBER}"
-          echo "build = ${RUN_NUMBER}.${SHA:0:7}"
+          echo "build = $RUN_NUMBER.$short_sha"
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
         env:
           SHA: ${{ toJSON(github.sha) }}
