@@ -19,9 +19,9 @@ jobs:
           echo "##[set-output name=repo;]${repo,,}" 
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
           short_sha=${SHA:0:7}
-          build="$RUN_NUMBER.$short_sha"
-          echo "##[set-output name=build;]${build}"
-          echo "output build = "$build
+          build_var="$RUN_NUMBER.$short_sha"
+          echo "##[set-output name=build;]${build_var}"
+          echo "output build = $build_var"
           echo "SHA = ${SHA}"
           echo "RUN_NUMBER = ${RUN_NUMBER}"
           echo "build = $RUN_NUMBER.$short_sha"
