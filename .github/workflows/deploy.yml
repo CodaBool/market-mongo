@@ -41,10 +41,10 @@ jobs:
 
       - name: Download `.serverless` state from S3
         run: |
-          aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
+          aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=false
           if [ !$not_exist ]; then
             echo "bucket exists"
-            aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+            # aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
           else
             echo "bucket does not exists"
           fi
