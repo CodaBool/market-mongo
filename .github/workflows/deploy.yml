@@ -18,7 +18,8 @@ jobs:
           repo=${GITHUB_REPOSITORY#CodaBool/}
           echo "##[set-output name=repo;]${repo,,}" 
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
-          build_id="${SHA:0:7}.${RUN_NUMBER}"
+          # raw_build_id="${SHA:0:7}.${RUN_NUMBER}"
+          build_id=$(echo "${SHA:0:7}.${RUN_NUMBER}"|tr -d '"')
           echo $build_id
           # echo "##[set-output name=build_id;]${build_id}"
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
