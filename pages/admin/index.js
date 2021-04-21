@@ -18,7 +18,9 @@ export default function Index({ user }) {
   const [orders, setOrders] = useState([])
   const [reviews, setReviews] = useState([])
 
-  console.log('client user =', user)
+  if (user) {
+    console.log('client user =', user)
+  }
   
   function getUser() {
     axios.get('/api/user', { params: { email: selector } })

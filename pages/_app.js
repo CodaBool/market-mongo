@@ -17,7 +17,7 @@ export default function app({ Component, pageProps }) {
 
   return (
     <div className="site">
-      <Provider session={pageProps.session} options={{ baseUrl: process.env.NEXTAUTH_URL }}>
+      <Provider session={pageProps.session} options={{ baseUrl: process.env.NEXTAUTH_URL || 'http://localhost:3000' }}>
         <CartProvider
           stripe={stripePromise}
           mode="checkout-session"
