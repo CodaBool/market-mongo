@@ -82,11 +82,11 @@ const securityHeaders = [
 module.exports = {
   target: 'serverless',
   env: {
+    NEXT_PUBLIC_NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
     NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK,
     NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PK: process.env.JWT_SIGNING_PK,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     RECAPTCHA_SK: process.env.RECAPTCHA_SK,
     MONGODB_URI: process.env.MONGODB_URI,
     JWT_SECRET: process.env.JWT_SECRET,
