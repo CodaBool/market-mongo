@@ -9,7 +9,7 @@ import { Elements } from '@stripe/react-stripe-js'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../styles/globals.css'
-import { Provider } from 'next-auth/client'
+import { Provider } from 'coda-auth-static/client'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK)
 

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import ShippingForm from '../../components/ShippingForm'
-import { useSession } from 'next-auth/client'
+import { useSession } from 'coda-auth-static/client'
 import CartCards from '../../components/CartCards'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'

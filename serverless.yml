@@ -17,7 +17,11 @@ serverless:
     bucketRegion: us-east-1
     bucketName: ${name}-${stage}
     domain: ${domain.${stage}}
-    memory: 600
+    timeout: 10 # 1-900
+    memory: # 128-10240
+      defaultLambda: 448
+      apiLambda: 640
+      imageLambda: 448
     name:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api

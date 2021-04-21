@@ -1,5 +1,5 @@
-import NextAuth from 'next-auth'
-import Providers from 'next-auth/providers'
+import NextAuth from 'coda-auth-static'
+import Providers from 'coda-auth-static/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'

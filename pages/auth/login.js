@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import { useRouter } from 'next/router'
 import { Load } from '../../components/Load'
-import { signIn, useSession } from 'next-auth/client'
+import { signIn, useSession } from 'coda-auth-static/client'
 
 export default function Login({ csrf }) {
   const [session, loading] = useSession()

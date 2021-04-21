@@ -1,7 +1,7 @@
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
-import { useSession } from 'next-auth/client'
+import { useSession } from 'coda-auth-static/client'
 import Button from 'react-bootstrap/Button'
 import CartCards from '../../components/CartCards'
 import { useShoppingCart } from 'use-shopping-cart'
