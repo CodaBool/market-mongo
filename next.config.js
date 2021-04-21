@@ -92,20 +92,20 @@ module.exports = {
     JWT_SECRET: process.env.JWT_SECRET,
     STRIPE_SK: process.env.STRIPE_SK,
   },
-  async headers() {
-    return [
-      {
-        source: '/',
-        headers: securityHeaders
-      },
-      {
-        source: '/:path*',
-        headers: securityHeaders
-      }
-    ]
-  },
-  i18n: {
-    locales: ['en-US'],
-    defaultLocale: 'en-US',
-  },
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/',
+  //       headers: securityHeaders
+  //     },
+  //     {
+  //       source: '/:path*',
+  //       headers: securityHeaders
+  //     }
+  //   ]
+  // },
+  // i18n: {
+  //   locales: ['en-US'],
+  //   defaultLocale: 'en-US',
+  // },
 };
