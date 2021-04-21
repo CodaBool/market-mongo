@@ -22,12 +22,14 @@ jobs:
           echo stage = ${GITHUB_REF#refs/heads/}
           echo "SHA"
           echo ${SHA}
-          echo "RUN_NUMBER"
+          echo "RUN_NUMBER1"
+          echo ${RUN_NUMBER.run_number}
+          echo "RUN_NUMBER2"
           echo ${RUN_NUMBER}
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
         env:
-          SHA: ${{ toJSON(github).sha }}
-          RUN_NUMBER: ${{ toJSON(job).run_number }}
+          SHA: ${{ toJSON(github.sha) }}
+          RUN_NUMBER: ${{ toJSON(job) }}
         
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v1
