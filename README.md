@@ -7,7 +7,17 @@
   - uses Serverless Framework for simple deploys to AWS
     - uses the next component to utilize the full toolkit of Nextjs
 
+# Start
+1. git clone
+2. npm i
+3. create .env file and fill NEXT_PUBLIC_STRIPE_PK, STRIPE_SK, MONGODB_URI, RECAPTCHA_SK
+> [create a secret](https://generate-secret.vercel.app/32) for the NEXTAUTH_SECRET
+
+4. npm run dev
+
 # Contribute
+## Getting started
+email `codabool@pm.me` or just do a pull request
 ## Errors
 ### Read CloudWatch Logs ([awslogs](https://github.com/jorgebastida/awslogs))
 `pip install awslogs` 
@@ -30,3 +40,7 @@ Runtime Environment Variables Issues
 - https://github.com/nextauthjs/next-auth/issues/345
 - https://github.com/nextauthjs/next-auth/issues/212
 - https://github.com/nextauthjs/next-auth/issues/674
+
+
+### [next-auth][warn][jwt_auto_generated_signing_key] 
+- requires configuration [docs](https://next-auth.js.org/warnings#jwt_auto_generated_signing_key)
