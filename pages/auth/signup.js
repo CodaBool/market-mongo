@@ -10,8 +10,8 @@ import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useRouter } from 'next/router'
-import { signIn, useSession } from 'coda-auth/client'
-// import ReCAPTCHA from "react-google-recaptcha"
+import { signIn, useSession } from 'next-auth/client'
+import ReCAPTCHA from "react-google-recaptcha"
 // import { Load, isLoad } from '../components/Load'
 import Toast from '../../components/Toast'
 import axios from 'axios'
@@ -23,39 +23,40 @@ export default function Signup() {
   const [show, setShow] = useState(false)
   const { handleSubmit, watch, errors, control, getValues } = useForm()
   const router = useRouter()
-  // const captcha = useRef(null)
+  const captcha = useRef(null)
 
   const onSubmit = (data) => {
     console.log(data)
-    // const token = captcha.current.getValue()
-    // if (true) { // TODO: reset this
-    // if (token !== "") {
-    bcrypt.hash(data.password, 10, (err, hash) => {
-      axios
-        .post('/api/user', {
-          email: data.email,
-          password: hash
-        })
-        .then((res) => {
-          console.log('success', res.data)
-          setSuccess(true)
-          signIn('credentials', {
+    const token = captcha.current.getValue()
+    if (token !== "") {
+      bcrypt.hash(data.password, 10, (err, hash) => {
+        axios
+          .post('/api/user', {
             email: data.email,
-            password: data.password,
-            callbackUrl: ''
+            password: hash,
+            token: token,
           })
-        })
-        .catch((err) => {
-          if (err.response.data === 'Duplicate Email') {
-            setShow(true)
-          } else {
-            console.log('err', err.response.data)
-          }
-        })
-      // .finally(
-      //   captcha.current.reset()
-      // )
-    })
+          .then((res) => {
+            console.log('success', res.data)
+            setSuccess(true)
+            signIn('credentials', {
+              email: data.email,
+              password: data.password,
+              callbackUrl: ''
+            })
+          })
+          .catch((err) => {
+            if (err.response.data === 'Duplicate Email') {
+              setShow(true)
+            } else {
+              console.log('err', err.response.data)
+            }
+          })
+        .finally(
+          captcha.current.reset()
+        )
+      })
+    }
   }
 
   // if (isLoad(session, loading) || success) return <Load />
@@ -128,6 +129,11 @@ export default function Signup() {
           <p className="errMsg">Your password must match</p>
         )}
         <Row>
+          <ReCAPTCHA
+            className="mx-auto mt-3"
+            sitekey="6LdzfbIaAAAAAI0STn8vy1bTyG3qW0ECE06Untoh"
+            ref={captcha}
+          />
           <Button
             className="mx-auto my-5"
             style={{ width: '97.3%' }}

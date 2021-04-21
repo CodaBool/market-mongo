@@ -5,33 +5,33 @@ domain:
   dev: ['dev', codattest.com]
   prod: codattest.com
 
-url: # Can only be gotten after 1st deploy
-  dev: https://dev.codattest.com # GET_FROM_CLOUDFRONT_AFTER_ONE_DEPLOY 
-  prod: GET_FROM_CLOUDFRONT_AFTER_ONE_DEPLOY
+url:
+  dev: https://dev.codattest.com 
+  prod: https://www.codattest.com
 
 serverless:
   component: '@sls-next/serverless-component@1.18.0'
   inputs:
-    memory: 248
+    useServerlessTraceTarget: true
+    publicDirectoryCache: false
     bucketRegion: us-east-1
     bucketName: ${name}-${stage}
+    domain: ${domain.${stage}}
+    memory: 248
     name:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
       imageLambda: ${name}-${stage}-image
     build:
-      cmd: npm # default = node_modules/.bin/next
-      args: [run, 'build'] # default = ['build']
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
+        NEXTAUTH_URL: ${url.${stage}}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
         JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
-    domain: ${domain.${stage}}
-    publicDirectoryCache: false
-    useServerlessTraceTarget: true
+        RECAPTCHA_SK: ${env.RECAPTCHA_SK}
     # cloudfront:
       # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
       # aliases: ["${alias.${stage}}.codattest.com"]

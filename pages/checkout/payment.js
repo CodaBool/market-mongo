@@ -4,7 +4,7 @@
 // // import { loadStripe } from '@stripe/stripe-js'
 // // import { Elements } from '@stripe/react-stripe-js'
 // import PaymentForm from '../../components/PaymentForm'
-// import { useSession } from 'coda-auth/client'
+// import { useSession } from 'next-auth/client'
 // import CartCards from '../../components/CartCards'
 // import Button from 'react-bootstrap/Button'
 // import Row from 'react-bootstrap/Row'

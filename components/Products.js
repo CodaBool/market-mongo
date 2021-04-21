@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import { useRouter } from 'next/router'
-import { useSession, signIn } from 'coda-auth/client'
+import { useSession, signIn } from 'next-auth/client'
 import { useShoppingCart } from 'use-shopping-cart'
 import { usdPretty } from '../constants'
 import { Image } from 'react-bootstrap-icons'
@@ -57,12 +57,14 @@ export default function Products({ products, productClick }) {
       <Row>
         {products.map((product) => (
           <Col key={product.id} md={6}>
-            <Card className="m-5 p-3" style={{cursor: 'pointer'}} onClick={() => router.push(`/item/${product.id}`)}>
+            <Card className="m-5" style={{cursor: 'pointer'}} onClick={() => router.push(`/item/${product.id}`)}>
               <BoxImg product={product} />
-              <h2>{product.name}</h2>
-              <h4>~Review Placeholder~</h4>
-              {usdPretty(product.metadata.price)}
-              <h4>~Shipping Placeholder~</h4>
+              <div className="p-3">
+                <h2>{product.name}</h2>
+                <h4>~Review Placeholder~</h4>
+                {usdPretty(product.metadata.price)}
+                <h4>~Shipping Placeholder~</h4>
+              </div>
               <Button variant="info" onClick={(e) => addToCart(e, product.id)}>Add to Cart</Button>
             </Card>
           </Col>

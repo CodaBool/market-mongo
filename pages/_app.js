@@ -9,14 +9,15 @@ import { Elements } from '@stripe/react-stripe-js'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../styles/globals.css'
-import { Provider } from 'coda-auth/client'
+import { Provider } from 'next-auth/client'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK)
 
 export default function app({ Component, pageProps }) {
+
   return (
     <div className="site">
-      <Provider session={pageProps.session}>
+      <Provider session={pageProps.session} options={{ baseUrl: process.env.NEXTAUTH_URL }}>
         <CartProvider
           stripe={stripePromise}
           mode="checkout-session"
@@ -30,7 +31,7 @@ export default function app({ Component, pageProps }) {
               <meta charSet="UTF-8" />
               <meta name="description" content="An e-commerce site which integrates with Stripe built on Nextjs" />
               <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-              <link rel="apple-touch-icon" href="/image/favicon-32x32.gif"></link>
+              <link rel="apple-touch-icon" href="/image/favicon-32x32.gif" />
               <link rel="icon" href="/image/favicon-32x32.gif" />
             </Head>
             <Navigation />

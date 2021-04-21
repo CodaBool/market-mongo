@@ -7,15 +7,20 @@ export default applyMiddleware(async (req, res) => {
     let error = null
     switch (req.method) {
       case 'POST':
-        await postUser(req.body)
-          .then(r => {
-            if (r.name === 'MongoError' && r.code === 11000) {
-              error = 'User already exists'
-            } else {
-              response = r
-            }
-          })
-          .catch(err => error = err)
+        const valid = await verify(req.body.token)
+        if (valid) {
+          console.log('inserting user', {email: req.body.email, password: req.body.password})
+          // TODO: create stripe customer first and append customer id
+          await postUser({email: req.body.email, password: req.body.password})
+            .then(r => {
+              if (r.name === 'MongoError' && r.code === 11000) {
+                error = 'User already exists'
+              } else {
+                response = r
+              }
+            })
+            .catch(err => error = err)
+        }
         break
       case 'GET':
         console.log('query', req.query)
@@ -64,6 +69,15 @@ export default applyMiddleware(async (req, res) => {
     res.status(500).json({msg: '/user: ' + (err.message || err)})
   }
 })
+
+async function verify(token) {
+  let valid = false
+  await fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SK}&response=${token}`, {method: 'POST'})
+    .then(res => res.json())
+    .then(data => valid = data.success === true)
+  console.log(valid)
+  return valid
+}
 
 // Seperated to allow for use in pages with getServerSideProps and in next-auth
 // WARNING: always place in try catch, returns null when no user is found

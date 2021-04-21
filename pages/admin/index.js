@@ -175,7 +175,10 @@ export default function Index({ user }) {
 export async function getServerSideProps(context) {
   await connectDB()
   const user = await getUserFromContext(context).catch(console.log)
-  return {
-    props: { user: jparse(user) }
+  if (user) {
+    return {
+      props: { user: jparse(user) }
+    }
   }
+  return { props: { } }
 }

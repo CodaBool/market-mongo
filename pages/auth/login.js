@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import { useRouter } from 'next/router'
 import { Load } from '../../components/Load'
-import { getCsrfToken, signIn, useSession } from 'coda-auth/client'
+import { signIn, useSession } from 'next-auth/client'
 
 export default function Login({ csrf }) {
   const [session, loading] = useSession()
@@ -14,17 +14,15 @@ export default function Login({ csrf }) {
   const { handleSubmit, errors, control, register } = useForm()
   const router = useRouter()
 
-  console.log('csrfToken', csrf)
-
   useEffect(() => {
     if (router.query.error === 'nonexistant') setError('No user found by that email')
     if (router.query.error === 'invalid') setError('Invalid login')
     if (router.query.error === 'unkown') setError('Something went wrong')
   }, [router.query.error])
 
-  const onSubmit = (data) => {
+  const onSubmit = async data => {
     console.log(data, router.query.callbackUrl)
-    if (data.email && data.password && data.csrf) {
+    if (data.email && data.password) {
       const callback = router.query.callbackUrl || ''
       signIn('credentials', {
         email: data.email,
@@ -45,12 +43,14 @@ export default function Login({ csrf }) {
     <>
       <h1 className="my-4 display-3">Login</h1>
       <Form onSubmit={handleSubmit(onSubmit)}>
+        {/* 
+        Docs say this is unecessary since using the signIn method
         <input
           name="csrf"
           type="hidden"
           defaultValue={csrf}
           ref={register}
-        />
+        /> */}
         <Form.Group>
           <Envelope className="mr-3 mb-1" size={30} />
           <Form.Label>Email</Form.Label>
@@ -105,11 +105,4 @@ export default function Login({ csrf }) {
       </Form>
     </>
   )
-}
-
-export async function getServerSideProps() {
-  const csrf = await getCsrfToken()
-  return {
-    props: { csrf }
-  }
 }

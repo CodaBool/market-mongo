@@ -35,8 +35,13 @@ export default applyMiddleware(async (req, res) => {
     } else {
       envVars.NEXTAUTH_URL = 'MISSING'
     }
-    await User.find({})
-      .then(response => resp = response)
+    await User.findOne({})
+      .then(response => {
+        if (response) {
+          response.password = undefined
+        }
+        resp = response
+      })
       .catch(err => console.log('/test', (err.message || err)))
     res.status(200).json({resp, envVars})
   } catch (err) {
