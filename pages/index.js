@@ -12,7 +12,7 @@ export default function Index() {
     <div>
       <h1 className="display-1 my-5">Oops,</h1>
       <h3 className="display-4 m-2">This site is under active construction <div className="d-inline-block">🚧</div></h3>
-      <a className="text-warning ml-4" href="https://github.com/CodaBool/market-mongo">Source Code</a>
+      <a className="text-primary ml-4" href="https://github.com/CodaBool/market-mongo">Source Code</a>
       <br/>
       <span className="text-info ml-4">Envionment: </span><span>{process.env.NEXT_PUBLIC_STAGE}</span>
       <br/>

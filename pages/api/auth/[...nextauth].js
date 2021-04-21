@@ -14,11 +14,10 @@ export const config = {
 }
 
 export default (req, res) => {
-  // console.log('/auth/[...nextauth] NEXTAUTH_URL=', process.env.NEXTAUTH_URL)
   NextAuth(req, res, {
     providers: [
       Providers.Credentials({
-        // The name to display on the sign in form (e.g. 'Sign in w ith...')
+        // The name to display on the sign in form (e.g. 'Sign in with...')
         name: 'Credentials',
         // The credentials is used to generate a suitable form on the sign in page.
         // You can specify whatever fields you are expecting to be submitted.
@@ -56,37 +55,25 @@ export default (req, res) => {
         }
       })
     ],
+    callbacks: {
+      session: async (session, user) => {
+        console.log('in session callback', session, user)
+        if (session) session.id = user.id
+        return Promise.resolve(session)
+      },
+      jwt: async (token, user, account, profile, isNewUser) => {
+        console.log('in jwt callback')
+        if (user) token.id = user.id
+        console.log(token)
+        return Promise.resolve(token)
+      }
+    },
     pages: {
       signIn: '/auth/login',
       signOut: '/auth/logout',
       newUser: '/auth/signup',
       error: '/' // Error code passed in query string as ?error=
     },
-    session: {
-      jwt: true,
-      maxAge: 30 * 24 * 60 * 60 // 30 days
-    },
-    jwt: {
-      jwt: true,
-      // signingKey: process.env.JWT_SIGNING_PK,
-      // secret: process.env.JWT_SECRET, // defaults to NEXTAUTH_SECRET
-    },
-    debug: true,
     secret: process.env.NEXTAUTH_SECRET
   })
 }
-
-
-// callbacks: {
-//   session: async (session, user) => {
-//     console.log('in session callback', session, user)
-//     if (session) session.id = user.id
-//     return Promise.resolve(session)
-//   },
-//   jwt: async (token, user, account, profile, isNewUser) => {
-//     console.log('in jwt callback')
-//     if (user) token.id = user.id
-//     console.log(token)
-//     return Promise.resolve(token)
-//   }
-// },

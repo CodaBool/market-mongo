@@ -73,6 +73,3 @@ export default function Products({ products, productClick }) {
     </>
   )
 }
-
-
-{/* <img src={product.images[0]} alt={product.name} className="img-lg" /> */}

@@ -28,7 +28,7 @@ export default function Index({ user }) {
       .catch(err => console.error(err.response.data.msg))
   }
   function getUsers() { // nothing in front end should be doing this operation
-    axios.get('/api/test')
+    axios.get('/api/admin/getAllUsers')
       .then(res => setUsers(res.data))
       .catch(err => console.error(err.response.data.msg))
     }

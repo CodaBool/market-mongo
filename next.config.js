@@ -89,6 +89,7 @@ module.exports = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     RECAPTCHA_SK: process.env.RECAPTCHA_SK,
     MONGODB_URI: process.env.MONGODB_URI,
+    JWT_SECRET: process.env.JWT_SECRET,
     STRIPE_SK: process.env.STRIPE_SK,
   },
   async headers() {
