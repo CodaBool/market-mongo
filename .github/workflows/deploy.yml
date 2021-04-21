@@ -21,7 +21,7 @@ jobs:
           short_sha=${SHA:0:7}
           build="$RUN_NUMBER.$short_sha"
           echo "##[set-output name=build;]${build}"
-          echo "output build = ${build}"
+          echo "output build = "$build
           echo "SHA = ${SHA}"
           echo "RUN_NUMBER = ${RUN_NUMBER}"
           echo "build = $RUN_NUMBER.$short_sha"
@@ -29,6 +29,10 @@ jobs:
         env:
           SHA: ${{ toJSON(github.sha) }}
           RUN_NUMBER: ${{ toJSON(github.run_number) }}
+
+      - name: PRINT
+        run: echo ${{ steps.extract.outputs.build }}
+
         
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v1
