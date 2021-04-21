@@ -18,15 +18,15 @@ jobs:
           repo=${GITHUB_REPOSITORY#CodaBool/}
           echo "##[set-output name=repo;]${repo,,}" 
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
-          echo "##[set-output name=build;]${RUN_NUMBER}-${SHA:0:7}"
-          echo ${build}
+          echo "##[set-output name=build;]${RUN_NUMBER}.${SHA:0:7}"
+          echo "output build = ${build}""
           echo "SHA = ${SHA}"
           echo "RUN_NUMBER = ${RUN_NUMBER}"
-          echo "build = ${RUN_NUMBER}-${SHA:0:7}"
+          echo "build = ${RUN_NUMBER}.${SHA:0:7}"
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
         env:
           SHA: ${{ toJSON(github.sha) }}
-          RUN_NUMBER: ${{ toJSON(job.run_number) }}
+          RUN_NUMBER: ${{ toJSON(github.run_number) }}
         
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v1
