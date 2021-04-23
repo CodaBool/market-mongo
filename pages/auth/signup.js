@@ -32,7 +32,7 @@ export default function Signup() {
     if (token !== "") {
       bcrypt.hash(data.password, 10, (err, hash) => {
         axios
-          .post('/api/user', {
+          .post('/api/customer', {
             email: data.email,
             password: hash,
             token: token,

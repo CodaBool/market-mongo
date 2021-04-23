@@ -2,15 +2,29 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
 export default function Index() {
+  useEffect(() => {
+    // axios.get('/api/customer', {params: { email: 'codDa@bool.com' } })
+    //   .then(res => console.log(res.data))
+    //   .catch(err => console.error(err.response.data.msg))
+    
+
+    // const data = 
+    axios.get('/api/customer', {params: { email: 'who@mail.com' } })
+      .then(res => console.log(res.data))
+      .catch(err => console.error(err.response.data.msg))
+    // axios.get('/api/test')
+    //   .then(res => console.log(res.data))
+    //   .catch(err => console.error(err.response.data.msg))
+  }, [])
   function test() {
-    axios.get('/api/test')
+    axios.post('/api/customer', {email: 'coDddda@bool.com', password: 'uwuOwOuwuOwOuwu' })
       .then(res => console.log(res.data))
       .catch(err => console.error(err.response.data.msg))
   }
 
   return (
     <div>
-      <h1 className="display-1 my-5">Oops,</h1>
+      <h1 onClick={test} className="display-1 my-5">Oops,</h1>
       <h3 className="display-4 m-2">This site is under active construction <div className="d-inline-block">🚧</div></h3>
       <a className="text-primary ml-4" href="https://github.com/CodaBool/market-mongo">Source Code</a>
       <br/>

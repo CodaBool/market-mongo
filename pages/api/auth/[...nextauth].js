@@ -3,6 +3,7 @@ import Providers from 'coda-auth/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
 import { getUser } from '../user'
+import { User } from '../../../models'
 
 export const config = {
   // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
@@ -34,7 +35,8 @@ export default (req, res) => {
         authorize: async (clientData) => {
           try {
             await connectDB()
-            const user = await getUser(clientData.email)
+            const user = await User.findOne({ email: clientData.email })
+              .catch(err => console.log(err))
             if (user) {
               const validPassword = await compare(
                 clientData.password,

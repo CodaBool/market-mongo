@@ -4,6 +4,7 @@ on:
     branches: [dev, prod]
 jobs:
   deploy:
+    if: "! contains(github.event.commits[0].message, '[no ci]')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -44,15 +45,12 @@ jobs:
       - name: Download `.serverless` state from S3
         run: |
           aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
-          if [ !$not_exist ]; then
-            echo "bucket exists"
+          if [ ! $not_exist ]; then
             aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
-          else
-            echo "bucket does not exists"
           fi
           
       - name: Deploy to AWS
-        run: npx serverless > output.txt # remove stdout
+        run: npx serverless > output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
         env:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}

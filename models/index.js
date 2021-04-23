@@ -30,6 +30,10 @@ const userSchema = new Schema({
     type: Number,
     default: 0
   },
+  spent: { 
+    type: Number,
+    default: 0
+  },
   address: {
     name: {
       type: String,
