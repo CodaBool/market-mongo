@@ -48,7 +48,6 @@ export default applyMiddleware(async (req, res) => {
   }
 })
 
-
 // Seperated to allow for use in pages with getServerSideProps and in next-auth
 // WARNING: always place in try catch, returns null when no user is found
 // WARNING: does not wait for db connection! Intentional due to the use of 2 methods for connecting to db
