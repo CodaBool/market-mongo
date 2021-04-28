@@ -10,7 +10,7 @@ url:
   prod: https://www.codattest.com
 
 serverless:
-  component: '@sls-next/serverless-component@1.19.0-alpha.46'
+  component: '@sls-next/serverless-component@1.19.0-alpha.50'
   inputs:
     useServerlessTraceTarget: true
     publicDirectoryCache: false
@@ -36,11 +36,11 @@ serverless:
         JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
         RECAPTCHA_SK: ${env.RECAPTCHA_SK}
         BUILD_ID: ${env.BUILD_ID}
-    # cloudfront:
-      # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
-      # aliases: ["${alias.${stage}}.codattest.com"]
     cloudfront:
       distributionId: EIWEPBSNER5B3
       defaults:
         forward:
           headers: [ Accept ] # Needed for image optimizer
+    # cloudfront:
+      # distributionId: XYZEXAMPLE # if you want to use an existing cloudfront distribution, provide it here
+      # aliases: ["${alias.${stage}}.codattest.com"]
