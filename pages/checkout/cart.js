@@ -20,7 +20,7 @@ export default function Cart() {
     <>
       <Col className={`mx-auto shrink ${size == 'small' || size == 'xsmall' || size == 'medium' ? 'w-100' : 'w-50'}`}>
         <h1 className="display-3">Cart</h1>
-        <CartCards isSimple={false} size={size} />
+        <CartCards size={size} />
         {Object.keys(cartDetails).length > 0 &&
           <>
             <Card className="p-3 mt-4">
@@ -40,23 +40,3 @@ export default function Cart() {
     </>
   )
 }
-
-
-// const handleCheckout: React.FormEventHandler<HTMLFormElement> = async (
-//   event
-// ) => {
-//   event.preventDefault()
-//   setLoading(true)
-
-//   const response = await fetchPostJSON(
-//     '/api/checkout_sessions/cart',
-//     cartDetails
-//   )
-
-//   if (response.statusCode === 500) {
-//     console.error(response.message)
-//     return
-//   }
-
-//   redirectToCheckout({ sessionId: response.id })
-// }

@@ -16,6 +16,7 @@ export default async (req, res) => {
       if (result.data.length) throw 'Email Taken'
       const customer = await stripe.customers.create({ email: body.email.toLowerCase() })
         .catch(err => { throw err.raw.message })
+        // TODO: this may be a better form .catch(err => { throw err.message })
 
       // MONGO
       await connectDB()
@@ -46,6 +47,7 @@ export default async (req, res) => {
       }
       const customer = await stripe.customers.update(body.id, insert)
         .catch(err => { throw err.raw.message })
+        // TODO: this may be a better form .catch(err => { throw err.message })
       res.status(200).json(customer)
       return
     } else {
@@ -74,9 +76,10 @@ async function getCustomer(id, email) {
   if (id) {
     const customer = await stripe.customers.retrieve(id)
       .catch(err => { throw err.raw.message })
+      // TODO: this may be a better form .catch(err => { throw err.message })
     return customer
   }
-  const result = await stripe.customers.list({ limit: 1, email: email.toLowerCase() })
+  const result = await stripe.customers.list({ limit: 1, email: email.toLowerCase() }) // TODO: look into a catch for this
   if (result.has_more) { // duplicates
     throw 'Duplicate emails'
   } else if (result.data.length) { // found one

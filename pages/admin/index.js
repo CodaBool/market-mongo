@@ -11,8 +11,7 @@ import { useSession } from 'coda-auth/client'
 import { Load, isLoad } from '../../components/Load'
 
 // serverside
-import { connectDB, jparse } from '../../util/db'
-import { getUserFromContext } from '../api/user'
+import { getAuthenticatedUser } from '../api/user'
 
 export default function Index({ user }) {
   const [selector, setSelector] = useState('')
@@ -25,19 +24,21 @@ export default function Index({ user }) {
   const [session, loading] = useSession()
   const router = useRouter()
 
-  if (isLoad(session, loading, true)) return <Load />
+  console.log(user)
 
-  if (session.user.email !== 'coda@bool.com') {
-    router.push('/')
-    return <Load />
-  }
+  // if (isLoad(session, loading, true)) return <Load />
+
+  // if (session.user.email !== 'coda@bool.com') {
+  //   router.push('/')
+  //   return <Load />
+  // }
 
   // if (user) {
   //   console.log('client user =', user)
   // }
   
   function getUser() { // res.data is an empty string if user not found
-    axios.get('/api/user', { params: { email: '' } })
+    axios.get('/api/user')
       .then(res => { if (res.data) setUsers([res.data]) })
       .catch(err => console.error(err.response.data.msg))
   }
@@ -266,12 +267,6 @@ export default function Index({ user }) {
 }
 
 export async function getServerSideProps(context) {
-  await connectDB()
-  const user = await getUserFromContext(context).catch(console.log)
-  if (user) {
-    return {
-      props: { user: jparse(user) }
-    }
-  }
-  return { props: { } }
+  const user = await getAuthenticatedUser(context)
+  return { props: { user } }
 }

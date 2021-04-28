@@ -23,11 +23,18 @@ export default function Navigation() {
           {session ? (
             <>
               {session.user.email === 'coda@bool.com' &&
-                <Link href="/admin" >
-                  <div className={`${router.asPath === '/admin' && 'active'} nav-link`}>
-                    Admin
-                  </div>
-                </Link>
+                <>
+                  <Link href="/admin" >
+                    <div className={`${router.asPath === '/admin' && 'active'} nav-link`}>
+                      Admin
+                    </div>
+                  </Link>
+                  <Link href="/admin/stripe" >
+                    <div className={`${router.asPath === '/admin/stripe' && 'active'} nav-link`}>
+                      Stripe
+                    </div>
+                  </Link>
+                </>
               }
               <Link href="/checkout/cart">
                 <div className={`${router.asPath === '/checkout/cart' && 'active'} nav-link`}>

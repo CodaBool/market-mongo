@@ -91,58 +91,61 @@ main {
   50% { transform: rotate(10deg); } 
   100% { transform: rotate(0deg); } 
 }
-
-
-
 /* Products */
+
+/* X Icon in Cart */
+.x-icon:hover {
+  cursor: pointer;
+  color: rgb(184, 36, 36);
+  filter: drop-shadow(0 0 2px #fd9d99);
+  animation: spin 0.1s linear;
+}
+@keyframes spin { 
+  100% { transform:rotate(90deg); } 
+}
 
 .money {
   color: rgb(177, 39, 4);
-}
-
-.box img {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  z-index: 0.1; /* toast modal is z-index: 1 so this must be below that */
-}
-.box .shine {
-  width: 100%;
 }
 .shine {
   background: white;
   background-image: linear-gradient(to right, white 0%, rgb(240, 236, 236) 20%, white 40%, white 100%);
   background-size: 800px 800px; 
   animation: linear shine 1s infinite;
+  /* z-index: -1; */
 }
+
 @keyframes shine {
   0% { background-position: -800px 0; }
   100% { background-position: 800px 0; }
 }
-
 @media (max-width: 576px) { /* Small devices (landscape phones, 576px and DOWN) */ 
-  .box .shine, .box img {
-    height: 232px;
-    width: 232px;
+  .box-small {
+    height: 326px;
+    width: 326px;
   }
 }
 @media (min-width: 576px) { /* Small devices (landscape phones, 576px and UP) */ 
-  .box .shine, .box img {
-    height: 412px;
+  .box-small {
+    height: 176px;
+    width: 176px;
   }
 }
 @media (min-width: 768px) { /* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
-  .box .shine, .box img {
-    height: 232px;
+  .box-small {
+    width: 86px;
+    height: 86px;
   }
 }
 @media (min-width: 992px) { /* Large devices (desktops, 992px and up) */
-  .box .shine, .box img {
-    height: 352px;
+  .box-small {
+    height: 146px;
+    width: 146px;
   }
 }
 @media (min-width: 1200px) { /* Extra large devices (large desktops, 1200px and up) */
-  .box .shine, .box img {
-    height: 443px;
+  .box-small {
+    height: 192px;
+    width: 192px;
   }
 }

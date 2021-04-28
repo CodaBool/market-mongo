@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
 export default function Index() {
+  
   useEffect(() => {
     // axios.get('/api/customer', {params: { email: 'codDa@bool.com' } })
     //   .then(res => console.log(res.data))
@@ -16,6 +17,7 @@ export default function Index() {
     //   .then(res => console.log(res.data))
     //   .catch(err => console.error(err.response.data.msg))
   }, [])
+
   function test() {
     axios.post('/api/customer', {email: 'coDddda@bool.com', password: 'uwuOwOuwuOwOuwu' })
       .then(res => console.log(res.data))

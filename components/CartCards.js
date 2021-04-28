@@ -4,109 +4,76 @@ import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import { X } from 'react-bootstrap-icons'
-import Spinner from 'react-bootstrap/Spinner'
 import BoxImg from './UI/BoxImg'
 
-let madeSelects = false
-const refs = []
+const QuanSelect = React.forwardRef(({ id, value, onSelect, quantity }, ref) => (
+  <select className="form-control my-3" name={`sel-${id}`} id={id} value={value} ref={ref} onChange={onSelect}>
+    {Array.from({length: Number(quantity)}, (x, i) => i + 1).map((option, index) => <option key={index}>{option}</option>)}
+  </select>
+))
 
-function usd(price) {
-  return '$' + String(price).slice(0, -2) + "." + String(price).slice(-2)
-}
-
-export default function CartCards({ isSimple, size }) {
-  const { cartDetails, removeItem, cartCount, setItemQuantity } = useShoppingCart()
-  const [selects, setSelects] = useState({})
-
-  function genSelects() {
-    let tempSelects = {}
-    Object.keys(cartDetails).map(item => {
-      // console.log('max quantity', cartDetails[item].max, 'for', cartDetails[item].name)
-      const newRef = createRef()
-      refs.push(newRef)
-      tempSelects = {
-        ...tempSelects,
-        // [item]: <QuanSelect
-        //   quantity={cartDetails[item].max} // max quantity
-        //   id={item} 
-        //   ref={newRef}
-        //   onSelect={(e) => setItemQuantity(item, e.target.value)} 
-        // />
-        [item]: 
-          <select className="form-control my-3" name={`quantity-for-item-${item}`} id={item} ref={newRef} onChange={(e) => setItemQuantity(item, e.target.value)}>
-            {Array.from({length: cartDetails[item].max}, (x, i) => i + 1).map((option, index) => <option key={index}>{option}</option>)}
-          </select>
-      }
-    })
-    setSelects(tempSelects)
-    madeSelects = true
-  }
-
-  function updateQuantity() { // error if refs do not get assigned before this is called
-    refs.forEach(ref => {
-      Object.keys(cartDetails).map(item => {
-        if (ref.current.id === item) {
-          // console.log('updating select with found quantity', ref.current.value, ' => ', cartDetails[item].quantity)
-          ref.current.value = cartDetails[item].quantity
-        }
-      })
-    })
-  }
+export default function CartCards({ simple, size }) {
+  const { cartDetails: cart, removeItem, cartCount, setItemQuantity } = useShoppingCart()
+  const [selects, setSelects] = useState()
 
   useEffect(() => {
-    if (!madeSelects) {
-      if (!isSimple) {
-        if (cartCount) {
-          genSelects()
-        }
-      }
+    if (cart) {
+      setSelects(Object.keys(cart).map(item => {
+        return (
+          <QuanSelect
+            quantity={cart[item].max} // max quantity
+            value={cart[item].quantity}
+            id={item} 
+            ref={createRef()}
+            onSelect={(e) => setItemQuantity(item, e.target.value)} 
+          />
+        )
+      }))
     }
-  }, [])
-  
-  useEffect(() => {
-    if (refs[0]) {
-      if (refs[0].current) {
-        updateQuantity()
-      }
-    }
-  }, [refs[0]])
+  }, [cart])
   
   return (
-    <div>
-      {Object.keys(cartDetails).length === 0 && <h1 className="my-5">🛒 No items found. Please go to <a href="/browse/1">Browse</a> and pick some up</h1>}
-      {Object.keys(cartDetails).map(item => (
+    <>
+      {Object.keys(cart).length === 0 && <h1 className="my-5">🛒 No items found. Please go to <a href="/browse/1">Browse</a> and pick some up</h1>}
+      {Object.keys(cart).map((item, index) => (
         <Card className="my-1 p-3" key={item}>
-          {!isSimple && <X className="x-icon" onClick={() => removeItem(item)} style={{position: 'absolute', right: '10px', top: '10px'}} size={42}/>}
-          <h4>{cartDetails[item].name}</h4>
+          {!simple && <X className="x-icon" onClick={() => removeItem(item)} style={{position: 'absolute', right: '10px', top: '10px'}} size={42}/>}
+          <h4>{cart[item].name}</h4>
           <Row>
             <Col sm={6} className="px-0">
-              <BoxImg cartDetails={cartDetails} item={item} />
+              <BoxImg imageUrl={cart[item].image} alt={cart[item].name} small />
             </Col>
             <Col className="my-auto" sm={6}>
-              {isSimple
-                ? <Row className="text-muted">
-                    <Col>Quantity</Col>
-                    <Col className="text-right">{cartDetails[item].quantity} x</Col>
+              {simple && 
+                <>
+                  <Row className="text-muted mt-3">
+                    <Col>Price</Col>
+                    <Col className="text-right">{cart[item].formattedValue}</Col>
                   </Row>
-                : refs[0] !== undefined
-                  ? <Row>
-                      <Col className="my-auto">
-                        <h5 className="d-inline">{usd(cartDetails[item].price)}</h5>
-                        <X className="float-right" size={27}/>
-                      </Col>
-                      <Col>{selects[item]}</Col>
-                    </Row>
-                  : <Spinner animation="border" variant="info" />
+                  <Row className="text-muted">
+                    <Col>Quantity</Col>
+                    <Col className="text-right">x {cart[item].quantity}</Col>
+                  </Row>
+                </>
+              }
+              {(selects && !simple) && 
+                <Row>
+                  <Col className="my-auto">
+                    <h5 className="d-inline">{cart[item].formattedValue}</h5>
+                    <X className="float-right" size={27}/>
+                  </Col>
+                  <Col>{selects[index]}</Col>
+                </Row>
               }
               <hr />
               <Row className="text-muted">
                 <Col>Subtotal</Col>
-                <Col className="text-right">{cartDetails[item].formattedValue}</Col>
+                <Col className="text-right">{cart[item].formattedValue}</Col>
               </Row>
             </Col>
           </Row>
         </Card>
       ))}
-    </div>
+    </>
   )
 }

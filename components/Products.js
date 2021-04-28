@@ -55,10 +55,10 @@ export default function Products({ products, productClick }) {
   return (
     <>
       <Row>
-        {products.map((product) => (
+        {products.map(product => (
           <Col key={product.id} md={6}>
             <Card className="m-5" style={{cursor: 'pointer'}} onClick={() => router.push(`/item/${product.id}`)}>
-              <BoxImg product={product} />
+              <BoxImg imageUrl={product.images[0]} alt={product.name} />
               <div className="p-3">
                 <h2>{product.name}</h2>
                 <h4>~Review Placeholder~</h4>

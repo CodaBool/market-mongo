@@ -1,29 +1,24 @@
-export default function BoxImg({ product, cartDetails, item }) {
-  const error = <p className="img-lg">Could Not Load Image</p>
-  if (cartDetails && item) {
-    if (cartDetails[item]) {
-      if (cartDetails[item].image) return (
-        <>
-          {cartDetails[item].image 
-            ? <img src={cartDetails[item].image} alt={cartDetails[item].name} className="mx-auto d-block rounded" style={{width: '70%'}} />
-            : <div className="border p-4" style={{width: '150px', height: '150px'}}>No Image Added 😔</div>
-          }
-        </>
-      )
-    }
-  }
-  if (product) {
-    if (product.images) {
-      if (product.images[0]) return (
-        <div className="d-flex box">
-          {product.images[0]
-            ? <img src={product.images[0]} alt={product.name} />
-            : error
-          }
-          <div className="shine"></div>
-        </div>
-      )
-    }
-  }
-  return error
+import { EmojiDizzy } from 'react-bootstrap-icons'
+import Image from 'next/image'
+
+export default function BoxImg({ imageUrl, alt, small }) {
+  if (small) return ( // used in checkout
+    <div className="mx-4">
+      <Image src={imageUrl} alt={alt} layout="responsive"  height={200} width={200} quality={20} style={{zIndex: '1'}} />
+      <div className="shine"></div>
+    </div>
+  )
+  if (imageUrl) return ( // used in browse
+    <div>
+      <Image src={imageUrl} alt={alt} layout="responsive" height={442} width={442} quality={40} style={{zIndex: '1'}} />
+      <div className="shine"></div>
+    </div>
+  )
+  return ( // used in admin page
+    <div className="d-flex box align-items-center justify-content-center flex-column" style={{backgroundColor: 'rgba(255, 0, 0, 0.02)'}}>
+      <EmojiDizzy className="mb-4" size={30} />
+      <p>Could Not Load Image</p>
+      <p>{alt}</p>
+    </div>
+  )
 }

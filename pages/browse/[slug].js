@@ -45,6 +45,7 @@ export default function BrowsePage({ products, totalPages, slug }) {
 }
 
 export async function getStaticProps(context) {
+  // TODO: create a function in api and call that here
   const stripe = require('stripe')(process.env.STRIPE_SK)
   let products = []
   let totalPages = 1

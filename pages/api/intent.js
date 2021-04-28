@@ -12,6 +12,7 @@ export default async (req, res) => {
     } else if (method === 'GET') {
       const intents = await stripe.paymentIntents.list({limit: 100, customer: query.id })
         .catch(err => { throw err.raw.message })
+        // TODO: this may be a better form .catch(err => { throw err.message })
       if (intents.has_more) {
         // TODO: handle with skip
       }

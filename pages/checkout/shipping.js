@@ -14,8 +14,7 @@ import useScreen from '../../constants/useScreen'
 import { Load } from '../../components/Load'
 
 // serverside
-import { connectDB, jparse } from '../../util/db'
-import { getUserFromContext } from '../api/user'
+import { getAuthenticatedUser } from '../api/user'
 
 export default function CheckoutPage({ user }) {
   console.log('user', user)
@@ -39,7 +38,7 @@ export default function CheckoutPage({ user }) {
         : <>
           <Cart3 className="mr-3 mb-3 d-inline" size={32} />
           <h1 className="display-4 d-inline" style={{fontSize: '2.5em'}}>Verify Cart</h1>
-          <CartCards isSimple />
+          <CartCards simple />
           <Card className="p-3">
             <Row>
               <Col className="text-muted">Tax</Col>
@@ -72,7 +71,6 @@ export default function CheckoutPage({ user }) {
 }
 
 export async function getServerSideProps(context) {
-  await connectDB()
-  const user = await getUserFromContext(context).catch(console.log)
-  return { props: { user: jparse(user) } }
+  const user = await getAuthenticatedUser(context)
+  return { props: { user } }
 }

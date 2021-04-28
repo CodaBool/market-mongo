@@ -1,4 +1,6 @@
-import applyMiddleware, { jwtFromReqOrCtx } from '../../util'
+import applyMiddleware from '../../util'
+import { connectDB, jparse } from '../../util/db'
+import { getSession } from 'coda-auth/client'
 import { User } from '../../models'
 
 export default applyMiddleware(async (req, res) => {
@@ -19,7 +21,9 @@ export default applyMiddleware(async (req, res) => {
       //     .catch(err => error = err)
       // }
     } else if (method === 'GET') { // null if user not found
-      const user = await User.findOne({ email: query.email })
+      const session = await getSession({ req })
+      if (!session) throw 'Unauthorized'
+      const user = await User.findById(session.id)
       res.status(200).json(user)
     } else if (method === 'PUT') {
       // if (body.data.admin) { // admin is immutable
@@ -55,14 +59,27 @@ export default applyMiddleware(async (req, res) => {
 // - METHOD 2: await connectDB, waits for connection, typically used in getServerSideProps
 //   - NOTE: wrap result in jparse() if sending to client to properly serialize json, see example below
 
-export async function getUserFromContext(context) { // always place in try catch
-  const jwt = jwtFromReqOrCtx(context)
-  if (jwt?.id) {
-    return User.findById(jwt.id)
-  } else if (jwt) {
-    return User.findOne({email: jwt.email})
+export async function getAuthenticatedUser(contextOrReq) {
+  try {
+    await connectDB()
+    let session = null
+    if (contextOrReq.req) { // Nextjs context
+      session = await getSession(contextOrReq)
+    } else { // typical req object
+      session = await getSession({req: contextOrReq})
+    }
+    if (!session) return Promise.reject('/user: No Session ID')
+    let user = null
+    if (session.id) {
+      user = await User.findById(session.id)
+    } else {
+      user = await User.findOne({email: session.user.email})
+    }
+    return jparse(user)
+  } catch (err) {
+    console.log('/getUser: ', err.message)
+    return null
   }
-  return Promise.reject('/user: No Session ID')
 }
 
 export async function postUser(data) { // always place in try catch

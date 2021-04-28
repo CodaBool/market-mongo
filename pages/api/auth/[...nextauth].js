@@ -2,7 +2,6 @@ import NextAuth from 'coda-auth'
 import Providers from 'coda-auth/providers'
 import { compare } from 'bcryptjs'
 import { connectDB } from '../../../util/db'
-import { getUser } from '../user'
 import { User } from '../../../models'
 
 export const config = {
@@ -35,7 +34,7 @@ export default (req, res) => {
         authorize: async (clientData) => {
           try {
             await connectDB()
-            const user = await User.findOne({ email: clientData.email })
+            const user = await User.findOne({ email: clientData.email }) // null if not found
               .catch(err => console.log(err))
             if (user) {
               const validPassword = await compare(
@@ -43,7 +42,7 @@ export default (req, res) => {
                 user.password
               )
               if (validPassword) { // complete successful login
-                return { id: user._id, email: user.email }
+                return { id: user._id, email: user.email.toLowerCase() }
               } else { // invalid password
                 return Promise.reject('/auth/login?error=invalid')
               }

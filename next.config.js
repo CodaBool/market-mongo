@@ -93,6 +93,9 @@ module.exports = {
     STRIPE_SK: process.env.STRIPE_SK,
     BUILD_ID: process.env.BUILD_ID,
   },
+  images: {
+    domains: ['files.stripe.com'],
+  },
   // async headers() {
   //   return [
   //     {
