@@ -133,7 +133,7 @@ export default function admin() {
                     ? <img src={product.images[0]} alt={product.name} style={{width: '150px'}} />
                     : <div className="border p-4" style={{width: '150px', height: '150px'}}>No Image Added 😔</div>
                   } */}
-                  <BoxImg stripeProduct={product} alt={product.name} />
+                  <BoxImg imageUrl={product.images[0]} alt={product.name} />
                   <h6>Name: {product.name}</h6>
                   <h6>ID: {product.id}</h6>
                   <h6>description: {product.description}</h6>

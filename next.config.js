@@ -94,7 +94,7 @@ module.exports = {
     BUILD_ID: process.env.BUILD_ID,
   },
   images: {
-    domains: ['files.stripe.com'],
+    domains: ['files.stripe.com', 'dev.codattest.com'],
   },
   // async headers() {
   //   return [
