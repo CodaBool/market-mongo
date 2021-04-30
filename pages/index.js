@@ -10,16 +10,16 @@ export default function Index() {
     
 
     // const data = 
-    axios.get('/api/customer', {params: { email: 'who@mail.com' } })
-      .then(res => console.log(res.data))
-      .catch(err => console.error(err.response.data.msg))
+    // axios.get('/api/customer', {params: { email: 'who@mail.com' } })
+    //   .then(res => console.log(res.data))
+    //   .catch(err => console.error(err.response.data.msg))
     // axios.get('/api/test')
     //   .then(res => console.log(res.data))
     //   .catch(err => console.error(err.response.data.msg))
   }, [])
 
   function test() {
-    axios.post('/api/customer', {email: 'coDddda@bool.com', password: 'uwuOwOuwuOwOuwu' })
+    axios.get('/api/test')
       .then(res => console.log(res.data))
       .catch(err => console.error(err.response.data.msg))
   }

@@ -14,10 +14,11 @@ import useScreen from '../../constants/useScreen'
 import { Load } from '../../components/Load'
 
 // serverside
-import { getAuthenticatedUser } from '../api/user'
+// import { getAuthenticatedUser } from '../api/user'
+import { getSession } from 'coda-auth/client'
+import Stripe from 'stripe'
 
-export default function CheckoutPage({ user }) {
-  console.log('user', user)
+export default function CheckoutPage({ customer }) {
   const { totalPrice } = useShoppingCart()
   const [session, loading] = useSession()
   const [error, setError] = useState('')
@@ -34,36 +35,32 @@ export default function CheckoutPage({ user }) {
   return (
     <Row ref={top}>
       <Col className={`${size.includes('small') ? 'mx-3 p-0 mt-3' : 'border-right pr-5 mt-3'}`} md={6}>
-        {loadMsg ? <Load msg={loadMsg} />
-        : <>
-          <Cart3 className="mr-3 mb-3 d-inline" size={32} />
-          <h1 className="display-4 d-inline" style={{fontSize: '2.5em'}}>Verify Cart</h1>
-          <CartCards simple />
-          <Card className="p-3">
-            <Row>
-              <Col className="text-muted">Tax</Col>
-              <Col className="text-right text-muted">$ 0.00</Col>
-            </Row>
-            <Row>
-              <Col className="text-muted">Shipping</Col>
-              <Col className="text-right text-muted">$ {SHIPPING_COST}</Col>
-            </Row>
-            <Row>
-              <Col>Total</Col>
-              <Col className="text-right">{total}</Col>
-            </Row>
-          </Card>
+        <Cart3 className="mr-3 mb-3 d-inline" size={32} />
+        <h1 className="display-4 d-inline" style={{fontSize: '2.5em'}}>Verify Cart</h1>
+        <CartCards simple />
+        <Card className="p-3">
           <Row>
-            <Button className="w-100 m-3" variant="warning" onClick={() => router.push('/checkout/cart')}>Edit Cart <PencilFill className="ml-2 mb-1" size={14} /></Button>
+            <Col className="text-muted">Tax</Col>
+            <Col className="text-right text-muted">$ 0.00</Col>
           </Row>
-        </>
-        }
+          <Row>
+            <Col className="text-muted">Shipping</Col>
+            <Col className="text-right text-muted">$ {SHIPPING_COST}</Col>
+          </Row>
+          <Row>
+            <Col>Total</Col>
+            <Col className="text-right">{total}</Col>
+          </Row>
+        </Card>
+        <Row>
+          <Button className="w-100 m-3" variant="warning" onClick={() => router.push('/checkout/cart')}>Edit Cart <PencilFill className="ml-2 mb-1" size={14} /></Button>
+        </Row>
       </Col >
       <Col className={`${size.includes('small') ? 'mx-3 p-0 mt-3' : 'border-left pl-5 mt-3'}`} md={6}>
-        {/* {saving
-          ? <Load msg="Saving" />
-          : <ShippingForm user={user} scroll={scroll} setLoadMsg={setLoadMsg} size={size} session={session} />
-        } */}
+        {loadMsg
+          ? <Load msg={loadMsg} />
+          : <ShippingForm customer={customer} scroll={scroll} setLoadMsg={setLoadMsg} size={size} shipping={customer.shipping} />
+        }
         {error && <p className="mx-auto">{error}</p>}
       </Col>
     </Row>
@@ -71,6 +68,8 @@ export default function CheckoutPage({ user }) {
 }
 
 export async function getServerSideProps(context) {
-  const user = await getAuthenticatedUser(context)
-  return { props: { user } }
+  const stripe = require('stripe')(process.env.STRIPE_SK)
+  const session = await getSession(context)
+  const customer = await stripe.customers.retrieve(session.customerId)
+  return { props: { customer } }
 }

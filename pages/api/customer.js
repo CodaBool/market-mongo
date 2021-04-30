@@ -1,5 +1,6 @@
-import { jwtFromReqOrCtx } from '../../util'
+// import { jwtFromReqOrCtx } from '../../util'
 import { connectDB } from '../../util/db'
+import { getSession } from 'coda-auth/client'
 import { User } from '../../models'
 
 const stripe = require('stripe')(process.env.STRIPE_SK)
@@ -13,10 +14,10 @@ export default async (req, res) => {
 
       // STRIPE
       const result = await stripe.customers.list({ email: body.email.toLowerCase() })
-      if (result.data.length) throw 'Email Taken'
+      if (result.data.length > 0) throw 'Email Taken'
       const customer = await stripe.customers.create({ email: body.email.toLowerCase() })
         .catch(err => { throw err.raw.message })
-        // TODO: this may be a better form .catch(err => { throw err.message })
+      if (!customer) throw 'Could not create Stripe Customer'
 
       // MONGO
       await connectDB()
@@ -24,30 +25,34 @@ export default async (req, res) => {
         email: body.email,
         password: body.password,
         customerId: customer.id
-      }).then(resp => {
-          if (resp.code === 11000) throw 'User already exists'
-        })
-        .catch(err => { throw err._message})
-
+      }).catch(err => {
+        stripe.customers.del(customer.id) // roll back stripe creation
+        if (err.code === 11000) throw 'User already exists'
+      })
       if (user && customer) {
-        res.status(200).send('Successful Signup!')
-        return
+        res.status(200).json({id: user._id})
       } else throw 'Could not signup'
-      
     } else if (method === 'GET') {
       const customer = await getCustomer(query.id, query.email)
       res.status(200).json(customer)
       return
     } else if (method === 'PUT') {
-      let insert = {}
-      if (false) { // Admin
-        insert = body.data
-      } else {
-        insert = { shipping: body.shipping }
-      }
-      const customer = await stripe.customers.update(body.id, insert)
-        .catch(err => { throw err.raw.message })
-        // TODO: this may be a better form .catch(err => { throw err.message })
+      const session = await getSession({ req })
+      if (!session) throw 'Unauthorized'
+      // Set fields explicitly to prevent unauthorized puts
+      const customer = await stripe.customers.update(session.customerId, {
+        shipping: {
+          name: body.name,
+          address: {
+            line1: body.address.line1,
+            line2: body.address.line2,
+            postal_code: body.address.postal_code,
+            city: body.address.city,
+            state: body.address.state,
+            country: 'US' // https://stripe.com/docs/api/customers/object#customer_object-shipping-address-country
+          }
+        }
+      }).catch(err => { console.log(err); throw err.raw.message })
       res.status(200).json(customer)
       return
     } else {
@@ -70,6 +75,28 @@ async function verify(token) {
   return valid
 }
 
+export async function getAuthenticatedCustomer(contextOrReq) {
+  try {
+    await connectDB()
+    let session = null
+    if (contextOrReq.req) { // Nextjs context
+      session = await getSession(contextOrReq)
+    } else { // typical req object
+      session = await getSession({req: contextOrReq})
+    }
+    if (!session) return Promise.reject('/customer: No Session')
+    let customer = null
+    if (session.stripeId) {
+      user = await User.findById(session.id)
+    } else {
+      user = await User.findOne({email: session.user.email})
+    }
+    return jparse(user)
+  } catch (err) {
+    console.log('/getUser: ', err.message)
+    return null
+  }
+}
 
 async function getCustomer(id, email) {
   if (!id && !email) throw 'Missing ID or Email'

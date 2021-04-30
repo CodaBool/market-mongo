@@ -42,7 +42,7 @@ export default (req, res) => {
                 user.password
               )
               if (validPassword) { // complete successful login
-                return { id: user._id, email: user.email.toLowerCase() }
+                return { id: user._id, email: user.email.toLowerCase(), customerId: user.customerId }
               } else { // invalid password
                 return Promise.reject('/auth/login?error=invalid')
               }
@@ -59,10 +59,12 @@ export default (req, res) => {
     callbacks: {
       session: async (session, user) => {
         if (session) session.id = user.id
+        if (session) session.customerId = user.customerId
         return Promise.resolve(session)
       },
       jwt: async (token, user, account, profile, isNewUser) => {
         if (user) token.id = user.id
+        if (user) token.customerId = user.customerId
         return Promise.resolve(token)
       }
     },

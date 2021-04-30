@@ -1,10 +1,14 @@
 import applyMiddleware from '../../util'
 import { User } from '../../models'
+import { getSession } from 'coda-auth/client'
 
 export default applyMiddleware(async (req, res) => {
   try {
     let resp = []
     let envVars = {}
+    const session = await getSession({req})
+    console.log(session)
+    console.log(session.user)
     if (process.env.NEXT_PUBLIC_STRIPE_PK) {
       envVars.NEXT_PUBLIC_STRIPE_PK = 'found'
     } else {

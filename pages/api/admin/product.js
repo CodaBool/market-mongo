@@ -1,11 +1,15 @@
-import { jwtFromReqOrCtx } from '../../../util'
-
+import { getSession } from 'coda-auth/client'
 const stripe = require('stripe')(process.env.STRIPE_SK)
 
 export default async (req, res) => {
   try {
     const { method, body, query } = req
     if (method === 'POST') {
+      // authenticate
+      const session = await getSession({ req })
+      if (!session) throw 'Unauthorized'
+      const user = await User.findById(session.id)
+      if (!user.admin) throw 'Unauthorized'
 
       const result = await stripe.customers.list({ email: body.email.toLowerCase() })
       if (result.data.length) throw 'Email Taken'
@@ -25,9 +29,12 @@ export default async (req, res) => {
       }
       res.status(200).json(products)
     } else if (method === 'PUT') {
-      const jwt = jwtFromReqOrCtx(req)
-      if (!jwt) throw 'Unauthorized'
-      console.log(jwt.email === 'coda@bool.com')
+      // authenticate
+      const session = await getSession({ req })
+      if (!session) throw 'Unauthorized'
+      const user = await User.findById(session.id)
+      if (!user.admin) throw 'Unauthorized'
+
       const product = await stripe.products.update(body.id, body.product)
         .catch(err => console.log(err))
       console.log(product)

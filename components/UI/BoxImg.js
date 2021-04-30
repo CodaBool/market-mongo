@@ -3,14 +3,14 @@ import Image from 'next/image'
 
 export default function BoxImg({ imageUrl, alt, small }) {
   if (small) return ( // used in checkout
-    <div className="mx-4">
-      <Image src={imageUrl} alt={alt} layout="responsive"  height={200} width={200} quality={20} style={{zIndex: '1'}} />
-      <div className="shine"></div>
+    <div className="mx-4 box-small">
+      <Image src={imageUrl} alt={alt} layout="responsive" height={200} width={200} quality={20} />
+      <div className="mx-4 shine"></div>
     </div>
   )
   if (imageUrl) return ( // used in browse
-    <div>
-      <Image src={imageUrl} alt={alt} layout="responsive" height={442} width={442} quality={40} style={{zIndex: '1'}} />
+    <div className="box">
+      <Image src={imageUrl} alt={alt} layout="responsive" height={442} width={442} quality={40} />
       <div className="shine"></div>
     </div>
   )

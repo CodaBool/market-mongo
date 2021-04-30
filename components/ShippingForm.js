@@ -9,118 +9,104 @@ import Modal from 'react-bootstrap/Modal'
 import { getState, USA_STATES, SHIPPING_COST, SHIPPING_EST } from '../constants'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { CreditCard, ArrowRight, House, Building, Globe, GeoAlt, Signpost, PlusCircle, Envelope, HandIndexThumb, BoxSeam } from 'react-bootstrap-icons'
+import { CreditCard, ArrowRight, House, Building, Globe, GeoAlt, Signpost, PlusCircle, Envelope, HandIndexThumb, BoxSeam, PersonFill } from 'react-bootstrap-icons'
 import { useForm, Controller } from 'react-hook-form'
 
-export default function ShippingForm({ shipping, size, setLoadMsg, session, customer, scroll }) {
+export default function ShippingForm({ size, setLoadMsg, customer, scroll, shipping }) {
   const { handleSubmit, watch, errors, register, control, getValues, setValue, formState, trigger } = useForm()
   const [show, setShow] = useState(false)
-  const [update, setUpdate] = useState(null)
   const [mis, setMis] = useState({})
   const router = useRouter()
 
   function autoFillState(postal_code) {
     const state = getState(postal_code)
-    if (state !== undefined) {
-      setValue('state', state)
-    }
+    if (state) setValue('state', state)
   }
   
   useEffect(() => autoFillState(watch('postal_code')), [watch])
   useEffect(() => {
-    if (shipping.postal_code) {
+    console.log('customer', customer)
+    if (shipping?.postal_code) {
       autoFillState(shipping.postal_code)
       trigger()
     }
   }, [])
 
-  useEffect(() => {
-    if (update !== null) {
-      onSubmit(getValues())
-    }
-  }, [update])
-
   const onSubmit = async (data) => {
     autoFillState(data.postal_code)
     let mismatch = {}
-    let skipSave = false
-    const shipData = shipping
-    shipData.name = session.user.name
-    const newAddress = {
-      line1: data.line1,
-      line2: data.line2,
-      postal_code: data.postal_code,
-      city: data.city,
-      state: data.state
+    const newShipping = {
+      name: data.name,
+      address: {
+        line1: data.line1,
+        line2: data.line2,
+        postal_code: data.postal_code,
+        city: data.city,
+        state: data.state
+      }
     }
-
-    
-    if (!shipping.err) { // record found
-      if (data.line1.trim().toLowerCase() !== shipData.address.line1.toLowerCase()) {
+    console.log('shipping', shipping, ' | new', newShipping)
+    if (shipping) {
+      if (data.name.trim() !== shipping.name) {
+        mismatch.name = data.name.trim()
+      }
+      if (data.line1.trim().toLowerCase() !== shipping.address.line1.toLowerCase()) {
         mismatch.line1 = data.line1.trim().toLowerCase()
       }
-      if (data.line2.trim().toLowerCase() !== shipData.address.line2.toLowerCase()) {
+      if (data.line2.trim().toLowerCase() !== shipping.address.line2.toLowerCase()) {
         mismatch.line2 = data.line2.trim().toLowerCase()
       }
-      if (data.postal_code.trim() !== shipData.address.postal_code) {
+      if (data.postal_code.trim() !== shipping.address.postal_code) {
         mismatch.postal_code = Number(data.postal_code.trim())
       }
-      if (data.city.trim().toLowerCase() !== shipData.address.city.toLowerCase()) {
+      if (data.city.trim().toLowerCase() !== shipping.address.city.toLowerCase()) {
         mismatch.city = data.city.trim().toLowerCase()
       }
-      if (data.state.trim().toLowerCase() !== shipData.address.state.toLowerCase()) {
+      if (data.state.trim().toLowerCase() !== shipping.address.state.toLowerCase()) {
         mismatch.state = data.state.trim().toLowerCase()
       }
-      if (Object.keys(mismatch).length == 0) { // nothing to update
-        skipSave = true
-      }
-      setMis(mismatch)
-    } else { // no address for account, save as new
-      delete shipData.err
-      shipData.address = newAddress
-      saveShipping(shipData)
-    }
-
-    if (update === null) { // has answered modal yet
-      if (Object.keys(mismatch).length) { // ask user with modal about mismatch
+      if (Object.keys(mismatch).length > 0) {
         setShow(true)
-      } else { // nothing to save
-        if (skipSave) { // false when saving as new shipping address or other shipping.err
-          saveShipping(null)
+        setMis(mismatch)
+        return
+      }
+    }
+    saveShipping(newShipping)
+  }
+  
+  async function saveShipping(data) {
+    setLoadMsg('Creating Shipment')
+    scroll()
+    if (data === 'replace') { // use newly entered data
+      data = {
+        name: getValues("name"),
+        address: {
+          line1: getValues("line1"),
+          line2: getValues("line2"),
+          postal_code: getValues("postal_code"),
+          city: getValues("city"),
+          state: getValues("state")
         }
       }
-    } else { // has answered modal on if should use new address or old one
-      if (update) { // save new address
-        shipData.address = newAddress
-        saveShipping(shipData)
-      } else { // use old address
-        saveShipping(null)
-      }
     }
-  }
-  
-  async function saveShipping(shipData) {
-    scroll()
-    if (shipData) {
-      // TODO: put user address
-      await axios.post('/api/stripe/putAddress', {shipData, customer})
+    if (data) {
+      await axios.put('/api/customer', data)
         .then(res => console.log(res.data))
-        .catch(err => console.log(err.response.data))
+        .catch(err => console.log(err.response.data.msg))
     }
-    setLoadMsg('Creating Shipment')
     router.push('/checkout/payment')
   }
-  
+
   return <>
     <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
         <Modal.Title>Confirm Shipping Address Update</Modal.Title>
       </Modal.Header>
-
       <Modal.Body>
         <p>We have a different saved shipping address. Are you sure you would like to update your address information?</p>
         {Object.keys(mis).map(miss => (
           <div key={miss}>
+            {miss === 'name' && <p><span className="text-muted mr-3">Name: </span>{shipping.name}<ArrowRight className="mx-3" size={14}/>{mis[miss]}</p>}
             {miss === 'line1' && <p><span className="text-muted mr-3">Line 1: </span>{shipping.address.line1}<ArrowRight className="mx-3" size={14}/>{mis[miss]}</p>}
             {miss === 'line2' && <p><span className="text-muted mr-3">Line 2: </span>{shipping.address.line2}<ArrowRight className="mx-3" size={14}/>{mis[miss]}</p>}
             {miss === 'postal_code' && <p><span className="text-muted mr-3">Zip: </span>{shipping.address.postal_code}<ArrowRight className="mx-3" size={14}/>{mis[miss]}</p>}
@@ -131,15 +117,15 @@ export default function ShippingForm({ shipping, size, setLoadMsg, session, cust
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => {setUpdate(false);setShow(false)}}>Keep Old Address</Button>
-        <Button variant="success" onClick={() => {setUpdate(true);setShow(false)}}>Update Address</Button>
+        <Button variant="secondary" onClick={() => {saveShipping(); setShow(false)}}>Keep Old Address</Button>
+        <Button variant="success" onClick={() => {saveShipping('replace'); setShow(false)}}>Update Address</Button>
       </Modal.Footer>
     </Modal >
     <Form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
       <Accordion defaultActiveKey="0">
         <Card>
           <Accordion.Toggle as={Card.Header}>
-            Address <House style={{marginLeft: '10px', marginBottom: '9px'}} size={28}/>
+            Shipping <House style={{marginLeft: '10px', marginBottom: '9px'}} size={28}/>
             <p className="float-right" style={{fontSize: '0.8em'}}>
               {Object.keys(errors).length > 0 && <>{`${Object.keys(errors).length} items left`}<PlusCircle className="ml-2 mb-1" size={18}/></>} 
             </p>
@@ -147,6 +133,28 @@ export default function ShippingForm({ shipping, size, setLoadMsg, session, cust
           <Accordion.Collapse className="show">
             <Card.Body className="px-2">
               
+              {/* Name */}
+              <InputGroup className="my-3">
+                <span className={`${errors.line1 && 'bg-danger'}`} style={{width: '10px', height: '40px'}}></span>
+                <InputGroup.Prepend>
+                  <InputGroup.Text><PersonFill className="mr-2 d-inline" size={18}/>Name</InputGroup.Text>
+                </InputGroup.Prepend>
+                <Controller
+                  as={<Form.Control />} 
+                  control={control}
+                  name="name"
+                  defaultValue={`${shipping ? shipping.name : ''}`}
+                  placeholder="Name" 
+                  required
+                  rules={{
+                    validate: () => {
+                      const val = getValues("line1")
+                      if (val.length < 4) return false
+                    }
+                  }}
+                />
+              </InputGroup>
+
               {/* Address Line 1*/}
               <InputGroup className="my-3">
                 <span className={`${errors.line1 && 'bg-danger'}`} style={{width: '10px', height: '40px'}}></span>
@@ -157,7 +165,7 @@ export default function ShippingForm({ shipping, size, setLoadMsg, session, cust
                   as={<Form.Control />} 
                   control={control}
                   name="line1"
-                  defaultValue={`${shipping.address ? shipping.address.line1 : ''}`}
+                  defaultValue={`${shipping ? shipping.address.line1 : ''}`}
                   placeholder="Address Line 1" 
                   required
                   rules={{
@@ -179,7 +187,7 @@ export default function ShippingForm({ shipping, size, setLoadMsg, session, cust
                   as={<Form.Control />} 
                   control={control}
                   name="line2"
-                  defaultValue={`${shipping.address ? shipping.address.line2 : ''}`}
+                  defaultValue={`${shipping ? shipping.address.line2 : ''}`}
                   placeholder="Address Line 2"
                 />
               </InputGroup>
@@ -196,7 +204,7 @@ export default function ShippingForm({ shipping, size, setLoadMsg, session, cust
                   as={<Form.Control />} 
                   control={control}
                   name="postal_code"
-                  defaultValue={`${shipping.address ? shipping.address.postal_code : ''}`}
+                  defaultValue={`${shipping ? shipping.address.postal_code : ''}`}
                   placeholder="Zip"
                   required
                   rules={{
@@ -220,7 +228,7 @@ export default function ShippingForm({ shipping, size, setLoadMsg, session, cust
                   as={<Form.Control />} 
                   control={control}
                   name="city"
-                  defaultValue={`${shipping.address ? shipping.address.city : ''}`}
+                  defaultValue={`${shipping ? shipping.address.city : ''}`}
                   placeholder="City"
                   required
                   rules={{
@@ -250,7 +258,7 @@ export default function ShippingForm({ shipping, size, setLoadMsg, session, cust
         </Card>
         <Card>
           <Accordion.Toggle as={Card.Header} >
-            Address<BoxSeam style={{marginLeft: '20px', marginBottom: '4px'}} size={28}/>
+            Shipping<BoxSeam style={{marginLeft: '20px', marginBottom: '4px'}} size={28}/>
             {/* <p className="float-right" style={{fontSize: '0.8em'}}>
               {!formState.isValid && <>Click To See more<HandIndexThumb className="translating" style={{marginLeft: '15px', marginBottom: '4px'}} size={20}/></>}
             </p> */}

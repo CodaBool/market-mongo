@@ -68,7 +68,7 @@ export async function getAuthenticatedUser(contextOrReq) {
     } else { // typical req object
       session = await getSession({req: contextOrReq})
     }
-    if (!session) return Promise.reject('/user: No Session ID')
+    if (!session) return Promise.reject('/user: No Session')
     let user = null
     if (session.id) {
       user = await User.findById(session.id)

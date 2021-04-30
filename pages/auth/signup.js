@@ -27,18 +27,16 @@ export default function Signup() {
 
   const onSubmit = (data) => {
     setSubmitting(true)
-    console.log(data)
     const token = captcha.current.getValue()
     if (token !== "") {
-      bcrypt.hash(data.password, 10, (err, hash) => {
+      bcrypt.hash(data.password, 10, (error, hash) => {
         axios
           .post('/api/customer', {
             email: data.email,
             password: hash,
             token: token,
           })
-          .then((res) => {
-            console.log('success', res.data)
+          .then(res => {
             setSuccess(true)
             signIn('credentials', {
               email: data.email,
@@ -46,11 +44,10 @@ export default function Signup() {
               callbackUrl: ''
             })
           })
-          .catch((err) => {
-            if (err.response.data === 'Duplicate Email') {
+          .catch(err => {
+            console.log(err.response.data.msg)
+            if (err.response.data.msg === 'Email Taken') {
               setShow(true)
-            } else {
-              console.log('err', err.response.data)
             }
           })
         .finally(() => {
@@ -65,7 +62,7 @@ export default function Signup() {
   }
 
   // if (isLoad(session, loading) || success) return <Load />
-  if (session) router.push('/')
+  // if (session) router.push('/')
 
   return (
     <>
