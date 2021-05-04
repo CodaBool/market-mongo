@@ -6,17 +6,17 @@ import Accordion from 'react-bootstrap/Accordion'
 import Card from 'react-bootstrap/Card'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Modal from 'react-bootstrap/Modal'
-import { getState, USA_STATES, SHIPPING_COST, SHIPPING_EST } from '../constants'
+import { getState, USA_STATES, SHIPPING_COST, SHIPPING_EST } from '../../constants'
 import axios from 'axios'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import { CreditCard, ArrowRight, House, Building, Globe, GeoAlt, Signpost, PlusCircle, Envelope, HandIndexThumb, BoxSeam, PersonFill } from 'react-bootstrap-icons'
 import { useForm, Controller } from 'react-hook-form'
 
-export default function ShippingForm({ size, setLoadMsg, customer, scroll, shipping }) {
+export default function Shipping({ size, setLoadMsg, customer, scroll, shipping, setPage }) {
   const { handleSubmit, watch, errors, register, control, getValues, setValue, formState, trigger } = useForm()
   const [show, setShow] = useState(false)
   const [mis, setMis] = useState({})
-  const router = useRouter()
+  // const router = useRouter()
 
   function autoFillState(postal_code) {
     const state = getState(postal_code)
@@ -94,7 +94,8 @@ export default function ShippingForm({ size, setLoadMsg, customer, scroll, shipp
         .then(res => console.log(res.data))
         .catch(err => console.log(err.response.data.msg))
     }
-    router.push('/checkout/payment')
+    setPage('payment')
+    // router.push('/checkout/payment')
   }
 
   return <>

@@ -3,9 +3,7 @@
 // // import Stripe from 'stripe'
 // // import { loadStripe } from '@stripe/stripe-js'
 // // import { Elements } from '@stripe/react-stripe-js'
-// import PaymentForm from '../../components/PaymentForm'
-// import { useSession } from 'coda-auth/client'
-// import CartCards from '../../components/CartCards'
+// import { Cart3, PencilFill, BoxSeam, Envelope, Receipt, HandIndexThumb, PlusCircle, Plus } from 'react-bootstrap-icons'
 // import Button from 'react-bootstrap/Button'
 // import Row from 'react-bootstrap/Row'
 // import InputGroup from 'react-bootstrap/InputGroup'
@@ -13,12 +11,13 @@
 // import Card from 'react-bootstrap/Card'
 // import Col from 'react-bootstrap/Col'
 // import Modal from 'react-bootstrap/Modal'
-// import { Cart3, PencilFill, BoxSeam, Envelope, Receipt, HandIndexThumb, PlusCircle, Plus } from 'react-bootstrap-icons'
-// import { axios, SHIPPING_COST, SHIPPING_EST, getEmail, getId } from '../../constants'
 // import { useRouter } from 'next/router'
+// import { useSession } from 'coda-auth/client'
+// import { SHIPPING_COST, SHIPPING_EST } from '../../constants'
+// import PaymentForm from '../../components/PaymentForm'
 // import useScreen from '../../constants/useScreen'
+// import CartCards from '../../components/CartCards'
 // import { Load, isLoad } from '../../components/Load'
-// import { quickCustomer } from '../../lib/helper'
 
 // export async function getServerSideProps(context) {
 //   const customer = await quickCustomer(null, context)
@@ -140,13 +139,12 @@
 //   )
 // }
 
-
 import React from 'react'
 
-export default function payment() {
+export default function shipping() {
   return (
     <div>
-      working on this route still
+      
     </div>
   )
 }

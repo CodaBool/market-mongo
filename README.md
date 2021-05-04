@@ -44,3 +44,7 @@ Runtime Environment Variables Issues
 
 ### [next-auth][warn][jwt_auto_generated_signing_key] 
 - requires configuration [docs](https://next-auth.js.org/warnings#jwt_auto_generated_signing_key)
+
+
+# Developer Notes
+- combine payment and shipping page

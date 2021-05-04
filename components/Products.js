@@ -33,7 +33,7 @@ export default function Products({ products, productClick }) {
         if (product.id === id) {
           name = product.name
           maxAllowed = product.metadata.quantity
-          item = { max: Number(product.metadata.quantity), rando: 'lol xd random', name: product.name, description: product.description, sku: product.id, price: Number(product.metadata.price), currency: product.metadata.currency, image: product.images[0]}
+          item = { name: product.name, description: product.description, id: product.id, price: Number(product.metadata.price), currency: product.metadata.currency, image: product.images[0]}
         }
       })
     

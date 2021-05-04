@@ -1,38 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
 export default function useScreen() {
-	const [screenType, setScreenType] = useState(getScreenType());
-
-	const resizeEvent = () => {
-		setScreenType(getScreenType())
-	}
+	const [screenType, setScreenType] = useState('medium')
 
 	useEffect(() => {
-		window.addEventListener('resize', resizeEvent);
+		window.addEventListener('resize', () => setScreenType(getSize()))
 		return () => {
-			window.removeEventListener('resize', resizeEvent);
+			window.removeEventListener('resize', () => setScreenType(getSize()))
 		};
 	}, [])
 
-	return screenType;
+	return screenType || 'medium'
 }
 
-const getScreenType = () => {
-	let screenType = null;
-
-	if (typeof window !== 'undefined') {
-		if (window.matchMedia('(max-width: 575px)').matches) {
-			screenType = 'xsmall';
-		} else if (window.matchMedia('(max-width: 768px)').matches) {
-			screenType = 'small';
-		} else if (window.matchMedia('(max-width: 991px)').matches) {
-			screenType = 'medium';
-		} else if (window.matchMedia('(max-width: 1199px)').matches) {
-			screenType = 'large';
-		} else {
-			screenType = 'xlarge';
-		}
+function getSize() {
+	if (typeof window === 'undefined') return null
+	if (window.matchMedia('(max-width: 575px)').matches) {
+		return 'xsmall'
+	} else if (window.matchMedia('(max-width: 768px)').matches) {
+		return 'small'
+	} else if (window.matchMedia('(max-width: 991px)').matches) {
+		return 'medium'
+	} else if (window.matchMedia('(max-width: 1199px)').matches) {
+		return 'large'
+	} else {
+		return 'xlarge'
 	}
-
-	return screenType;
 }
