@@ -10,7 +10,7 @@ url:
   prod: https://www.codattest.com
 
 serverless:
-  component: '@sls-next/serverless-component@1.19.0-alpha.50'
+  component: '@sls-next/serverless-component@1.19.0'
   inputs:
     useServerlessTraceTarget: true
     publicDirectoryCache: false
