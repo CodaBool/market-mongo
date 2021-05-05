@@ -5,17 +5,17 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
-import Toast from '../../components/Toast'
-import useDebounce from '../../constants/useDebounce'
-import { CATEGORY } from '../../constants'
 import axios from 'axios'
 import FormControl from 'react-bootstrap/FormControl'
 import InputGroup from 'react-bootstrap/InputGroup'
 import { useSession, signIn } from 'coda-auth/client'
-import { Load, isLoad } from '../../components/Load'
-import BoxImg from '../../components/UI/BoxImg'
-import { useForm, Controller } from 'react-hook-form'
 import { ImageFill, CloudCheckFill, ArrowClockwise } from 'react-bootstrap-icons'
+import { useForm, Controller } from 'react-hook-form'
+import Toast from '../Toast'
+import useDebounce from '../../constants/useDebounce'
+import { CATEGORY } from '../../constants'
+import { Load, isLoad } from '../Load'
+import BoxImg from '../UI/BoxImg'
 
 export default function admin() {
   const [session, loading] = useSession()
@@ -88,12 +88,12 @@ export default function admin() {
   }
 
   function fillData() {
-    console.log('bounced | id =', uid)
+    // console.log('bounced | id =', uid)
     if (uid) {
       setLoadProduct(true)
       axios.get('/api/admin/product', { params: {id: uid} })
         .then(res => {
-          console.log('product', res.data)
+          // console.log('product', res.data)
           setProduct(res.data)
           setValue('u-name', `${res.data.name ? res.data.name : ''}`)
           setValue('u-active', `${res.data.active ? res.data.active : ''}`)
@@ -112,9 +112,11 @@ export default function admin() {
   return (
     <>
     <Accordion className="my-5" defaultActiveKey="0">
+      <h1 className="display-4">Stripe</h1>
+
       <Card>
         <Accordion.Toggle as={Card.Header} eventKey="0">
-          See Products
+          Products
         </Accordion.Toggle>
         <Accordion.Collapse eventKey="0" className="expandable">
           <>
@@ -128,21 +130,15 @@ export default function admin() {
             </Row>
             <Row className="m-2">
               {products && products.map(product => (
-                <Card key={product.id} className="m-2">
-                  {/* {product.images[0] 
-                    ? <img src={product.images[0]} alt={product.name} style={{width: '150px'}} />
-                    : <div className="border p-4" style={{width: '150px', height: '150px'}}>No Image Added 😔</div>
-                  } */}
-                  <BoxImg imageUrl={product.images[0]} alt={product.name} />
-                  <h6>Name: {product.name}</h6>
-                  <h6>ID: {product.id}</h6>
-                  <h6>description: {product.description}</h6>
-                  <h6>active: <p className={`${product.active ? 'text-success' : 'text-danger'} d-inline`}>{product.active ? 'Active' : 'Archived'}</p></h6>
-                  <Button href={`https://dashboard.stripe.com/test/products/${product.id}/edit`} target="_blank" variant="outline-primary">Edit Image</Button>
-                  <h6>price: {product.metadata.price}</h6>
-                  <h6>quantity: {product.metadata.quantity}</h6>
-                  <h6>currency: {product.metadata.currency}</h6>
-                  <h6>categories: {product.metadata.categories}</h6>
+                <Card key={product.id} className="m-2" style={{maxWidth: '250px'}}>
+                  <BoxImg imageUrl={product.images[0]} alt={product.name} small />
+                  <Button href={`https://dashboard.stripe.com/test/products/${product.id}/edit`} target="_blank" variant="outline-primary" className="my-2 mx-4">Edit Image</Button>
+                  <h6><strong>ID: </strong> {product.id}</h6>
+                  {product.images[0] && <h6><strong>Image: </strong> {product.images[0].slice(31)}</h6>}
+                  <h6><strong>Name: </strong> {product.name}</h6>
+                  <h6><strong>description: </strong> {product.description}</h6>
+                  <h6><strong>active: </strong> <p className={`${product.active ? 'text-success' : 'text-danger'} d-inline`}>{product.active ? 'Active' : 'Archived'}</p></h6>
+                  <h6><strong>livemode: </strong> <p className={`${product.livemode ? 'text-success' : 'text-danger'} d-inline`}>{product.livemode ? 'True' : 'False'}</p></h6>
                 </Card>
               ))}
             </Row>

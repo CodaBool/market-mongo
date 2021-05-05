@@ -93,6 +93,41 @@ const orderSchema = new Schema({
   status: String
 }, { timestamps: true })
 
+const productSchema = new Schema({
+  _id: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: true
+  },
+  name: {
+    type: String,
+    default: null
+  },
+  description: {
+    type: String,
+    default: null
+  },
+  images: {
+    type: [String],
+    default: []
+  },
+  active: {
+    type: Boolean,
+    default: true
+  },
+  livemode: {
+    type: Boolean,
+    default: false
+  }
+}, { timestamps: true })
+
 const reviewSchema = new Schema({
   productId: {
     type: String,
@@ -133,3 +168,4 @@ const reviewSchema = new Schema({
 export const User = mongoose.models.user || mongoose.model('user', userSchema)
 export const Order = mongoose.models.order || mongoose.model('order', orderSchema)
 export const Review = mongoose.models.review || mongoose.model('review', reviewSchema)
+export const Product = mongoose.models.product || mongoose.model('product', productSchema)

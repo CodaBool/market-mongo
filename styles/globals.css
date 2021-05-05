@@ -86,6 +86,10 @@ main {
 .sway {
   animation: sway 5s infinite;
 }
+.sway-on-hover:hover {
+  cursor: pointer;
+  animation: sway 1s infinite;
+}
 @keyframes sway { 
   0% { transform: rotate(0deg); } 
   50% { transform: rotate(10deg); } 
@@ -102,6 +106,14 @@ main {
 }
 @keyframes spin { 
   100% { transform:rotate(90deg); } 
+}
+/* Admin page */
+.flip {
+  cursor: pointer;
+  animation: flip 0.5s linear;
+}
+@keyframes flip { 
+  100% { transform:rotate(360deg); } 
 }
 
 .money {

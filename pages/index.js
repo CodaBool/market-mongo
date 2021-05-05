@@ -41,8 +41,9 @@ export default function Index({ time }) {
   )
 }
 
+// revalidate test
 export async function getStaticProps() {
   const date = new Date()
   const time = (date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()) || 'undefined'
-  return { props: { time }, revalidate: 30 }
+  return { props: { time }, revalidate: 10 }
 }

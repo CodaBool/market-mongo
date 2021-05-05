@@ -29,11 +29,6 @@ export default function Navigation() {
                       Admin
                     </div>
                   </Link>
-                  <Link href="/admin/stripe" >
-                    <div className={`${router.asPath === '/admin/stripe' && 'active'} nav-link`}>
-                      Stripe
-                    </div>
-                  </Link>
                 </>
               }
               <Link href="/checkout/cart">

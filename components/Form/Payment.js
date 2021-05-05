@@ -28,25 +28,35 @@ const popoverStripe = (
   <Popover>
     <Popover.Title as="h3">Stripe is a trusted payment service.</Popover.Title>
     <Popover.Content>
-      To ensure security we complete checkouts with Stripe. Card information is never stored and will be handled directly by Stripe. 90% of Americans have bought from businesses using Stripe such as Amazon, Google, Lyft and Zoom. 
+      To ensure security we complete checkouts with Stripe. Card information is handled entirely through Stripe, no card information is stored or even seen outside of Stripe. 90% of Americans have bought from businesses using Stripe such as Amazon, Google, Lyft and Zoom. 
     </Popover.Content>
   </Popover>
 )
 
 export default function PaymentForm({ size, customer, setLoadMsg, setPage, scroll, router, cart }) {
-  const { handleSubmit, watch, errors, register, control, getValues, setValue, formState, trigger } = useForm()
-  const [paymentComplete, setPaymentComplete] = useState(false)
+  // const { handleSubmit, watch, errors, register, control, getValues, setValue, formState, trigger } = useForm()
+  // const [paymentComplete, setPaymentComplete] = useState(false)
   // const total = '$ ' + ((totalPrice + (SHIPPING_COST * 100)) / 100).toFixed(2)
   
   // useEffect(() => setPrice(total), [])
   // useEffect(() => autoFillState(watch('zip')), [watch])
 
-  const onSubmit = async (data) => {
+  async function checkout() {
     scroll()
-    console.log('submitted payment | data =', data)
     await axios.post('/api/stripe/session', cart)
       .then(res => console.log('res', res.data))
       .catch(err => console.log('err', err.response.data.msg))
+      .catch(console.log)
+    // setLoadMsg('Finalizing Order')
+    // router.push('/checkout/confirmed')
+  }
+
+  // const onSubmit = async (data) => {
+  //   scroll()
+  //   console.log('submitted payment | data =', data)
+  //   await axios.post('/api/stripe/session', cart)
+  //     .then(res => console.log('res', res.data))
+  //     .catch(err => console.log('err', err.response.data.msg))
     // setLoadMsg('Creating Order')
     // await axios.get('/api/stripe/validateCart', { params: {cartDetails:cartDetails, customer:customer }})
     //   .then(res => {
@@ -83,34 +93,32 @@ export default function PaymentForm({ size, customer, setLoadMsg, setPage, scrol
     //     query: { payment_intent: intent.id },
     //   })
     // }
-  }
+  // }
 
   return (
-    <Form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
-      <Accordion>
-        <Card>
-          <Accordion.Toggle as={Card.Header}>
-            Payment<CreditCard style={{marginLeft: '20px', marginBottom: '4px'}} size={28}/>
-          </Accordion.Toggle>
-          <Accordion.Collapse className="show">
-            <Card.Body className="pt-0">
-            <Form.Label>Card Number</Form.Label>
-            <Form.Group className="border group">
-              hi
-              {/* <CardNumberElement onChange={checkPay} /> */}
-            </Form.Group>
-              <OverlayTrigger trigger={['hover', 'focus']} overlay={popoverStripe} >
-                <Row>
-                  <div className="mx-auto d-block">
-                    <Image src="/image/poweredByStripe.jpg" className="rounded" width={140} height={40} alt="stripe" />
-                  </div>
-                </Row>
-              </OverlayTrigger>
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-        <Button type="submit">Stripe Checkout</Button>
-      </Accordion>
-    </Form>
+    <Accordion>
+      <Card>
+        <Accordion.Toggle as={Card.Header}>
+          Payment<CreditCard style={{marginLeft: '20px', marginBottom: '4px'}} size={28}/>
+        </Accordion.Toggle>
+        <Accordion.Collapse className="show">
+          <Card.Body className="pt-0">
+          <Form.Label>Card Number</Form.Label>
+          <Form.Group className="border group">
+            hi
+            {/* <CardNumberElement onChange={checkPay} /> */}
+          </Form.Group>
+            <OverlayTrigger trigger={['hover', 'focus']} overlay={popoverStripe} >
+              <Row>
+                {/* <div className="mx-auto d-block">
+                  <Image src="/image/poweredByStripe.jpg" className="rounded" width={140} height={40} alt="stripe" />
+                </div> */}
+              </Row>
+            </OverlayTrigger>
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
+      <Button onClick={checkout}>Stripe Checkout</Button>
+    </Accordion>
   )
 }

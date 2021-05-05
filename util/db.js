@@ -12,6 +12,7 @@ export async function connectDB() {
   )
 }
 
+// TODO: replace all usage of stringify for more security
 export function jparse(obj) {
   return JSON.parse(JSON.stringify(obj))
 }

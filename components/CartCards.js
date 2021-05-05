@@ -12,7 +12,7 @@ const QuanSelect = React.forwardRef(({ id, value, onSelect, quantity }, ref) => 
   </select>
 ))
 
-export default function CartCards({ simple, size }) {
+export default function CartCards({ simple }) {
   const { cartDetails: cart, removeItem, cartCount, setItemQuantity } = useShoppingCart()
   const [selects, setSelects] = useState()
 
@@ -25,7 +25,7 @@ export default function CartCards({ simple, size }) {
             value={cart[item].quantity}
             id={item} 
             ref={createRef()}
-            onSelect={(e) => setItemQuantity(item, e.target.value)} 
+            onSelect={(e) => setItemQuantity(item, Number(e.target.value))} 
           />
         )
       }))

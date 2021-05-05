@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useSession, getSession } from 'coda-auth/client'
+import { useSession, getSession, signIn } from 'coda-auth/client'
 import { Cart3, PencilFill, BoxSeam, Envelope, Receipt, HandIndexThumb, PlusCircle, Plus } from 'react-bootstrap-icons'
 import { useRouter } from 'next/router'
 import { useShoppingCart } from 'use-shopping-cart'
@@ -11,32 +11,30 @@ import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Modal from 'react-bootstrap/Modal'
 import { SHIPPING_COST, SHIPPING_EST } from '../../constants'
-// import PaymentForm from '../../components/PaymentForm'
 import useScreen from '../../constants/useScreen'
 import Shipping from '../../components/Form/Shipping'
 import Payment from '../../components/Form/Payment'
 import CartCards from '../../components/CartCards'
-import { Load, isLoad } from '../../components/Load'
+import { Load } from '../../components/Load'
 
 // Combined shipping and payment page to reduce the number of Stripe api reads for customer 
-export default function Combined({ customer }) {
+export default function Combined(props) {
   const { cartDetails: cart, totalPrice } = useShoppingCart()
   const total = '$ ' + ((totalPrice + (SHIPPING_COST * 100)) / 100).toFixed(2)
+  const [customer, setCustomer] = useState(props.customer)
+  const [page, setPage] = useState('shipping')
   const [session, loading] = useSession()
   const router = useRouter()
   const size = useScreen()
 
-  const [page, setPage] = useState('shipping')
+  if (session === null && !loading) signIn() 
 
-  console.log('page', page)
-  if (page === 'shipping') return <Ship customer={customer} size={size} router={router} setPage={setPage} total={total} />
+  if (page === 'shipping') return <Ship customer={customer} size={size} router={router} setPage={setPage} total={total} setCustomer={setCustomer} />
   if (page === 'payment') return <Pay customer={customer} size={size} router={router} setPage={setPage} total={total} cart={cart} />
-  return (
-    <h1>error</h1>
-  )
+  return <h1 className="display-4">Please Reload</h1>
 }
 
-function Ship({ customer, size, setPage, router, total }) {
+function Ship({ customer, size, setPage, router, total, setCustomer }) {
   const [loadMsg, setLoadMsg] = useState('')
   const scroll = () => { top.current && top.current.scrollIntoView() }
   const top = useRef(null)
@@ -68,7 +66,7 @@ function Ship({ customer, size, setPage, router, total }) {
       <Col className={`${size.includes('small') ? 'mx-3 p-0 mt-3' : 'border-left pl-5 mt-3'}`} md={6}>
         {loadMsg
           ? <Load msg={loadMsg} />
-          : <Shipping customer={customer} scroll={scroll} setLoadMsg={setLoadMsg} size={size} shipping={customer.shipping} setPage={setPage} />
+          : <Shipping customer={customer} scroll={scroll} setLoadMsg={setLoadMsg} size={size} shipping={customer.shipping} setPage={setPage} setCustomer={setCustomer} />
         }
       </Col>
     </Row>
@@ -110,7 +108,7 @@ function Pay({ customer, size, router, setPage, total, cart }) {
                   </InputGroup.Text>
                 </Card>
                 </>
-                : <Load />
+                : <Load msg="Address Not Found, Please Go Back and Re-enter Your Address" />
               }
             </Card.Body>
           </Card>
@@ -165,7 +163,7 @@ function Pay({ customer, size, router, setPage, total, cart }) {
       </Row>
 
       {/* Modal informing about test payment info */}
-      <Modal show={show} onHide={() => setShow(false)}>
+      {/* <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Welcome to the Test Environment!</Modal.Title>
         </Modal.Header>
@@ -177,7 +175,7 @@ function Pay({ customer, size, router, setPage, total, cart }) {
         <Modal.Footer>
           <p>This is just a test and no actual charges are made. Try making a test payment with the Stripe card info found above.</p>
         </Modal.Footer>
-      </Modal >
+      </Modal > */}
     </>
   )
 }

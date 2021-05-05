@@ -4,10 +4,16 @@ import BrowseNav from '../../components/BrowseNav'
 import { BagCheckFill } from 'react-bootstrap-icons'
 import Toast from '../../components/Toast'
 import Products from '../../components/Products'
-import { PRODUCTS_PER_PAGE } from '../../constants'
 import { useRouter } from 'next/router'
 
+// server
+import { PRODUCTS_PER_PAGE } from '../../constants'
+import { connectDB } from '../../util/db'
+import { Product } from '../../models'
+
 export default function BrowsePage({ products, totalPages, slug }) {
+  if (!products) return <h1 className="display-4 m-5">No Items for sale</h1>
+
   const [showSucc, setShowSucc] = useState(false)
   const [showMaxErr, setShowMaxErr] = useState(false)
   const [name, setName] = useState('')
@@ -56,6 +62,13 @@ export async function getStaticProps(context) {
     console.log('over 100 active products') // TODO: pagination
   } else {
     if (all) {
+
+      // add price and quantity from mongo
+      await connectDB()
+      const mongoProducts = await Product.find()
+      console.log(all.data.length, '&', mongoProducts.length)
+
+      // console.log('all', all)
       totalPages = Math.ceil(all.data.length / PRODUCTS_PER_PAGE) || 1
       // Splits products into small arrays of the max page size
       let i = 0, j, tempArr, chunk = PRODUCTS_PER_PAGE, splitArr = []
@@ -65,11 +78,13 @@ export async function getStaticProps(context) {
       }
       products = splitArr[slug - 1]
 
+      if (all.data.length === 0) return { props: {products: null, totalPages, slug } }
     } else {
       console.log('could not find products')
+      return { props: {products: null, totalPages, slug }, revalidate: 1 }
     }
   }
-  return { props: {products, totalPages, slug } }
+  return { props: {products, totalPages, slug }, revalidate: 1 }
 }
 
 export async function getStaticPaths() {
@@ -87,6 +102,7 @@ export async function getStaticPaths() {
         }))
       } else {
         console.log('no products found')
+        return { paths: [ { params: { slug: '1' } } ] }
       }
     }
   } else {

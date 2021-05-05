@@ -12,7 +12,7 @@ import axios from 'axios'
 import { CreditCard, ArrowRight, House, Building, Globe, GeoAlt, Signpost, PlusCircle, Envelope, HandIndexThumb, BoxSeam, PersonFill } from 'react-bootstrap-icons'
 import { useForm, Controller } from 'react-hook-form'
 
-export default function Shipping({ size, setLoadMsg, customer, scroll, shipping, setPage }) {
+export default function Shipping({ size, setLoadMsg, customer, scroll, shipping, setPage, setCustomer }) {
   const { handleSubmit, watch, errors, register, control, getValues, setValue, formState, trigger } = useForm()
   const [show, setShow] = useState(false)
   const [mis, setMis] = useState({})
@@ -25,7 +25,6 @@ export default function Shipping({ size, setLoadMsg, customer, scroll, shipping,
   
   useEffect(() => autoFillState(watch('postal_code')), [watch])
   useEffect(() => {
-    console.log('customer', customer)
     if (shipping?.postal_code) {
       autoFillState(shipping.postal_code)
       trigger()
@@ -45,7 +44,7 @@ export default function Shipping({ size, setLoadMsg, customer, scroll, shipping,
         state: data.state
       }
     }
-    console.log('shipping', shipping, ' | new', newShipping)
+    // console.log('shipping', shipping, ' | new', newShipping)
     if (shipping) {
       if (data.name.trim() !== shipping.name) {
         mismatch.name = data.name.trim()
@@ -91,11 +90,11 @@ export default function Shipping({ size, setLoadMsg, customer, scroll, shipping,
     }
     if (data) {
       await axios.put('/api/customer', data)
-        .then(res => console.log(res.data))
+        .then(res => setCustomer(res.data))
         .catch(err => console.log(err.response.data.msg))
+        .catch(console.log)
     }
     setPage('payment')
-    // router.push('/checkout/payment')
   }
 
   return <>
@@ -149,8 +148,7 @@ export default function Shipping({ size, setLoadMsg, customer, scroll, shipping,
                   required
                   rules={{
                     validate: () => {
-                      const val = getValues("line1")
-                      if (val.length < 4) return false
+                      if (getValues("name").length < 4) return false
                     }
                   }}
                 />

@@ -23,14 +23,14 @@ export default function Item({ product }) {
 
   function addToCart() {
     if (session) {
-      const item = { max: Number(product.metadata.quantity), name: product.name, description: product.description, sku: product.id, price: Number(product.metadata.price), currency: product.metadata.currency, image: product.images[0]}
+      const item = { name: product.name, description: product.description, sku: product._id, price: Number(product.price), currency: product.currency, image: product.images[0]}
       let total = Number(quantity.current.value)
       if (cartDetails[product.id]) { // already exists in cart
         total += cartDetails[product.id].quantity
       }
-      if (total > product.metadata.quantity) { // check if below max quantity
-        if (cartDetails[product.id].quantity < product.metadata.quantity) { // can add a fraction of desired amount
-          const overflow = total - product.metadata.quantity
+      if (total > product.quantity) { // check if below max quantity
+        if (cartDetails[product.id].quantity < product.quantity) { // can add a fraction of desired amount
+          const overflow = total - product.quantity
           const maxAdd = Math.abs(quantity.current.value - overflow)
           setOverflow(maxAdd)
           setShowErr(true)
