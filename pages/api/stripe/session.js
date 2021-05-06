@@ -172,7 +172,7 @@ const validateOld = (inventorySrc, cartDetails) => {
   for (const id in cartDetails) {
     // const product = cartDetails[itemId]
     const inventoryItem = inventorySrc.find(
-      (currentProduct) => currentProduct.sku === id || currentProduct.id === id
+      (currentProduct) => currentProduct.sku === id || currentProduct._id === id
     )
     if (inventoryItem === undefined) {
       throw new Error(

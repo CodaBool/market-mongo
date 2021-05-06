@@ -13,7 +13,7 @@ import { useShoppingCart } from 'use-shopping-cart'
 import { usdPretty, genQuanArr, MAX_DUP_ITEMS } from '../../constants'
 
 // server
-import { connectDB } from '../../util/db'
+import { connectDB, jparse } from '../../util/db'
 import { Product } from '../../models'
 
 export default function Item({ product }) {
@@ -29,29 +29,29 @@ export default function Item({ product }) {
   function addToCart() {
     if (!session) signIn()
     const selectedQuantity = Number(quantity.current.value)
-    const item = { name: product.name, description: product.description, id: product.id, price: Number(product.price), image: product.images[0]}
-    if (cartDetails[product.id]) { // in cart
-      if (cartDetails[product.id].quantity + selectedQuantity > MAX_DUP_ITEMS) { // BUST
-        const overflow = cartDetails[product.id].quantity + selectedQuantity - MAX_DUP_ITEMS
+    const item = { name: product.name, description: product.description, id: product._id, price: Number(product.price), image: product.images[0]}
+    if (cartDetails[product._id]) { // in cart
+      if (cartDetails[product._id].quantity + selectedQuantity > MAX_DUP_ITEMS) { // BUST
+        const overflow = cartDetails[product._id].quantity + selectedQuantity - MAX_DUP_ITEMS
         const maxAdd = Math.abs(selectedQuantity - overflow)
         // console.log('Fraction of', product.name, '| maxAdd', maxAdd)
         if (maxAdd) {
           setOverflow(maxAdd)
           setShowErr(true)
-          setItemQuantity(product.id, cartDetails[product.id].quantity + maxAdd)
+          setItemQuantity(product._id, cartDetails[product._id].quantity + maxAdd)
         } else {
           setShowMaxErr(true)
         }
       } else { // add all
-        // console.log('adding ALL of existing item', product.name, 'set quantity to', cartDetails[product.id].quantity + selectedQuantity)
-        setItemQuantity(product.id, cartDetails[product.id].quantity + selectedQuantity)
+        // console.log('adding ALL of existing item', product.name, 'set quantity to', cartDetails[product._id].quantity + selectedQuantity)
+        setItemQuantity(product._id, cartDetails[product._id].quantity + selectedQuantity)
         setShowSucc(true)
       }
     } else { // new
       // adding item with quantity not supported in latest use-shopping-cart
       // instead adding single item and then calling setItemQuantity to match quantity
       addItem(item)
-      setItemQuantity(product.id, selectedQuantity)
+      setItemQuantity(product._id, selectedQuantity)
       setShowSucc(true)
     }
   }
@@ -62,7 +62,7 @@ export default function Item({ product }) {
 
   return (
     <>
-      <Card key={product.id} className="p-3">
+      <Card key={product._id} className="p-3">
         <Row>
           <Col>
             <BoxImg imageUrl={product.images[0]} alt={product.name} />
@@ -123,36 +123,18 @@ export default function Item({ product }) {
 }
 
 export async function getStaticProps(context) {
-  const stripe = require('stripe')(process.env.STRIPE_SK)
   let { slug } = context.params
-  const product = await stripe.products.retrieve(slug)
-  // add price and quantity from mongo
   await connectDB()
-  const mongoProduct = await Product.findById(slug)
-  product.price = mongoProduct.price
-  product.quantity = mongoProduct.quantity
-  return { props: { product } }
+  const product = await Product.findById(slug)
+  return { props: { product: jparse(product) } }
 }
 
 export async function getStaticPaths() {
-  const stripe = require('stripe')(process.env.STRIPE_SK)
-  let paths = []
-  if (stripe) {
-    const products = await stripe.products.list({limit: 100, active: true}) // starting_after: pagination, uses id
-    if (products.has_more === true) {
-      console.log('over 100 active products, build pagination') // TODO: pagination
-    } else {
-      if (products) {
-        paths = products.data.map(product => ({
-          params: { slug: product.id },
-        }))
-      } else {
-        console.log('could not define products from stripe')
-      }
-    }
-  } else {
-    console.log('could not make instantiate stripe')
-  }
-  console.log('item/[slug] paths', paths)
+  await connectDB()
+  const products = await Product.find()
+  const paths = products.map(product => ({
+    params: { slug: product._id }
+  }))
+  console.log('/item/[slug]', paths)
   return { paths, fallback: false } // { fallback: false } means other routes should 404.
 }

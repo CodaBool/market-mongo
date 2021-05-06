@@ -34,8 +34,8 @@ export default function Products({ products, productClick }) {
   function addToCart(e, id) {
     e.stopPropagation()
     if (!session) signIn()
-    const product = products.find(product => product.id === id)
-    const item = { name: product.name, description: product.description, id: product.id, price: Number(product.price), image: product.images[0]}
+    const product = products.find(product => product._id === id)
+    const item = { name: product.name, description: product.description, id: product._id, price: Number(product.price), image: product.images[0]}
     const cartId = Object.keys(cart).find(cartId => cartId === id)
     if (cartId) {
       if (cart[cartId].quantity < MAX_DUP_ITEMS) { // increment
@@ -64,8 +64,8 @@ export default function Products({ products, productClick }) {
       </div>
       <Row>
         {products.map(product => (
-          <Col key={product.id} md={6}>
-            <Card className="m-5" style={{cursor: 'pointer'}} onClick={() => router.push(`/item/${product.id}`)}>
+          <Col key={product._id} md={6}>
+            <Card className="m-5" style={{cursor: 'pointer'}} onClick={() => router.push(`/item/${product._id}`)}>
               <BoxImg imageUrl={product.images[0]} alt={product.name} />
               <div className="p-3">
                 <h2>{product.name}</h2>
@@ -73,7 +73,7 @@ export default function Products({ products, productClick }) {
                 {usdPretty(product.price)}
                 <h4>~Shipping Placeholder~</h4>
               </div>
-              <Button variant="info" onClick={(e) => addToCart(e, product.id)}>Add to Cart</Button>
+              <Button variant="info" onClick={(e) => addToCart(e, product._id)}>Add to Cart</Button>
             </Card>
           </Col>
         ))}
