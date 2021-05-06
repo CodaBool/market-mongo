@@ -36,7 +36,7 @@ export default function Product() {
 
   const onUpdateSubmit = (data) => {
     console.log('submit with data =', data)
-    axios.put('/api/product', {_id: uid, data: {
+    axios.put('/api/admin/mongo/product', {_id: uid, data: {
       name: data['u-name'],
       active: data['u-active'],
       price: data['u-price'],
@@ -59,7 +59,7 @@ export default function Product() {
   }
 
   const onCreateSubmit = (data) => {
-    axios.post('/api/product', {
+    axios.post('/api/admin/mongo/product', {
       _id: data['c-id'],
       name: data['c-name'],
       active: data['c-active'],
@@ -86,7 +86,7 @@ export default function Product() {
   }
 
   function fillData() {
-    axios.get('/api/product', {params: {_id: uid}})
+    axios.get('/api/admin/mongo/product', {params: {_id: uid}})
       .then(res => {
         // console.log(res.data)
         setValue('u-name', `${res.data.name ? res.data.name : ''}`)
@@ -96,7 +96,7 @@ export default function Product() {
         setValue('u-description', `${res.data.description ? res.data.description : ''}`)
         setValue('u-image', `${res.data.images ? res.data.images[0].slice(31) : ''}`)
       })
-      .catch(err => console.error(err))
+      .catch(err => console.error(err.response.data.msg))
   }
 
   useEffect(() =>  {
@@ -109,9 +109,9 @@ export default function Product() {
   }, [])
 
   function getProducts() {
-    axios.get('/api/product')
+    axios.get('/api/admin/mongo/product')
       .then(res => setProducts(res.data))
-      .catch(err => console.error('get err', err.response.data.msg))
+      .catch(err => console.error(err.response.data.msg))
   }
 
   return (
@@ -322,7 +322,7 @@ export default function Product() {
           </Form>
         </Accordion.Collapse>
       </Card>
-      <div style={{position: 'fixed', top: '80px', right: '10px'}}>
+      <div className="toastHolder" style={{position: 'fixed', top: '80px', right: '10px'}}>
         <Toast show={show} setShow={setShow} title='Product Created' body={<>
           <p><strong>You Added {modalData.name}</strong></p>
           {modalData.quantity && <p>Quantity: {modalData.quantity}</p>}

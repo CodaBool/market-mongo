@@ -1,11 +1,13 @@
-import applyMiddleware from '../../util'
+import applyMiddleware from '../../../../util'
 import { getSession } from 'coda-auth/client'
-import { Product } from '../../models'
+import { Product } from '../../../../models'
+import { User } from '../../../../models'
 
 export default applyMiddleware(async (req, res) => {
   try {
     const session = await getSession({ req })
-    if (!session || session.user.email !== 'codabool@pm.me') throw 'Unauthorized'
+    const user = await User.findById(session.id)
+    if (!user.admin) throw 'Unauthorized'
     const { method, body, query } = req
     if (method === 'POST') {
       const product = await Product.create(body)
@@ -31,10 +33,12 @@ export default applyMiddleware(async (req, res) => {
       throw `Cannot use ${method} method for this route`
     }
   } catch (err) {
+    console.log('mongo', err, typeof err)
+
     if (typeof err === 'string') {
-      res.status(400).json({ msg: '/product: ' + err })
+      res.status(400).json({ msg: '/admin/mongo/product: ' + err })
     } else {
-      res.status(500).json({ msg: '/product: ' + (err.message || err)})
+      res.status(500).json({ msg: '/admin/mongo/product: ' + (err.message || err)})
     }
   }
 })

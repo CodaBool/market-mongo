@@ -5,10 +5,11 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import { X } from 'react-bootstrap-icons'
 import BoxImg from './UI/BoxImg'
+import { genQuanArr, MAX_DUP_ITEMS } from '../constants'
 
-const QuanSelect = React.forwardRef(({ id, value, onSelect, quantity }, ref) => (
+const QuanSelect = React.forwardRef(({ id, value, onSelect }, ref) => (
   <select className="form-control my-3" name={`sel-${id}`} id={id} value={value} ref={ref} onChange={onSelect}>
-    {Array.from({length: Number(quantity)}, (x, i) => i + 1).map((option, index) => <option key={index}>{option}</option>)}
+    {genQuanArr(MAX_DUP_ITEMS).map((option, index) => <option key={index}>{option}</option>)}
   </select>
 ))
 
@@ -21,7 +22,6 @@ export default function CartCards({ simple }) {
       setSelects(Object.keys(cart).map(item => {
         return (
           <QuanSelect
-            quantity={cart[item].max} // max quantity
             value={cart[item].quantity}
             id={item} 
             ref={createRef()}

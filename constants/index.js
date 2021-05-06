@@ -1,4 +1,5 @@
 export const PRODUCTS_PER_PAGE = 10
+export const MAX_DUP_ITEMS = 3
 export const SHIPPING_COST = 7.99
 export const SHIPPING_EST = '2-4 Business Days'
 export const CATEGORY = ['Apparel', 'Electronic', 'Home', 'Grocery', 'Health', 'Toys', 'Handmade', 'Sports', 'Outdoors']
@@ -10,7 +11,8 @@ export const USA_STATES = [
   'VT','VI','VA','WA','WV','WI','WY'
 ];
 
-export function usdPretty (price) {
+export function usdPretty(price) {
+  if (!price) return <p className="text-danger">Undefined Price</p>
   return (
     <h3 className="money">
       <span className="align-top" style={{lineHeight: '1.7em', fontSize: '0.6em'}}>$</span>
@@ -18,6 +20,10 @@ export function usdPretty (price) {
       <span className="d-inline align-top" style={{lineHeight: '1.6em', fontSize: '0.6em'}}>{String(price).slice(-2)}</span>
     </h3>
   )
+}
+export function genQuanArr(quantity) {
+  if (quantity > MAX_DUP_ITEMS) return Array.from({length: MAX_DUP_ITEMS}, (x, i) => i + 1)
+  return Array.from({length: quantity}, (x, i) => i + 1)
 }
 
 export function getState(zipString) { // Get State from Zip Code

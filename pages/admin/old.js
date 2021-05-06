@@ -44,7 +44,7 @@ export default function Index({ user }) {
       .catch(err => console.error(err.response.data.msg))
   }
   function getUsers() { // nothing in front end should be doing this operation
-    axios.get('/api/admin/getAllUsers')
+    axios.get('/api/admin/mongo/user')
       .then(res => setUsers(res.data))
       .catch(err => console.error(err.response.data.msg))
   }

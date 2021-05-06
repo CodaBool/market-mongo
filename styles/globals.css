@@ -14,7 +14,6 @@ main {
   margin: 0 15px 0 15px;
 }
 
-
 /* Form */
 .form-label {
   font-size: 1.3em;
@@ -131,6 +130,9 @@ main {
 }
 .box img, .box-small img {
   z-index: 1;
+}
+.toastHolder {
+  z-index: 2;
 }
 
 @keyframes shine {

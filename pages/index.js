@@ -17,6 +17,7 @@ export default function Index({ time }) {
     //   .catch(err => console.error(err.response.data.msg))
   }, [])
 
+
   function test() {
     axios.get('/api/test')
       .then(res => console.log(res.data))

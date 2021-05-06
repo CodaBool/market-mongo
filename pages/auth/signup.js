@@ -150,7 +150,7 @@ export default function Signup() {
           }
         </Row>
       </Form>
-      <div style={{ position: 'fixed', top: '120px', right: '20px' }}>
+      <div className="toastHolder" style={{ position: 'fixed', top: '120px', right: '20px' }}>
         <Toast
           show={show}
           setShow={setShow}

@@ -18,6 +18,9 @@ export default function app({ Component, pageProps }) {
   const providerValue = useMemo(() => ({cusContext, setCusContext}), [cusContext, setCusContext])
   if (!customerContext) console.log('ok')
 
+  // TODO: use-shopping-cart has moved to instead wanting the stripe public key string directly instead of the promise
+  // however, I get verbose console messages with this. Sticking to beta.5 and passing a promise until this is cleaned up
+
   return (
     <div className="site">
       <Provider session={pageProps.session}>
