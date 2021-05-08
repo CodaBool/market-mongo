@@ -1,5 +1,5 @@
 component: express
-name: ${env:REPO}-stripe-webhook
+name: ${env:REPO}-stripe-webhook # makes up the infra names using = this.name-hash-${thing}
 app: coda-market
 org: codabool
 stage: ${env:STAGE}
@@ -13,10 +13,7 @@ url:
   prod: https://www.codattest.com
 
 inputs:
-  src: ./
-  # domain: ${domain.${stage}}
-  # name: a-${env:what}
-  # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
+  src: ./pages/api/webhook
   env:
     STRIPE_SK: ${env:STRIPE_SK}
     MONGODB_URI: ${env:MONGODB_URI}
@@ -25,7 +22,6 @@ inputs:
     STRIPE_PK: ${env:STRIPE_PK}
     BUILD_ID: ${env:BUILD_ID}
     NODE_ENV: production # TODO: make conditional to dev if dev stage
-
-# name iam roles
-# name lambda
-# staging
+  # domain: ${domain.${stage}}
+  # name: a-${env:what}
+  # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
