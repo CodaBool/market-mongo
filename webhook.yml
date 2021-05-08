@@ -13,7 +13,7 @@ url:
   prod: https://www.codattest.com
 
 inputs:
-  src: ./pages/api/webhook
+  src: ./webhook # path to the source folder
   env:
     STRIPE_SK: ${env:STRIPE_SK}
     MONGODB_URI: ${env:MONGODB_URI}
@@ -25,3 +25,7 @@ inputs:
   # domain: ${domain.${stage}}
   # name: a-${env:what}
   # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
+
+# found in wild
+# functionConf:
+#     name: ${name}
