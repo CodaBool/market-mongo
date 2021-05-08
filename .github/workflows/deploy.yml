@@ -36,15 +36,15 @@ jobs:
         with:
           node-version: '12'
 
-      - name: Install dependencies
-        run: npm ci
+      # - name: Install dependencies
+      #   run: npm ci
 
       # # - name: Install webhook dependencies 
       # #   working-directory: ./webhook
       # #   run: npm ci
 
-      - name: Serverless AWS authentication
-        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # - name: Serverless AWS authentication
+      #   run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # - name: Download `.serverless` state from S3
       #   run: |
@@ -77,17 +77,9 @@ jobs:
       #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Deploy webhook to AWS
-        # working-directory: ./
+        working-directory: ./webhook
         run: |
-          mkdir webhook
-          mv webhook.yml webhook/serverless.yml
-          mv pages/api/stripe/webhook/index.js webhook/
-          mv node_modules/ webhook/
-          mv package.json webhook/
-          mv package-lock.json webhook/
-          ls
-          cd webhook
-          ls
+          npm i express
           npx serverless deploy
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
