@@ -80,8 +80,8 @@ jobs:
         # working-directory: ./
         run: |
           mkdir webhook
-          mv ./webhook.yml ./webhook/serverless.yml
-          mv ./pages/api/stripe/webhook/index.js ./webhook/index.js
+          mv webhook.yml webhook/serverless.yml
+          mv pages/api/stripe/webhook/index.js webhook/index.js
           mv node_modules/ webhook/
           cd webhook
           npx serverless deploy
