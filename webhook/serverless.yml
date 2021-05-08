@@ -14,7 +14,6 @@ url:
 
 inputs:
   src: ./
-  functionName: express-demo
   # domain: ${domain.${stage}}
   # name: a-${env:what}
   # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
