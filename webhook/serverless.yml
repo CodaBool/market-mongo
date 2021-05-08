@@ -1,5 +1,5 @@
 component: express
-name: stripe-webhook-${env.TEST_ME}-ue
+name: stripe-webhook-${env:TEST_ME}-ue
 app: coda-market
 org: codabool
 
@@ -16,3 +16,14 @@ inputs:
 # name lambda
 # staging
 # run on github action
+
+
+
+# IN THE WILD
+# stage: ${env:STAGE}
+
+
+# inputs:
+#   functionName: express-demo-${stage}
+#   env:
+#     NODE_ENV: production
