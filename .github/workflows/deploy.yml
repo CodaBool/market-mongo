@@ -81,7 +81,7 @@ jobs:
         run: |
           mkdir webhook
           mv webhook.yml webhook/serverless.yml
-          mv pages/api/stripe/webhook/webhook.js webhook/index.js
+          mv pages/api/stripe/webhook.js webhook/index.js
           cd webhook
           npm i express
           npx serverless deploy
