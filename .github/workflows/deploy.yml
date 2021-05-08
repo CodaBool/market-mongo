@@ -42,7 +42,7 @@ jobs:
           npm ci
 
       - name: Install webhook dependencies 
-        run: cd ./webhook && npm ci
+        run: cd ./webhook && npm i
 
       - name: Serverless AWS authentication
         run: |
