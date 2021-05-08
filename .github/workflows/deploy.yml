@@ -68,13 +68,13 @@ jobs:
           RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
           BUILD_ID: ${{ steps.extract.outputs.build }}
 
-      - name: serverless deploy
-        uses: serverless/github-action@master
-        with:
-          args: deploy
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # - name: serverless deploy
+      #   uses: serverless/github-action@master
+      #   with:
+      #     args: deploy
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Deploy webhook to AWS
         working-directory: ./webhook
