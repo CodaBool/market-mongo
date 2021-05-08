@@ -114,6 +114,10 @@ const productSchema = new Schema({
     type: String,
     default: null
   },
+  currency: {
+    type: String,
+    default: 'USD'
+  },
   images: {
     type: [String],
     default: []

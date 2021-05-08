@@ -1,0 +1,18 @@
+component: express
+name: stripe-webhook
+app: coda-market
+org: codabool
+
+stage: dev # default = dev
+
+inputs:
+  src: ./ # app dir
+  memory: 512
+  #name: a-${env.what}
+  # roleName: my-custom-role-name-${env.what} # custom AWS IAM Role name
+  # domain: api.serverless.com
+
+# name iam roles
+# name lambda
+# staging
+# run on github action

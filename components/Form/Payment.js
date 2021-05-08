@@ -11,10 +11,11 @@ import { CreditCard, BagCheckFill, PlusCircle, InfoCircle, HandIndexThumb } from
 // import { useRouter } from 'next/router'
 // import { useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcElement} from '@stripe/react-stripe-js'
 import { useForm } from 'react-hook-form'
+import { loadStripe } from '@stripe/stripe-js'
 import axios from 'axios'
 // import { SHIPPING_COST, getState } from '../constants'
-// import { useShoppingCart } from 'use-shopping-cart'
 import Image from 'next/image'
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK)
 
 const popover = (
   <Popover>
@@ -41,12 +42,27 @@ export default function PaymentForm({ size, customer, setLoadMsg, setPage, scrol
   // useEffect(() => setPrice(total), [])
   // useEffect(() => autoFillState(watch('zip')), [watch])
 
+
   async function checkout() {
     scroll()
+    let sessionId = null
+    const stripe = await stripePromise;
     await axios.post('/api/stripe/session', cart)
-      .then(res => console.log('res', res.data))
+      .then(res => {
+        console.log('res', res.data)
+        sessionId = res.data.id
+      })
       .catch(err => console.log('err', err.response.data.msg))
       .catch(console.log)
+    if (!sessionId) return
+    const result = await stripe.redirectToCheckout({sessionId});
+    console.log('done', result)
+    if (result.error) {
+      console.error(result.error)
+      // If `redirectToCheckout` fails due to a browser or network
+      // error, display the localized error message to your customer
+      // using `result.error.message`.
+    }
     // setLoadMsg('Finalizing Order')
     // router.push('/checkout/confirmed')
   }

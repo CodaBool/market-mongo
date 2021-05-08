@@ -46,7 +46,7 @@ export default function Signup() {
           })
           .catch(err => {
             console.log(err.response.data.msg)
-            if (err.response.data.msg === 'Email Taken') {
+            if (err.response.data.msg.includes('Email Taken')) {
               setShow(true)
             }
           })
@@ -158,7 +158,7 @@ export default function Signup() {
           error
           body={
             <h5 className="text-danger">
-              An account already exists with the Email Address
+              An account already exists with that Email Address
             </h5>
           }
         />

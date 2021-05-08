@@ -1,5 +1,7 @@
 stage: ${env.STAGE}
 name: ${env.REPO}
+# app: coda-market
+org: codabool
 
 domain:
   dev: ['dev', codattest.com]

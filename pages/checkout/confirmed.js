@@ -235,13 +235,41 @@
 //   }
 // */
 
+// REWRITE v2
+import { useRouter } from 'next/router'
 
-import React from 'react'
+// server
+// import { getAuthenticatedUser } from '../api/user'
+import { getSession } from 'coda-auth/client'
 
-export default function confirmed() {
+export default function confirmed({ session }) {
+  const router = useRouter()
+  console.log(router.query.id)
+  console.log('client', session)
   return (
-    <div>
-      Still working on this route
-    </div>
+    <>
+      <h1 className="display-3 my-4">
+        Order Complete
+      </h1>
+      <p>Amount: {session.amount_total}</p>
+      <p>Currency: {session.currency}</p>
+      <p>Mode: {session.mode}</p>
+      <p>Status: {session.payment_status}</p>
+      <p>Metadata: {Object.keys(session.metadata).map(el => `${el}: ${session.metadata[el]}`)}</p>
+      <p>Email: {session.customer_details.email}</p>
+    </>
   )
+}
+
+export async function getServerSideProps(context) {
+  const stripe = require('stripe')(process.env.STRIPE_SK)
+  console.log('serverside', context.query.id)
+  const session = await stripe.checkout.sessions.retrieve(context.query.id)
+  // const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent)
+  const jwt = await getSession(context)
+  if (!session || !jwt) return { props: {  } }
+  if (session.customer === jwt.customerId) {
+    return { props: { session } }
+  }
+  return { props: {  } }
 }

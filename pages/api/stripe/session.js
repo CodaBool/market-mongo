@@ -1,8 +1,9 @@
 const stripe = require('stripe')(process.env.STRIPE_SK)
 // const validateSKU = require('use-shopping-cart/utilities').validateCartItems // only checks that each sku exists 
 import { getSession } from 'coda-auth/client'
-import { Product } from '../../../models'
+import { Product, User } from '../../../models'
 import applyMiddleware from '../../../util'
+import { MAX_DUP_ITEMS } from '../../../constants'
 
 
 const inventory = [
@@ -33,48 +34,34 @@ export default applyMiddleware(async (req, res) => {
   try {
 
     // Authenticated users only
-    const session = await getSession({ req })
-    if (!session) throw 'Unauthorized'
+    const jwt = await getSession({ req })
+    if (!jwt) throw 'Unauthorized'
 
     const { method, body, query } = req
+    // console.log('in session with customer', session)
+    console.log('in session with customer', jwt.customerId)
     if (method === 'POST') {
-      // console.log('in api with cart', body)
       const products = await Product.find()
-      // const line_items = validate(inventory, body) // throws if sku cannot be found
-      // console.log('line_items', JSON.stringify(line_items, null, 2))
-      // console.log('line_items', formatLineItems(line_items, null, 2))
-
       const line_items = validate(products, body)
-      console.log('items =', line_items)
+      // const user = await User.findById(jwt.id)
+      console.log('user =', user)
 
-      /*  CUSTOM VALIDATION WITHOUT PRICE API
-        quantity: amount being purchased
-        price_data: {
-          currency: 'USD',
-          unit_amount: 1
-          product_data: {
-            name: product name,
-            images: []
-          }
-        }
-      */
-      /*  SIMPLIER
-        price: 'price_1InUzEAJvGrE9xG5IAYLtrZv',
-        quantity: 1
-      */
-      // const session = await stripe.checkout.sessions.create({
-      //   success_url: 'https://example.com/success',
-      //   cancel_url: 'https://example.com/cancel',
-      //   payment_method_types: ['card'],
-      //   line_items,
-      //   mode: 'payment',
-      // });
-
-      // return {
-      //   statusCode: 200,
-      //   body: JSON.stringify({ sessionId: session.id })
-      // }
-      res.status(200).json({msg: 'nice'})
+      const session = await stripe.checkout.sessions.create({
+        success_url: 'http://localhost:3000/checkout/confirmed?id={CHECKOUT_SESSION_ID}',
+        // success_url: 'https://example.com/success',
+        cancel_url: 'http://localhost:3000/checkout/cancelled?id={CHECKOUT_SESSION_ID}',
+        payment_method_types: ['card'],
+        line_items,
+        customer: jwt.customerId,
+        billing_address_collection: 'auto',
+        mode: 'payment',
+        // shipping_rates: 1,
+        shipping_address_collection: {
+          allowed_countries: ['US']
+        },
+      })
+      // console.log('server session', session)
+      res.status(200).json({id: session.id})
     } else if (method === 'GET') {
       throw 'bad route'
     } else if (method === 'PUT') {
@@ -97,6 +84,7 @@ export default applyMiddleware(async (req, res) => {
 function validate(source, cart) {
   const validatedItems = []
   
+  if (!cart) throw 'No products in cart'
   
   for (const id in cart) {
     // console.log(source)
@@ -105,11 +93,43 @@ function validate(source, cart) {
     // verify that all ids exist in source
     if (!item) throw `No product in source with id "${id}"`
     // verify that the local has the correct price
-    console.log('compare price', cart[id].price, 'vs', item.price)
+    // console.log('compare price', cart[id].price, 'vs', item.price)
     if (cart[id].price !== item.price) throw 'Price discrepency'
-    // verify that the local does not go over quanity
-    console.log('compare price', cart[id].quantity, 'vs', item.quantity)
+
+    // verify that the local does not go over store duplicate limit
+    // console.log('check if over max', cart[id].quantity, 'vs', MAX_DUP_ITEMS)
+    if (cart[id].quantity > MAX_DUP_ITEMS) throw 'Exceeding max per customer limit'
+    
+    // verify that the local does not go over store supply
+    // console.log('check if over supply', cart[id].quantity, 'vs', item.quantity)
     if (cart[id].quantity > item.quantity) throw 'Exceeding supply limit'
+    
+    // don't allow empty quantity
+    if (cart[id].quantity === 0) throw 'Empty quantity'
+    
+    // ALL GOOD
+    // console.log('YOUR GOOD to checkout with', id)
+    
+    // set proper form for checkout session
+
+    if (!item.images[0]) throw 'Improper market image'
+    // if (!item.description) throw 'Improper market description'
+    // if (!item.currency) throw 'Improper market currency'
+    const line = {
+      quantity: cart[id].quantity,
+      price_data: {
+        currency: item.currency || 'USD', // TODO: WARNING default should come from MONGO
+        unit_amount: item.price,
+        product_data: {
+          name: item.name,
+          description: item.description,
+          images: [item.images[0]]
+          // ...item.product_data
+        },
+        // ...item.price_data
+      }
+    }
+    validatedItems.push(line)
   }
 
   // for (const id in cartDetails) {
@@ -123,18 +143,18 @@ function validate(source, cart) {
   //     )
   //   }
 
-  //   const item = {
-  //     quantity: cartDetails[id].quantity,
-  //     price_data: {
-  //       currency: inventoryItem.currency,
-  //       unit_amount: inventoryItem.price,
-  //       product_data: {
-  //         name: inventoryItem.name,
-  //         ...inventoryItem.product_data
-  //       },
-  //       ...inventoryItem.price_data
-  //     }
-  //   }
+    // const item = {
+    //   quantity: cartDetails[id].quantity,
+    //   price_data: {
+    //     currency: inventoryItem.currency,
+    //     unit_amount: inventoryItem.price,
+    //     product_data: {
+    //       name: inventoryItem.name,
+    //       ...inventoryItem.product_data
+    //     },
+    //     ...inventoryItem.price_data
+    //   }
+    // }
 
   //   if (typeof cartDetails[id].product_data?.metadata === 'object') {
   //     item.price_data.product_data.metadata = {

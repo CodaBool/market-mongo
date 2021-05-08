@@ -31,6 +31,6 @@
     "react-paypal-button-v2": "^2.6.3",
     "stripe": "^8.145.0",
     "timeago.js": "^4.0.2",
-    "use-shopping-cart": "^3.0.0-beta.5"
+    "use-shopping-cart": "^2.4.3"
   }
 }
