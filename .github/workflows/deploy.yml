@@ -70,7 +70,8 @@ jobs:
       - name: Deploy webhook to AWS
         run: |
           pwd
-          cd ./webhook && npx serverless deploy # for verbose deploys
+          cd ./webhook
+          npx serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }} deploy
         # run: npx serverless > output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
 
       # - name: Upload `.serverless` state to S3
