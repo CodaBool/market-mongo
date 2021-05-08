@@ -1,5 +1,5 @@
 component: express
-name: ${env:REPO}-stripe-webhook # makes up the infra names using = this.name-hash-${thing}
+name: ${env:REPO}-stripe-webhook
 app: coda-market
 org: codabool
 stage: ${env:STAGE}
@@ -13,7 +13,7 @@ url:
   prod: https://www.codattest.com
 
 inputs:
-  src: ./ # path to the source folder
+  src: ./
   env:
     STRIPE_SK: ${env:STRIPE_SK}
     MONGODB_URI: ${env:MONGODB_URI}
