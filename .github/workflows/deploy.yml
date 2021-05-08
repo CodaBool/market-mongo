@@ -49,7 +49,7 @@ jobs:
             aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
           fi
           
-      - name: Deploy to AWS
+      - name: Deploy app to AWS
         # run: npx serverless # for verbose deploys
         run: npx serverless > output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
         env:
@@ -68,11 +68,6 @@ jobs:
         working-directory: ./webhook
         run: |
           npm ci
-
-          # verbose
-          npx serverless 
-          
-          # hidden
           npx serverless deploy > output
           sed '/› Deploying\|aNA/d' output
         env:
