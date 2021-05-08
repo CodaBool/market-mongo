@@ -82,7 +82,7 @@ jobs:
           mkdir webhook
           mv ./webhook.yml ./webhook/serverless.yml
           mv ./pages/api/stripe/webhook/index.js ./webhook/index.js
-          mv -r node_modules ./webhook
+          mv node_modules/ webhook/
           cd webhook
           npx serverless deploy
         env:
