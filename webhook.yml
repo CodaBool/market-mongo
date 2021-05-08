@@ -13,7 +13,7 @@ url:
   prod: https://www.codattest.com
 
 inputs:
-  src: ./webhook # path to the source folder
+  src: ./ # path to the source folder
   env:
     STRIPE_SK: ${env:STRIPE_SK}
     MONGODB_URI: ${env:MONGODB_URI}

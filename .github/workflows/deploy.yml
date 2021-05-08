@@ -36,8 +36,8 @@ jobs:
         with:
           node-version: '12'
 
-      # - name: Install dependencies
-      #   run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
       # # - name: Install webhook dependencies 
       # #   working-directory: ./webhook
@@ -77,8 +77,12 @@ jobs:
       #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Deploy webhook to AWS
-        working-directory: ./webhook
+        # working-directory: ./
         run: |
+          mkdir webhook
+          mv webhook.yml webhook/serverless.yml
+          mv pages/api/stripe/webhook/webhook.js webhook/index.js
+          cd webhook
           npm i express
           npx serverless deploy
         env:
