@@ -47,4 +47,5 @@ Runtime Environment Variables Issues
 
 
 # Developer Notes
-- combine payment and shipping page
+- look into paypal integration
+- setup webhook file
