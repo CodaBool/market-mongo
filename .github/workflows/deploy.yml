@@ -40,10 +40,10 @@ jobs:
       #   run: npm ci
 
       - name: Install webhook dependencies 
-        run: cd ./webhook && npm ci
+        run: pwd && cd ./webhook && pwd && npm ci
 
-      - name: Serverless AWS authentication
-        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # - name: Serverless AWS authentication
+      #   run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # - name: Download `.serverless` state from S3
       #   run: |
@@ -71,6 +71,7 @@ jobs:
         run: |
           pwd
           cd ./webhook
+          pwd
           npx serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }} deploy
         # run: npx serverless > output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
 
