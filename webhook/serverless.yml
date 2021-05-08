@@ -1,29 +1,32 @@
 component: express
-name: stripe-webhook-${env:TEST_ME}-ue
+name: ${env:REPO}-stripe-webhook
 app: coda-market
 org: codabool
+stage: ${env:STAGE}
 
-stage: dev # default = dev
+domain:
+  dev: ['dev', codattest.com]
+  prod: codattest.com
+
+url:
+  dev: https://dev.codattest.com 
+  prod: https://www.codattest.com
 
 inputs:
-  src: ./ # app dir
-  memory: 512
-  #name: a-${env.what}
-  # roleName: my-custom-role-name-${env.what} # custom AWS IAM Role name
-  # domain: api.serverless.com
+  src: ./
+  functionName: express-demo
+  # domain: ${domain.${stage}}
+  # name: a-${env:what}
+  # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
+  env:
+    STRIPE_SK: ${env:STRIPE_SK}
+    MONGODB_URI: ${env:MONGODB_URI}
+    NEXT_PUBLIC_NEXTAUTH_URL: ${url.${stage}}
+    STAGE: ${stage}
+    STRIPE_PK: ${env:STRIPE_PK}
+    BUILD_ID: ${env:BUILD_ID}
+    NODE_ENV: production # TODO: make conditional to dev if dev stage
 
 # name iam roles
 # name lambda
 # staging
-# run on github action
-
-
-
-# IN THE WILD
-# stage: ${env:STAGE}
-
-
-# inputs:
-#   functionName: express-demo-${stage}
-#   env:
-#     NODE_ENV: production

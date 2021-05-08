@@ -81,7 +81,12 @@ jobs:
         run: npx serverless deploy
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-          TEST_ME: someVal
+          BUILD_ID: ${{ steps.extract.outputs.build }}
+          STAGE: ${{ steps.extract.outputs.stage }}
+          REPO: ${{ steps.extract.outputs.repo }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
 
       # - name: Upload `.serverless` state to S3
       #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
