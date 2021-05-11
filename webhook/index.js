@@ -14,7 +14,7 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
 
     if (process.env.NODE_ENV === 'production') {
       const allowedIPs = process.env.ALLOW_LIST.split(',')
-      console.log('allowed ips', allowed)
+      console.log('allowed ips', allowedIPs)
       console.log('ip from', req.socket.remoteAddress)
       console.log('is this ip allowed', allowedIPs.includes(req.socket.remoteAddress))
       if (allowedIPs.includes(req.socket.remoteAddress)) throw `Unauthorized IP ${req.socket.remoteAddress}`
