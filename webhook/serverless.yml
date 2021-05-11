@@ -5,7 +5,7 @@ org: codabool
 
 inputs:
   src: ./
-  domain: ${env.WEBHOOK_DOMAIN}
+  domain: ${env:WEBHOOK_DOMAIN}
   env:
     STRIPE_SK: ${env:STRIPE_SK}
     MONGODB_URI: ${env:MONGODB_URI}
