@@ -2,7 +2,6 @@ component: express
 name: ${env:REPO}-webhook
 app: coda-market
 org: codabool
-stage: ${env:STAGE}
 
 dom:
   dev: devhook.codattest.com
