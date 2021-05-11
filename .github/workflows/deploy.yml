@@ -78,8 +78,6 @@ jobs:
               - 'webhook/**'
 
       - name: Deploy webhook to AWS
-      # TODO: would be nice if there was a [hook] github message check to force deploy
-        # if: steps.webhookChange.outputs.src == 'true' 
         if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
         working-directory: ./webhook
         run: |
