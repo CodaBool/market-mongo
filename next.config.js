@@ -33,7 +33,7 @@ const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' *.stripe.com *.bootstrapcdn.com *.jquery.com * js.delivr.net;
   child-src *.stripe.com;
-  frame-src *.stripe.com;
+  frame-src *.stripe.com *.google.com;
   script-src-elem 'self' 'unsafe-eval' 'unsafe-inline';
   img-src * blob: data:;
   connect-src *;
@@ -69,10 +69,10 @@ const securityHeaders = [
     value: 'max-age=31536000; includeSubDomains; preload',
   },
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy
-  // {
-  //   key: 'Permissions-Policy',
-  //   value: 'fullscreen=(), sync-xhr(), web-share()', // previously added payment=(self),push(slef),notifications(slef),autoplay(slef),xr(slef)
-  // },
+  {
+    key: 'Permissions-Policy',
+    value: 'fullscreen=(), sync-xhr(), web-share()', // previously had payment=(self),push(slef),notifications(slef),autoplay(slef),xr(slef)
+  },
   {
     key: 'Content-Security-Policy',
     value: ContentSecurityPolicy.replace(/\n/g, ''),
@@ -122,8 +122,8 @@ module.exports = {
       }
     ]
   },
-  // i18n: {
-  //   locales: ['en-US'],
-  //   defaultLocale: 'en-US',
-  // },
+  i18n: {
+    locales: ['en-US'],
+    defaultLocale: 'en-US',
+  },
 };
