@@ -4,7 +4,7 @@ app: coda-market
 org: codabool
 stage: ${env:STAGE}
 
-domain:
+dom:
   dev: devhook.codattest.com
   prod: prodhook.codattest.com
 
@@ -26,7 +26,7 @@ inputs:
     STRIPE_PK: ${env:STRIPE_PK}
     BUILD_ID: ${env:BUILD_ID}
     NODE_ENV: ${node:${stage}}
-  domain: ${domain:${stage}}
+  domain: ${dom.${stage}}
   # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
 
 # found in wild
