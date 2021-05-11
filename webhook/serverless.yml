@@ -12,7 +12,7 @@ inputs:
     STRIPE_PK: ${env:STRIPE_PK}
     MONGODB_URI: ${env:MONGODB_URI}
     BUILD_ID: ${env:BUILD_ID}
-    NODE_ENV: ${env:NODE_ENV}
+    NODE_ENV: 'production'
   # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
 
 # found in wild

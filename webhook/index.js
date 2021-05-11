@@ -9,10 +9,8 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
 
     console.log('origin', req.get('host'))
     console.log('ip', req.socket.remoteAddress)
+    console.log('NODE_ENV', process.env.NODE_ENV)
     
-    
-    console.log('event values | body =', body, ' | headers =', headers, '| STRIPE_WH =', process.env.STRIPE_WH)
-    // let type = null, data = null, event = null
     const event = stripe.webhooks.constructEvent(
       body,
       headers['stripe-signature'],
@@ -49,8 +47,10 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
   }
 })
 
-app.listen(3001, () =>
-  console.log(`---> http://localhost:${3001}`)
-)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(3001, () =>
+    console.log(`---> http://localhost:${3001}`)
+  )
+}
 
 module.exports = app
