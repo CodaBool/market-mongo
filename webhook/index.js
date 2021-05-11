@@ -7,17 +7,11 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
   try {
     const { method, body, query, headers } = req
 
-    console.log('origin', req.get('host'))
-    console.log('ip', req.socket.remoteAddress)
-    console.log('NODE_ENV', process.env.NODE_ENV)
-
-
+    // Allow only stripe IPs
     if (process.env.NODE_ENV === 'production') {
       const allowedIPs = process.env.ALLOW_LIST.split(',')
-      console.log('allowed ips', allowedIPs)
-      console.log('ip from', req.socket.remoteAddress)
-      console.log('is this ip allowed', allowedIPs.includes(req.socket.remoteAddress))
       if (!allowedIPs.includes(req.socket.remoteAddress)) throw `Unauthorized IP ${req.socket.remoteAddress}`
+      if (req.get('host').slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
     }
     
     const event = stripe.webhooks.constructEvent(
