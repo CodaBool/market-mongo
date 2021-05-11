@@ -117,7 +117,24 @@ jobs:
 
       - name: PRINT STUFF
         run: |
-          echo "change that is not webhook"
+          echo "files "${FILES}
+          echo "count "${COUNT}
+        env:
+          FILES: ${{ steps.testChange.outputs.src_files }}
+          COUNT: ${{ steps.testChange.outputs.src_count }}
+
+      - name: conditional TRUE
+        if: "steps.testChange.outputs.src == 'true'"
+        run: |
+          echo "files "${FILES}
+          echo "count "${COUNT}
+        env:
+          FILES: ${{ steps.testChange.outputs.src_files }}
+          COUNT: ${{ steps.testChange.outputs.src_count }}
+
+      - name: conditional FALSE
+        if: "steps.testChange.outputs.src == 'false'"
+        run: |
           echo "files "${FILES}
           echo "count "${COUNT}
         env:
