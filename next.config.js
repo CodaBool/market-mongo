@@ -29,18 +29,18 @@
 //   style-src * 'unsafe-inline';
 // `
 // ATTEMPT 3
-// const ContentSecurityPolicy = `
-//   default-src 'self';
-//   script-src 'self' 'unsafe-eval' 'unsafe-inline' *.stripe.com *.bootstrapcdn.com *.jquery.com * js.delivr.net;
-//   child-src *.stripe.com;
-//   frame-src *.stripe.com;
-//   script-src-elem 'self' 'unsafe-eval' 'unsafe-inline';
-//   img-src * blob: data:;
-//   connect-src *;
-//   font-src 'self';
-//   media-src 'none';
-//   style-src 'self' * 'unsafe-inline';
-// `
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.stripe.com *.bootstrapcdn.com *.jquery.com * js.delivr.net;
+  child-src *.stripe.com;
+  frame-src *.stripe.com;
+  script-src-elem 'self' 'unsafe-eval' 'unsafe-inline';
+  img-src * blob: data:;
+  connect-src *;
+  font-src 'self';
+  media-src 'none';
+  style-src 'self' * 'unsafe-inline';
+`
 
 const securityHeaders = [
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
@@ -73,13 +73,27 @@ const securityHeaders = [
   //   key: 'Permissions-Policy',
   //   value: 'fullscreen=(), sync-xhr(), web-share()', // previously added payment=(self),push(slef),notifications(slef),autoplay(slef),xr(slef)
   // },
-  // {
-  //   key: 'Content-Security-Policy',
-  //   value: ContentSecurityPolicy.replace(/\n/g, ''),
-  // }
+  {
+    key: 'Content-Security-Policy',
+    value: ContentSecurityPolicy.replace(/\n/g, ''),
+  }
 ];
 
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+
 module.exports = {
+  // webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+  //   if (true) {
+  //    config.plugins.push(
+  //      new BundleAnalyzerPlugin({
+  //        analyzerMode: 'server',
+  //        analyzerPort: isServer ? 8888 : 8889,
+  //        openAnalyzer: true,
+  //      })
+  //    )
+  //   }
+  //   return config
+  // },
   target: 'serverless',
   env: {
     NEXT_PUBLIC_NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
@@ -96,18 +110,18 @@ module.exports = {
   images: {
     domains: ['files.stripe.com', 'dev.codattest.com'],
   },
-  // async headers() {
-  //   return [
-  //     {
-  //       source: '/',
-  //       headers: securityHeaders
-  //     },
-  //     {
-  //       source: '/:path*',
-  //       headers: securityHeaders
-  //     }
-  //   ]
-  // },
+  async headers() {
+    return [
+      {
+        source: '/',
+        headers: securityHeaders
+      },
+      {
+        source: '/:path*',
+        headers: securityHeaders
+      }
+    ]
+  },
   // i18n: {
   //   locales: ['en-US'],
   //   defaultLocale: 'en-US',

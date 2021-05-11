@@ -25,7 +25,7 @@ jobs:
         env:
           SHA: ${{ toJSON(github.sha) }}
           RUN_NUMBER: ${{ toJSON(github.run_number) }}
-          
+
       - uses: dorny/paths-filter@v2
         id: appChange
         with:
@@ -44,6 +44,7 @@ jobs:
               - 'serverless.yml'
 
       - name: Configure AWS Credentials
+        if: "steps.appChange.outputs.src == 'true' && ! contains(github.event.commits[0].message, '[no app]')"
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -131,21 +132,3 @@ jobs:
           WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
           FILES: ${{ steps.testChange.outputs.src_files }}
           COUNT: ${{ steps.testChange.outputs.src_count }}
-
-      - name: list file change
-        if: "steps.appChange.outputs.src == 'true'"
-        run: |
-          echo "files "${FILES}
-          echo "count "${COUNT}
-        env:
-          FILES: ${{ steps.appChange.outputs.src_files }}
-          COUNT: ${{ steps.appChange.outputs.src_count }}
-
-      - name: list file change ADVANCED
-        if: "steps.appChange.outputs.src == 'true' && ! contains(github.event.commits[0].message, '[no app]')"
-        run: |
-          echo "files "${FILES}
-          echo "count "${COUNT}
-        env:
-          FILES: ${{ steps.appChange.outputs.src_files }}
-          COUNT: ${{ steps.appChange.outputs.src_count }}

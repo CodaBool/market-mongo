@@ -183,6 +183,7 @@ function Pay({ customer, size, router, setPage, total, cart }) {
 export async function getServerSideProps(context) {
   const stripe = require('stripe')(process.env.STRIPE_SK)
   const session = await getSession(context)
+  if (!session?.customerId) return { props: {  } } 
   const customer = await stripe.customers.retrieve(session.customerId)
   return { props: { customer } }
 }

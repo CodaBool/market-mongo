@@ -47,9 +47,9 @@ export default applyMiddleware(async (req, res) => {
       // console.log('user =', user)
 
       const session = await stripe.checkout.sessions.create({
-        success_url: 'http://localhost:3000/checkout/confirmed?id={CHECKOUT_SESSION_ID}',
+        success_url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/checkout/confirmed?id={CHECKOUT_SESSION_ID}`,
         // success_url: 'https://example.com/success',
-        cancel_url: 'http://localhost:3000/checkout/cancelled?id={CHECKOUT_SESSION_ID}',
+        cancel_url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/checkout/cancelled?id={CHECKOUT_SESSION_ID}`,
         payment_method_types: ['card'],
         line_items,
         customer: jwt.customerId,
