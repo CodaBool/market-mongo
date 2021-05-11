@@ -91,6 +91,7 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: webhookChange
         with:
+          list-files: 'shell'
           filters: |
             src:
               - 'webhook/**'
@@ -98,6 +99,7 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: appChange
         with:
+          list-files: 'shell'
           filters: |
             src:
               - '.github/**'
