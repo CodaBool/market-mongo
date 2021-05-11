@@ -13,7 +13,7 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
     const event = stripe.webhooks.constructEvent(
       body,
       headers['stripe-signature'],
-      process.env.STRIPE_WH
+      process.env.STRIPE_WH//
     )
     const { type } = event 
     console.log('✅ Success:', event.id, '| Type:', event.type)
