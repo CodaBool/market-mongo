@@ -40,19 +40,24 @@ jobs:
       - name: Get Stripe Allow List
         id: allow 
         run: |
-          npm install --global jq-cli-wrapper
-          jq --version
-          curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")'
-          IPs=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
-          echo "##[set-output name=IPs;]${IPs}"
+          sudo apt-get install jq
+          ips_webhooks=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
+          ips_api=$(curl https://stripe.com/files/ips/ips_api.json | jq '.API | join(",")')
+          echo "Allowed webhook ips = "${ips_webhooks}
+          echo "Allowed api ips = "${ips_api}
+          echo "##[set-output name=ips_webhooks;]${ips_webhooks}"
+          echo "##[set-output name=ips_api;]${ips_api}"
 
       - name: Serverless AWS authentication
         run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: print allow list
-        run: echo ${ALLOW_LIST}
+        run: |
+          echo "Allowed webhook ips = "${ALLOW_WEBHOOK_IPS}
+          echo "Allowed api ips = "${ALLOW_API_IPS}
         env:
-          ALLOW_LIST: ${{ steps.allow.outputs.IPs }}
+          ALLOW_WEBHOOK_IPS: ${{ steps.allow.outputs.ips_webhooks }}
+          ALLOW_API_IPS: ${{ steps.allow.outputs.ips_api }}
       # - name: Install dependencies
       #   run: npm ci
 
