@@ -25,6 +25,26 @@ jobs:
           SHA: ${{ toJSON(github.sha) }}
           RUN_NUMBER: ${{ toJSON(github.run_number) }}
 
+      # - name: check modified files
+      #   id: check
+      #   run: |
+      #     echo "=============== list modified files ==============="
+      #     git diff --name-only HEAD^ HEAD
+          
+      #     echo "========== check paths of modified files =========="
+      #     git diff --name-only HEAD^ HEAD > files.txt
+      #     while IFS= read -r file
+      #     do
+      #       echo $file
+      #       if [[ $file != webhook/* ]]; then
+      #         echo "This modified file is not under the 'webhook' folder."
+      #         echo "::set-output name=run_hook::false"
+      #         break
+      #       else
+      #         echo "::set-output name=run_hook::true"
+      #       fi
+      #     done < files.txt
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:

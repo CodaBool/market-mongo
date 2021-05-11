@@ -1,0 +1,20 @@
+name: next-market
+on:
+  push:
+    branches: [dev, prod]
+jobs:
+  additional:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Extract Pipline Vars
+        run: |
+          repo=${GITHUB_REPOSITORY#CodaBool/}
+          echo "##[set-output name=repo;]${repo,,}" 
+          echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
+          build=$(echo "${SHA:0:7}.${RUN_NUMBER}"|tr -d '"') # removes an annoying double quote
+          echo "##[set-output name=build;]${build}"
+        id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
+        env:
+          SHA: ${{ toJSON(github.sha) }}
+          RUN_NUMBER: ${{ toJSON(github.run_number) }}
