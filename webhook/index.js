@@ -37,6 +37,7 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
 
     res.status(200).json({msg: 'hi'})
   } catch (err) {
+    console.error(err)
     if (typeof err === 'string') {
       res.status(400).json({ msg: 'webhook ❌ ' + err })
     } else {
