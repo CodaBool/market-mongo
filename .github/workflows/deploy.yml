@@ -115,8 +115,7 @@ jobs:
       #     ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
       #     WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
 
-      - name: Deploy webhook to AWS
-        if: "steps.testChange.outputs.src == 'true'"
+      - name: PRINT STUFF
         run: |
           echo "change that is not webhook"
           echo "files "${FILES}
