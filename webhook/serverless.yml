@@ -8,8 +8,9 @@ inputs:
   domain: ${env:WEBHOOK_DOMAIN}
   env:
     STRIPE_SK: ${env:STRIPE_SK}
-    MONGODB_URI: ${env:MONGODB_URI}
+    STRIPE_WH: ${env:STRIPE_WH}
     STRIPE_PK: ${env:STRIPE_PK}
+    MONGODB_URI: ${env:MONGODB_URI}
     BUILD_ID: ${env:BUILD_ID}
     NODE_ENV: ${env:NODE_ENV}
   # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name

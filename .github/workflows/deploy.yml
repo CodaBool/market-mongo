@@ -89,5 +89,6 @@ jobs:
           REPO: ${{ steps.extract.outputs.repo }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          STRIPE_WH: ${{ secrets.STRIPE_WH }}
           NODE_ENV: ${{ steps.extract.outputs.stage == 'prod' && 'production' || 'development' }}
           WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
