@@ -13,6 +13,7 @@ inputs:
     MONGODB_URI: ${env:MONGODB_URI}
     BUILD_ID: ${env:BUILD_ID}
     NODE_ENV: 'production'
+    ALLOW_LIST: ${env:ALLOW_LIST}
   # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
 
 # found in wild

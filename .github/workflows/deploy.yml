@@ -40,6 +40,7 @@ jobs:
       - name: Get Stripe Allow List
         id: allow # use ${{ steps.allow.outputs.ips_webhooks }} or ${{ steps.allow.outputs.ips_api }} for stripe allowlist
         run: |
+          jq --version
           sudo apt-get install jq
           ips_webhooks=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
           ips_api=$(curl https://stripe.com/files/ips/ips_api.json | jq '.API | join(",")')
