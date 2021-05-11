@@ -79,6 +79,8 @@ jobs:
           STRIPE_SK: ${{ secrets.STRIPE_SK }}
           STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
           SERVERLESS_STAGE: ${{ steps.extract.outputs.stage }}
+          NODE_ENV: ${{ steps.extract.outputs.stage == 'prod' && 'production' || 'development' }}
+          WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
 
       # - name: Upload `.serverless` state to S3
       #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
