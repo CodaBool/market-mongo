@@ -13,11 +13,10 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
 
 
     if (process.env.NODE_ENV === 'production') {
-      const allowedIPs = await fetch('https://stripe.com/files/ips/ips_webhooks.json')
-      // allowlist stripe ip https://stripe.com/docs/ips
-      app.listen(3001, () =>
-        console.log(`---> http://localhost:${3001}`)
-      )
+      const allowed = process.env.ALLOW_LIST.split(',')
+      console.log('allowed ips', allowed)
+      console.log('ip from', req.socket.remoteAddress)
+      console.log('is this ip allowed', allowed.includes(req.socket.remoteAddress))
     }
     
     const event = stripe.webhooks.constructEvent(

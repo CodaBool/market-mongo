@@ -38,7 +38,7 @@ jobs:
           node-version: '12'
 
       - name: Get Stripe Allow List
-        id: allow 
+        id: allow # use ${{ steps.allow.outputs.ips_webhooks }} or ${{ steps.allow.outputs.ips_api }} for stripe allowlist
         run: |
           sudo apt-get install jq
           ips_webhooks=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
@@ -51,13 +51,6 @@ jobs:
       - name: Serverless AWS authentication
         run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: print allow list
-        run: |
-          echo "Allowed webhook ips = "${ALLOW_WEBHOOK_IPS}
-          echo "Allowed api ips = "${ALLOW_API_IPS}
-        env:
-          ALLOW_WEBHOOK_IPS: ${{ steps.allow.outputs.ips_webhooks }}
-          ALLOW_API_IPS: ${{ steps.allow.outputs.ips_api }}
       # - name: Install dependencies
       #   run: npm ci
 
@@ -89,24 +82,25 @@ jobs:
 
       # ==== WEBHOOK ====
 
-      # - uses: dorny/paths-filter@v2
-      #   id: webhookChange
-      #   with:
-      #     filters: |
-      #       src:
-      #         - 'webhook/**'
+      - uses: dorny/paths-filter@v2
+        id: webhookChange
+        with:
+          filters: |
+            src:
+              - 'webhook/**'
 
-      # - name: Deploy webhook to AWS
-      #   if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
-      #   working-directory: ./webhook
-      #   run: |
-      #     npm ci
-      #     npx serverless deploy
-      #   env:
-      #     SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-      #     BUILD_ID: ${{ steps.extract.outputs.build }}
-      #     REPO: ${{ steps.extract.outputs.repo }}
-      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
-      #     STRIPE_WH: ${{ secrets.STRIPE_WH }}
-      #     WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
+      - name: Deploy webhook to AWS
+        if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
+        working-directory: ./webhook
+        run: |
+          npm ci
+          npx serverless deploy
+        env:
+          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+          BUILD_ID: ${{ steps.extract.outputs.build }}
+          REPO: ${{ steps.extract.outputs.repo }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          STRIPE_WH: ${{ secrets.STRIPE_WH }}
+          ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
+          WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
