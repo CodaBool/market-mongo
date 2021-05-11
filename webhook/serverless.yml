@@ -1,5 +1,5 @@
 component: express
-name: ${env:REPO}-webhook
+name: ${env:REPO}-webhook-new
 app: coda-market
 org: codabool
 
