@@ -17,7 +17,7 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
       console.log('allowed ips', allowedIPs)
       console.log('ip from', req.socket.remoteAddress)
       console.log('is this ip allowed', allowedIPs.includes(req.socket.remoteAddress))
-      if (allowedIPs.includes(req.socket.remoteAddress)) throw `Unauthorized IP ${req.socket.remoteAddress}`
+      if (!allowedIPs.includes(req.socket.remoteAddress)) throw `Unauthorized IP ${req.socket.remoteAddress}`
     }
     
     const event = stripe.webhooks.constructEvent(
