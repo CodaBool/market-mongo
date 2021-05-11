@@ -9,6 +9,9 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
 
     console.log('origin', req.get('host'))
     console.log('ip', req.socket.remoteAddress)
+    
+    
+    console.log('event values | body =', body, ' | headers =', headers, '| STRIPE_WH =', process.env.STRIPE_WH)
     // let type = null, data = null, event = null
     const event = stripe.webhooks.constructEvent(
       body,
