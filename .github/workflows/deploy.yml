@@ -3,7 +3,7 @@ on:
   push:
     branches: [dev, prod]
 jobs:
-  deploy app:
+  deploy:
     if: "! contains(github.event.commits[0].message, '[no ci]')"
     runs-on: ubuntu-latest
     steps:
