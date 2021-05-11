@@ -9,7 +9,7 @@ export const USA_STATES = [
   'MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND',
   'MP','OH','OK','OR','PW','PA','PR','RI','SC','SD','TN','TX','UT',
   'VT','VI','VA','WA','WV','WI','WY'
-];
+]
 
 export function usdPretty(price) {
   if (!price) return <p className="text-danger">Undefined Price</p>
