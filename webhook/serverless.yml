@@ -1,16 +1,20 @@
 component: express
-name: ${env:REPO}-stripe-webhook
+name: ${env:REPO}-webhook
 app: coda-market
 org: codabool
 stage: ${env:STAGE}
 
 domain:
-  dev: ['dev', codattest.com]
-  prod: codattest.com
+  dev: devhook.codattest.com
+  prod: prodhook.codattest.com
 
 url:
   dev: https://dev.codattest.com 
   prod: https://www.codattest.com
+
+node:
+  dev: development 
+  prod: production
 
 inputs:
   src: ./
@@ -21,9 +25,8 @@ inputs:
     STAGE: ${stage}
     STRIPE_PK: ${env:STRIPE_PK}
     BUILD_ID: ${env:BUILD_ID}
-    NODE_ENV: production # TODO: make conditional to dev if dev stage
-  # domain: ${domain.${stage}}
-  # name: a-${env:what}
+    NODE_ENV: ${node.${stage}}
+  domain: ${domain.${stage}}
   # roleName: my-custom-role-name-${env:what} # custom AWS IAM Role name
 
 # found in wild

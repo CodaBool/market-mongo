@@ -44,7 +44,7 @@ export default applyMiddleware(async (req, res) => {
       const products = await Product.find()
       const line_items = validate(products, body)
       // const user = await User.findById(jwt.id)
-      console.log('user =', user)
+      // console.log('user =', user)
 
       const session = await stripe.checkout.sessions.create({
         success_url: 'http://localhost:3000/checkout/confirmed?id={CHECKOUT_SESSION_ID}',
