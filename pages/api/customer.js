@@ -13,7 +13,10 @@ export default async (req, res) => {
       if (!valid) throw 'Invalid Captcha'
 
       // STRIPE
-      const result = await stripe.customers.list({ email: body.email.toLowerCase() })
+      const result = await stripe.customers.list({
+        email: body.email.toLowerCase().trim(),
+        metadata: { signupEmail: body.email.toLowerCase().trim() }
+      })
       if (result.data.length > 0) throw 'Email Taken'
       const customer = await stripe.customers.create({ email: body.email.toLowerCase() })
         .catch(err => { throw err.raw.message })

@@ -32,10 +32,25 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
     } else if (type === 'charge.succeeded') {
       console.log('charge.succeeded =', event)
     } else if (type === 'checkout.session.completed') {
+
+      // revert email back to original
+      console.log('is', event.data.object.metadata.signupEmail, '===', event.data.object.customer_details.email)
+      if (event.data.object.metadata.signupEmail !== event.data.object.customer_details.email) {
+        console.log('reverting customer', event.data.object.customer, 'to', event.data.object.customer_details.email)
+        const customer = await stripe.customers.update(event.data.object.customer, { email: event.data.object.metadata.signupEmail })
+          .catch(err => { console.log(err); throw err.raw.message })
+        console.log('fixed customer =', customer)
+      }
+
       console.log('checkout.session.completed =', event)
     } else {
       console.log(type, event)
     }
+
+    // event.data.object
+    // .customer (id)
+    // .customer_details.email
+    // .metadata.signupEmail
 
     console.log('\n=============================')
 
