@@ -25,6 +25,13 @@ jobs:
           SHA: ${{ toJSON(github.sha) }}
           RUN_NUMBER: ${{ toJSON(github.run_number) }}
 
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'webhook/**'
+
       # - name: check modified files
       #   id: check
       #   run: |
@@ -47,6 +54,13 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: AM I RUNNING
+        if: steps.changes.outputs.src == 'true'
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
