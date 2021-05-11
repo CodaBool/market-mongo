@@ -9,7 +9,7 @@ inputs:
   env:
     STRIPE_SK: ${env:STRIPE_SK}
     MONGODB_URI: ${env:MONGODB_URI}
-    STAGE: ${stage}
+    STAGE: ${env:STAGE}
     STRIPE_PK: ${env:STRIPE_PK}
     BUILD_ID: ${env:BUILD_ID}
     NODE_ENV: ${env:NODE_ENV}

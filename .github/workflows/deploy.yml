@@ -79,7 +79,8 @@ jobs:
 
       - name: Deploy webhook to AWS
       # TODO: would be nice if there was a [hook] github message check to force deploy
-        if: steps.webhookChange.outputs.src == 'true' 
+        # if: steps.webhookChange.outputs.src == 'true' 
+        if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
         working-directory: ./webhook
         run: |
           npm ci
@@ -90,7 +91,6 @@ jobs:
           REPO: ${{ steps.extract.outputs.repo }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           STRIPE_SK: ${{ secrets.STRIPE_SK }}
-          STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-          SERVERLESS_STAGE: ${{ steps.extract.outputs.stage }}
+          STAGE: ${{ steps.extract.outputs.stage }}
           NODE_ENV: ${{ steps.extract.outputs.stage == 'prod' && 'production' || 'development' }}
           WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
