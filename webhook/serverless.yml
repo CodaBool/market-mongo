@@ -1,7 +1,8 @@
 component: express
-name: ${env:REPO}-webhook-new
+name: ${env:REPO}-webhook
 app: coda-market
 org: codabool
+stage: ${env:STAGE}
 
 inputs:
   src: ./
