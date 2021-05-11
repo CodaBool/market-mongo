@@ -28,11 +28,11 @@ export function genQuanArr(quantity) {
 
 export function getState(zipString) { // Get State from Zip Code
   if (typeof zipString !== 'string' || zipString.length !== 5 || !zipString.match(/^[0-9]+$/)) {
-    return undefined;
+    return undefined
   }
 
   const zipcode = parseInt(zipString, 10); 
-  let st;
+  let st
 
   if (zipcode >= 35000 && zipcode <= 36999) {
     st = 'AL';

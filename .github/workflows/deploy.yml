@@ -92,57 +92,52 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: webhookChange
         with:
+          list-files: 'escape'
           filters: |
             src:
               - 'webhook/**'
 
       - uses: dorny/paths-filter@v2
-        id: testChange
+        id: appChange
         with:
           list-files: 'escape'
           filters: |
             src:
-              - 'webhook/[!_]*'
+              - '.github/**'
+              - 'components/**'
+              - 'constants/**'
+              - 'models/**'
+              - 'pages/**'
+              - 'public/**'
+              - 'styles/**'
+              - 'next.config.js'
+              - 'package.json'
+              - 'serverless.yml'
 
-      # - name: Deploy webhook to AWS
-      #   if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
-      #   working-directory: ./webhook
-      #   run: |
-      #     npm ci
-      #     npx serverless deploy
-      #   env:
-      #     SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-      #     BUILD_ID: ${{ steps.extract.outputs.build }}
-      #     STAGE: ${{ steps.extract.outputs.stage }}
-      #     REPO: ${{ steps.extract.outputs.repo }}
-      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
-      #     STRIPE_WH: ${{ secrets.STRIPE_WH }}
-      #     ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
-      #     WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
+      - name: Deploy webhook to AWS
+        if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
+        working-directory: ./webhook
+        run: |
+          npm ci
+          npx serverless deploy
+        env:
+          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+          BUILD_ID: ${{ steps.extract.outputs.build }}
+          STAGE: ${{ steps.extract.outputs.stage }}
+          REPO: ${{ steps.extract.outputs.repo }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          STRIPE_WH: ${{ secrets.STRIPE_WH }}
+          ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
+          WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
+          FILES: ${{ steps.testChange.outputs.src_files }}
+          COUNT: ${{ steps.testChange.outputs.src_count }}
 
-      - name: PRINT STUFF
+      - name: list file change
+        if: "steps.appChange.outputs.src == 'true'"
         run: |
           echo "files "${FILES}
           echo "count "${COUNT}
         env:
-          FILES: ${{ steps.testChange.outputs.src_files }}
-          COUNT: ${{ steps.testChange.outputs.src_count }}
-
-      - name: conditional TRUE
-        if: "steps.testChange.outputs.src == 'true'"
-        run: |
-          echo "files "${FILES}
-          echo "count "${COUNT}
-        env:
-          FILES: ${{ steps.testChange.outputs.src_files }}
-          COUNT: ${{ steps.testChange.outputs.src_count }}
-
-      - name: conditional FALSE
-        if: "steps.testChange.outputs.src == 'false'"
-        run: |
-          echo "files "${FILES}
-          echo "count "${COUNT}
-        env:
-          FILES: ${{ steps.testChange.outputs.src_files }}
-          COUNT: ${{ steps.testChange.outputs.src_count }}
+          FILES: ${{ steps.appChange.outputs.src_files }}
+          COUNT: ${{ steps.appChange.outputs.src_count }}
