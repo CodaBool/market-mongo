@@ -100,11 +100,11 @@ jobs:
 
       # ==== WEBHOOK ====
 
-      # BEST JOB FILTER marketplace 2021
-      # changed-files
-      # paths-changes-filter
-      # file-changes-action
-      # has-changed-path
+      # 2021 Github Action Marketplace: path filtering
+      # - changed-files
+      # - paths-changes-filter
+      # - file-changes-action
+      # - has-changed-path
 
       - uses: dorny/paths-filter@v2
         id: webhookChange

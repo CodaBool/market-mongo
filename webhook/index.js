@@ -32,17 +32,19 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
     } else if (type === 'charge.succeeded') {
       console.log('charge.succeeded =', event)
     } else if (type === 'checkout.session.completed') {
-
+      console.log('checkout.session.completed =', event)
+    } else if (type === 'customer.updated') {
+      console.log('customer.updated =', event)
       // revert email back to original
-      console.log('is', event.data.object.metadata.signupEmail, '===', event.data.object.customer_details.email)
-      if (event.data.object.metadata.signupEmail !== event.data.object.customer_details.email) {
-        console.log('reverting customer', event.data.object.customer, 'to', event.data.object.customer_details.email)
-        const customer = await stripe.customers.update(event.data.object.customer, { email: event.data.object.metadata.signupEmail })
+      const { metadata, email, id } = event.data.object
+      if (!metadata.signupEmail || !email || !id) throw `Missing data | signupEmail=${metadata.signupEmail}, email=${email}, id=${id}`
+      console.log('is match?', metadata.signupEmail, '===', email)
+      if (metadata.signupEmail !== email) {
+        console.log('reverting customer', id, 'from', email, '=>', metadata.signupEmail)
+        const customer = await stripe.customers.update(id, { email: metadata.signupEmail })
           .catch(err => { console.log(err); throw err.raw.message })
         console.log('fixed customer =', customer)
       }
-
-      console.log('checkout.session.completed =', event)
     } else {
       console.log(type, event)
     }
