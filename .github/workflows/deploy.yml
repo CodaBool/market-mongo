@@ -26,32 +26,34 @@ jobs:
           SHA: ${{ toJSON(github.sha) }}
           RUN_NUMBER: ${{ toJSON(github.run_number) }}
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: '12'
+      # - uses: actions/setup-node@v2-beta
+      #   with:
+      #     node-version: '12'
 
-      - name: Get Stripe Allow List
-        id: allow # use ${{ steps.allow.outputs.ips_webhooks }} or ${{ steps.allow.outputs.ips_api }} for stripe allowlist
-        run: |
-          ips_webhooks=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
-          ips_api=$(curl https://stripe.com/files/ips/ips_api.json | jq '.API | join(",")')
-          echo "##[set-output name=ips_webhooks;]${ips_webhooks}"
-          echo "##[set-output name=ips_api;]${ips_api}"
+      # - name: Get Stripe Allow List
+      #   id: allow # use ${{ steps.allow.outputs.ips_webhooks }} or ${{ steps.allow.outputs.ips_api }} for stripe allowlist
+      #   run: |
+      #     ips_webhooks=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
+      #     ips_api=$(curl https://stripe.com/files/ips/ips_api.json | jq '.API | join(",")')
+      #     echo "##[set-output name=ips_webhooks;]${ips_webhooks}"
+      #     echo "##[set-output name=ips_api;]${ips_api}"
 
-      - name: Serverless AWS authentication
-        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # - name: Serverless AWS authentication
+      #   run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # - name: Install dependencies
+      #   if: "! contains(github.event.commits[0].message, '[no app]')"
       #   run: npm ci
 
       # - name: Download `.serverless` state from S3
+      #   if: "! contains(github.event.commits[0].message, '[no app]')"
       #   run: |
       #     aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
       #     if [ ! $not_exist ]; then
@@ -60,6 +62,7 @@ jobs:
           
       # - name: Deploy app to AWS
       #   # run: npx serverless # for verbose deploys
+      #   if: "! contains(github.event.commits[0].message, '[no app]')"
       #   run: npx serverless > output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
       #   env:
       #     NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
@@ -75,6 +78,7 @@ jobs:
 
 
       # - name: Upload `.serverless` state to S3
+      #   if: "! contains(github.event.commits[0].message, '[no app]')"
       #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
 
       # ==== WEBHOOK ====
@@ -86,19 +90,37 @@ jobs:
             src:
               - 'webhook/**'
 
+      - uses: dorny/paths-filter@v2
+        id: testChange
+        with:
+          list-files: 'escape'
+          filters: |
+            src:
+              - 'webhook/[!_]*'
+
+      # - name: Deploy webhook to AWS
+      #   if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
+      #   working-directory: ./webhook
+      #   run: |
+      #     npm ci
+      #     npx serverless deploy
+      #   env:
+      #     SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+      #     BUILD_ID: ${{ steps.extract.outputs.build }}
+      #     STAGE: ${{ steps.extract.outputs.stage }}
+      #     REPO: ${{ steps.extract.outputs.repo }}
+      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      #     STRIPE_SK: ${{ secrets.STRIPE_SK }}
+      #     STRIPE_WH: ${{ secrets.STRIPE_WH }}
+      #     ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
+      #     WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
+
       - name: Deploy webhook to AWS
-        if: "contains(github.event.commits[0].message, '[hook]') || steps.webhookChange.outputs.src == 'true' "
-        working-directory: ./webhook
+        if: "steps.testChange.outputs.src == 'true'"
         run: |
-          npm ci
-          npx serverless deploy
+          echo "change that is not webhook"
+          echo "files "${FILES}
+          echo "count "${COUNT}
         env:
-          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-          BUILD_ID: ${{ steps.extract.outputs.build }}
-          STAGE: ${{ steps.extract.outputs.stage }}
-          REPO: ${{ steps.extract.outputs.repo }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          STRIPE_SK: ${{ secrets.STRIPE_SK }}
-          STRIPE_WH: ${{ secrets.STRIPE_WH }}
-          ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
-          WEBHOOK_DOMAIN: ${{ steps.extract.outputs.stage == 'prod' && 'prodhook.codattest.com' || 'devhook.codattest.com' }}
+          FILES: ${{ steps.testChange.outputs.src_files }}
+          COUNT: ${{ steps.testChange.outputs.src_count }}
