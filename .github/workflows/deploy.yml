@@ -140,7 +140,7 @@ jobs:
           COUNT: ${{ steps.appChange.outputs.src_count }}
 
       - name: list file change ADVANCED
-        if: "steps.appChange.outputs.src == 'true' && ! contains(github.event.commits[0].message, '[no app]'"
+        if: "steps.appChange.outputs.src == 'true' && ! contains(github.event.commits[0].message, '[no app]')"
         run: |
           echo "files "${FILES}
           echo "count "${COUNT}
