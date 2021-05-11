@@ -20,6 +20,7 @@ jobs:
           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
           build=$(echo "${SHA:0:7}.${RUN_NUMBER}"|tr -d '"') # removes an annoying double quote
           echo "##[set-output name=build;]${build}"
+          
         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
         env:
           SHA: ${{ toJSON(github.sha) }}
@@ -36,9 +37,22 @@ jobs:
         with:
           node-version: '12'
 
+      - name: Get Stripe Allow List
+        id: allow 
+        run: |
+          npm install --global jq-cli-wrapper
+          jq --version
+          curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")'
+          IPs=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
+          echo "##[set-output name=IPs;]${IPs}"
+
       - name: Serverless AWS authentication
         run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      - name: print allow list
+        run: echo ${ALLOW_LIST}
+        env:
+          ALLOW_LIST: ${{ steps.allow.outputs.IPs }}
       # - name: Install dependencies
       #   run: npm ci
 
