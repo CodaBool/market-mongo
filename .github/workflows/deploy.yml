@@ -62,7 +62,7 @@ jobs:
           
       # - name: Deploy app to AWS
       #   # run: npx serverless # for verbose deploys
-      #   if: "! contains(github.event.commits[0].message, '[no app]')"
+      #   if: "steps.appChange.outputs.src == 'true'"
       #   run: npx serverless > output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
       #   env:
       #     NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
@@ -76,9 +76,8 @@ jobs:
       #     RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
       #     BUILD_ID: ${{ steps.extract.outputs.build }}
 
-
       # - name: Upload `.serverless` state to S3
-      #   if: "! contains(github.event.commits[0].message, '[no app]')"
+      #   if: "steps.appChange.outputs.src == 'true'"
       #   run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
 
       # ==== WEBHOOK ====
@@ -92,7 +91,6 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: webhookChange
         with:
-          list-files: 'escape'
           filters: |
             src:
               - 'webhook/**'
@@ -100,7 +98,6 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: appChange
         with:
-          list-files: 'escape'
           filters: |
             src:
               - '.github/**'
@@ -135,6 +132,15 @@ jobs:
 
       - name: list file change
         if: "steps.appChange.outputs.src == 'true'"
+        run: |
+          echo "files "${FILES}
+          echo "count "${COUNT}
+        env:
+          FILES: ${{ steps.appChange.outputs.src_files }}
+          COUNT: ${{ steps.appChange.outputs.src_count }}
+
+      - name: list file change ADVANCED
+        if: "steps.appChange.outputs.src == 'true' && ! contains(github.event.commits[0].message, '[no app]'"
         run: |
           echo "files "${FILES}
           echo "count "${COUNT}
