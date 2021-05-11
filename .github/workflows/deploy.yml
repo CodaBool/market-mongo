@@ -83,7 +83,7 @@ jobs:
         working-directory: ./webhook
         run: |
           npm ci
-          npx serverless deploy
+          npx serverless deploy --force
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
           BUILD_ID: ${{ steps.extract.outputs.build }}
