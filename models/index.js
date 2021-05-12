@@ -1,5 +1,23 @@
 import mongoose, { Schema } from 'mongoose'
 
+// const chargeSchema = new Schema({ 
+//   _id: String,
+//   id_payment_intent: String,
+//   id_payment_method: String,
+//   id_customer: String,
+//   amount: Number,
+//   amount_captured: Number,
+//   amount_refunded: Number,
+//   captured: Number,
+//   created: Number,
+//   currency: String,
+//   paid: Boolean,
+//   receipt_url: String,
+//   refunded: Boolean,
+//   status: String,
+//   risk: String,
+// })
+
 const userSchema = new Schema({
   email: {
     type: String,
@@ -80,18 +98,19 @@ const userSchema = new Schema({
   }
 }, { timestamps: true })
 
+const chargeSchema = new Schema({
+  id_payment_intent: String, // raw = payment_intent
+  id_payment_method: String, // raw = payment_method
+  id_customer: String, // raw = customer
+})
+
 const orderSchema = new Schema({
-  intentId: {
-    type: String,
-    required: true
-  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  amount: Number,
-  status: String
-}, { timestamps: true })
+  charges: [chargeSchema]
+})
 
 const productSchema = new Schema({
   _id: {

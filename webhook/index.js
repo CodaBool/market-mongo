@@ -21,18 +21,69 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
     )
     const { type } = event 
     console.log('✅ Success:', event.id, '| Type:', event.type)
-    console.log('\n=============================\n')
+    console.log('=============================')
 
     if (type === 'payment_intent.succeeded') {
-      console.log('payment_intent.succeeded =')
-      console.log(JSON.stringify(event, null, 4))
+      // console.log('payment_intent.succeeded =')
+      // console.log(JSON.stringify(event, null, 4))
+
+      // create relevant obj
+      const { object: o } = event.data
+      console.log('=== loop charges ===')
+      // console.log('o', o)
+      const charges = o.charges.data.map((charge, index) => {
+        console.log('charge', charge.refunds)
+        const obj = {
+          _id: charge.id,
+          id_customer: charge.customer,
+          id_user: null,
+          id_payment_intent: charge.payment_intent,
+          id_payment_method: charge.payment_method,
+          amount: charge.amount,
+          amount_captured: charge.amount_captured,
+          amount_refunded: charge.amount_refunded,
+          captured: charge.captured,
+          created: charge.created,
+          currency: charge.currency,
+          paid: charge.paid,
+          receipt_url: charge.receipt_url,
+          refunded: charge.refunded,
+          status: charge.status,
+          risk: charge.outcome.risk_level + '-' + charge.outcome.risk_score,
+          fingerprint: charge.payment_method_details.card.fingerprint,
+          card_last4: charge.payment_method_details.card.last4,
+          refunds: charge.refunds.data,
+        }
+        // console.log('relevant obj =', obj)
+        return obj
+      })
+      console.log('charges', charges)
+      const main = {
+        id_intent: o.id,
+        id_customer: o.customer,
+        id_payment_method: o.payment_method,
+        payment_status: o.payment_status,
+        metadata: o.metadata,
+        amount_intent: o.amount,
+        amount_capturable: o.amount_capturable,
+        amount_received: o.amount_received,
+        client_secret: o.client_secret,
+        created: o.created,
+        currency: o.currency,
+        livemode: o.livemode,
+        status: o.status,
+        shipping: o.shipping,
+        charges
+      }
+      console.log('main', main)
+      console.log('=====================')
     } else if (type === 'payment_method.attached') {
       console.log('payment_method.attached =', event)
     } else if (type === 'payment_intent.created') {
-      console.log('payment_intent.created =', event)
+      // console.log('payment_intent.created =', event)
     } else if (type === 'charge.succeeded') {
-      console.log('charge.succeeded =')
-      console.log(JSON.stringify(event, null, 4))
+      // console.log('charge.succeeded =')
+      // console.log(JSON.stringify(event, null, 4))
     } else if (type === 'checkout.session.completed') {
       console.log('checkout.session.completed =')
       console.log(JSON.stringify(event, null, 4))
