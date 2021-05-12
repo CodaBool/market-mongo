@@ -24,15 +24,18 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
     console.log('\n=============================\n')
 
     if (type === 'payment_intent.succeeded') {
-      console.log('payment_intent.succeeded =', event)
+      console.log('payment_intent.succeeded =')
+      console.log(JSON.stringify(event, null, 4))
     } else if (type === 'payment_method.attached') {
       console.log('payment_method.attached =', event)
     } else if (type === 'payment_intent.created') {
       console.log('payment_intent.created =', event)
     } else if (type === 'charge.succeeded') {
-      console.log('charge.succeeded =', event)
+      console.log('charge.succeeded =')
+      console.log(JSON.stringify(event, null, 4))
     } else if (type === 'checkout.session.completed') {
-      console.log('checkout.session.completed =', event)
+      console.log('checkout.session.completed =')
+      console.log(JSON.stringify(event, null, 4))
     } else if (type === 'customer.updated') {
       console.log('customer.updated =', event)
       // revert email back to original
