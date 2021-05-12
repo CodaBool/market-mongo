@@ -31,10 +31,10 @@
 // ATTEMPT 3
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.stripe.com *.bootstrapcdn.com *.jquery.com * js.delivr.net *.google.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.stripe.com *.bootstrapcdn.com *.jquery.com * js.delivr.net;
   child-src *.stripe.com;
   frame-src *.stripe.com *.google.com;
-  script-src-elem 'self' 'unsafe-eval' 'unsafe-inline';
+  script-src-elem 'self' 'unsafe-eval' 'unsafe-inline' *.google.com;
   img-src * blob: data:;
   connect-src *;
   font-src 'self';
