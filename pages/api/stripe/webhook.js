@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SK, { apiVersion: '2020-08-2
 // import express from 'express'
 import { buffer } from "micro"
 import { Order, User } from '../../../models'
-import { connectDB, isValidObjectId } from '../../../util/db'
+import { connectDB } from '../../../util/db'
 export const config = {
   api: {
     bodyParser: false,
@@ -16,6 +16,7 @@ export default async (req, res) => {
 
     // Authorize
     if (process.env.NODE_ENV === 'production') {
+      console.log('prod env', process.env.ALLOW_LIST, socket.remoteAddress, headers.host)
       const allowedIPs = process.env.ALLOW_LIST.split(',')
       if (!allowedIPs.includes(socket.remoteAddress)) throw `Unauthorized IP ${socket.remoteAddress}`
       if (!headers.host.slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
@@ -29,18 +30,18 @@ export default async (req, res) => {
     )
     const { type } = event 
     // console.log('\n=============================')
-    // console.log('✅ Success:', event.id, '| Type:', event.type)
+    console.log('✅', event.type)
 
     if (type === 'payment_intent.succeeded') {
       // console.log(JSON.stringify(event, null, 4))
-      console.log('✅ Success:', event.id, '| Type:', event.type)
+      // console.log('✅ Success:', event.id, '| Type:', event.type)
       const { object: o } = event.data
       console.log('\n=====================')
       console.log('cus_id =', o.customer, '| id =', o.metadata.id, '| email 1 =', o.metadata.email, '| email 2 =', o.charges.data[0].billing_details.email)
       const user = await User.findOne({ customerId: o.customer })
 
       if (o.metadata.id || o.metadata.email) {
-        console.log('validate, user id (from metadata) =', isValidObjectId(o.metadata.id))
+        console.log('meta', o.metadata.id, o.metadata.email)
       } else {
         console.log('--> No metadata found')
       }
@@ -49,10 +50,8 @@ export default async (req, res) => {
       console.log('found user with id =', user._id)
 
       const charges = o.charges.data.map(charge => {
-        console.log('validate, cus_id =', isValidObjectId(o.customer))
-        console.log('validate, intent id =', isValidObjectId(o.id))
-        console.log('validate, charge id =', isValidObjectId(charge.id))
-        console.log('validate, user =', isValidObjectId(user._id))
+        console.log('intent id =', o.id)
+        console.log('charge id =', charge.id)
         const obj = {
           _id: charge.id,
           id_customer: charge.customer,
@@ -116,6 +115,9 @@ export default async (req, res) => {
       // console.log('checkout.session.completed =')
       // console.log(JSON.stringify(event, null, 4))
       console.log('session completed metadata =', event.data.object.metadata)
+
+      // TRUE! metadata passed from create to complete
+
     } else if (type === 'customer.updated') {
       // console.log('customer.updated =', event)
       // revert email back to original

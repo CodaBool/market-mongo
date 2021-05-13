@@ -99,14 +99,14 @@ const userSchema = new Schema({
 }, { timestamps: true })
 
 const chargeSchema = new Schema({
-  // _id: Number, // replace with stripe charge id
+  _id: String, // replace with stripe charge id
   id_payment_intent: String, // raw = payment_intent
   id_payment_method: String, // raw = payment_method
   id_customer: String, // raw = customer
 })
 
 const orderSchema = new Schema({
-  // _id: Number, // replace with stripe intent id
+  _id: String, // replace with stripe intent id
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
