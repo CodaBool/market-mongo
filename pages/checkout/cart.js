@@ -20,12 +20,10 @@ export default function Cart() {
     setRouting(true)
     if (!session) {
       signIn()
-    } else {
-      router.push('/checkout/combined')
+      return
     }
+    router.push('/checkout/combined')
   }
-
-  if (routing) return <Load />
 
   return (
     <>
@@ -41,9 +39,12 @@ export default function Cart() {
               </Row>
             </Card>
             <Row>
-              <Button className="w-100 mx-3 my-5" variant="primary" disabled={loading} onClick={handleClick}>
-                Add Shipping <BoxSeam className="ml-2 mb-1" size={14}/>
-              </Button>
+              {routing
+                ? <Load msg="Creating Checkout" />
+                : <Button className="w-100 mx-3 my-5" variant="primary" disabled={loading} onClick={handleClick}>
+                    Add Shipping <BoxSeam className="ml-2 mb-1" size={14}/>
+                  </Button>
+              }
             </Row>
           </>
         }

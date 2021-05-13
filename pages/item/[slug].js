@@ -27,7 +27,10 @@ export default function Item({ product }) {
   const quantity = useRef(null)
 
   function addToCart() {
-    if (!session) signIn()
+    if (!session) {
+      signIn()
+      return
+    }
     const selectedQuantity = Number(quantity.current.value)
     const item = { name: product.name, description: product.description, id: product._id, price: Number(product.price), image: product.images[0]}
     if (cartDetails[product._id]) { // in cart

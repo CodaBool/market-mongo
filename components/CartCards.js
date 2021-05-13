@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row'
 import { X } from 'react-bootstrap-icons'
 import BoxImg from './UI/BoxImg'
 import { genQuanArr, MAX_DUP_ITEMS } from '../constants'
+import { signIn } from 'coda-auth/dist/client'
 
 const QuanSelect = React.forwardRef(({ id, value, onSelect }, ref) => (
   <select className="form-control my-3" name={`sel-${id}`} id={id} value={value} ref={ref} onChange={onSelect}>
@@ -31,13 +32,22 @@ export default function CartCards({ simple }) {
       }))
     }
   }, [cart])
+
+  // TODO: consider making cart route protected
+  function handleRemove(item) {
+    if (!session) {
+      signIn()
+      return
+    }
+    removeItem(item)
+  }
   
   return (
     <>
       {Object.keys(cart).length === 0 && <h1 className="my-5">🛒 No items found. Please go to <a href="/browse/1">Browse</a> and pick some up</h1>}
       {Object.keys(cart).map((item, index) => (
         <Card className="my-1 p-3" key={item}>
-          {!simple && <X className="x-icon" onClick={() => removeItem(item)} style={{position: 'absolute', right: '10px', top: '10px'}} size={42}/>}
+          {!simple && <X className="x-icon" onClick={() => handleRemove(item)} style={{position: 'absolute', right: '10px', top: '10px'}} size={42}/>}
           <h4>{cart[item].name}</h4>
           <Row>
             <Col sm={6} className="px-0">

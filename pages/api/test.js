@@ -39,6 +39,11 @@ export default applyMiddleware(async (req, res) => {
     } else {
       envVars.NEXTAUTH_URL = 'MISSING'
     }
+    if (process.env.NODE_ENV) {
+      envVars.NODE_ENV = process.env.NODE_ENV
+    } else {
+      envVars.NODE_ENV = 'MISSING'
+    }
     await User.findOne({})
       .then(response => {
         if (response) {

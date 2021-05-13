@@ -33,7 +33,10 @@ export default function Products({ products, productClick }) {
 
   function addToCart(e, id) {
     e.stopPropagation()
-    if (!session) signIn()
+    if (!session) {
+      signIn()
+      return
+    }
     const product = products.find(product => product._id === id)
     const item = { name: product.name, description: product.description, id: product._id, price: Number(product.price), image: product.images[0]}
     const cartId = Object.keys(cart).find(cartId => cartId === id)

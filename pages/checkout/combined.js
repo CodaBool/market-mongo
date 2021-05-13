@@ -27,11 +27,14 @@ export default function Combined(props) {
   const router = useRouter()
   const size = useScreen()
 
-  if (session === null && !loading) signIn() 
+  if (session === null && !loading) {
+    signIn()
+    return <h1 className="display-4 my-5 text-center">Please Login</h1>
+  }
 
   if (page === 'shipping') return <Ship customer={customer} size={size} router={router} setPage={setPage} total={total} setCustomer={setCustomer} />
   if (page === 'payment') return <Pay customer={customer} size={size} router={router} setPage={setPage} total={total} cart={cart} />
-  return <h1 className="display-4">Please Reload</h1>
+  return <h1 className="display-4 my-5 text-center">Please Reload</h1>
 }
 
 function Ship({ customer, size, setPage, router, total, setCustomer }) {
