@@ -59,6 +59,7 @@ export default applyMiddleware(async (req, res) => {
         shipping_address_collection: {
           allowed_countries: ['US']
         },
+        metadata: { id: jwt.id, email: jwt.user.email }
       })
       // console.log('server session', session)
       res.status(200).json({id: session.id})

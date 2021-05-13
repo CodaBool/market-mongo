@@ -1,42 +1,62 @@
-require('dotenv').config()
-const express = require("express")
-const stripe = require('stripe')(process.env.STRIPE_SK, {  apiVersion: "2020-08-27" })
-const app = express()
+const stripe = require('stripe')(process.env.STRIPE_SK, { apiVersion: '2020-08-27' })
+// import express from 'express'
+import { buffer } from "micro"
+import { Order, User } from '../../../models'
+import { connectDB, isValidObjectId } from '../../../util/db'
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
 
-app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
+export default async (req, res) => {
   try {
-    const { method, body, query, headers } = req
+    const { method, body, headers, socket } = req
+    const buf = await buffer(req)
 
-    // Allow only stripe IPs and trusted Origin
+    // Authorize
     if (process.env.NODE_ENV === 'production') {
       const allowedIPs = process.env.ALLOW_LIST.split(',')
-      if (!allowedIPs.includes(req.socket.remoteAddress)) throw `Unauthorized IP ${req.socket.remoteAddress}`
-      if (!req.get('host').slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
+      if (!allowedIPs.includes(socket.remoteAddress)) throw `Unauthorized IP ${socket.remoteAddress}`
+      if (!headers.host.slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
     }
-    
+
+    // Construct
     const event = stripe.webhooks.constructEvent(
-      body,
+      buf,
       headers['stripe-signature'],
       process.env.STRIPE_WH
     )
     const { type } = event 
-    console.log('✅ Success:', event.id, '| Type:', event.type)
-    console.log('=============================')
+    // console.log('\n=============================')
+    // console.log('✅ Success:', event.id, '| Type:', event.type)
 
     if (type === 'payment_intent.succeeded') {
-      // console.log('payment_intent.succeeded =')
       // console.log(JSON.stringify(event, null, 4))
-
-      // create relevant obj
+      console.log('✅ Success:', event.id, '| Type:', event.type)
       const { object: o } = event.data
-      console.log('=== loop charges ===')
-      // console.log('o', o)
-      const charges = o.charges.data.map((charge, index) => {
-        console.log('charge', charge.refunds)
+      console.log('\n=====================')
+      console.log('cus_id =', o.customer, '| id =', o.metadata.id, '| email 1 =', o.metadata.email, '| email 2 =', o.charges.data[0].billing_details.email)
+      const user = await User.findOne({ customerId: o.customer })
+
+      if (o.metadata.id || o.metadata.email) {
+        console.log('validate, user id (from metadata) =', isValidObjectId(o.metadata.id))
+      } else {
+        console.log('--> No metadata found')
+      }
+      
+      if (!user) throw 'Could not associate intent with user'
+      console.log('found user with id =', user._id)
+
+      const charges = o.charges.data.map(charge => {
+        console.log('validate, cus_id =', isValidObjectId(o.customer))
+        console.log('validate, intent id =', isValidObjectId(o.id))
+        console.log('validate, charge id =', isValidObjectId(charge.id))
+        console.log('validate, user =', isValidObjectId(user._id))
         const obj = {
           _id: charge.id,
           id_customer: charge.customer,
-          id_user: null,
+          id_user: user._id,
           id_payment_intent: charge.payment_intent,
           id_payment_method: charge.payment_method,
           amount: charge.amount,
@@ -54,12 +74,12 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
           card_last4: charge.payment_method_details.card.last4,
           refunds: charge.refunds.data,
         }
-        // console.log('relevant obj =', obj)
         return obj
       })
-      console.log('charges', charges)
+      // console.log('charges', charges)
       const main = {
-        id_intent: o.id,
+        _id: o.id,
+        user: user._id,
         id_customer: o.customer,
         id_payment_method: o.payment_method,
         payment_status: o.payment_status,
@@ -75,20 +95,29 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
         shipping: o.shipping,
         charges
       }
-      console.log('main', main)
+      console.log('----->', main)
+      if (main) {
+        await connectDB()
+        const order = await Order.create(main).catch(console.log)
+        console.log('made order', order)
+      }
       console.log('=====================')
     } else if (type === 'payment_method.attached') {
-      console.log('payment_method.attached =', event)
+      // console.log('payment_method.attached =', event)
     } else if (type === 'payment_intent.created') {
       // console.log('payment_intent.created =', event)
+    } else if (type === 'charge.succeeded') {
+    } else if (type === 'checkout.session.created') {
+      console.log('session created metadata =', event.data.object.metadata)
     } else if (type === 'charge.succeeded') {
       // console.log('charge.succeeded =')
       // console.log(JSON.stringify(event, null, 4))
     } else if (type === 'checkout.session.completed') {
-      console.log('checkout.session.completed =')
-      console.log(JSON.stringify(event, null, 4))
+      // console.log('checkout.session.completed =')
+      // console.log(JSON.stringify(event, null, 4))
+      console.log('session completed metadata =', event.data.object.metadata)
     } else if (type === 'customer.updated') {
-      console.log('customer.updated =', event)
+      // console.log('customer.updated =', event)
       // revert email back to original
       const { metadata, email, id } = event.data.object
       if (!metadata.signupEmail || !email || !id) throw `Missing data | signupEmail=${metadata.signupEmail}, email=${email}, id=${id}`
@@ -100,15 +129,8 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
         console.log('fixed customer =', customer)
       }
     } else {
-      console.log(type, event)
+      // console.log(type, event)
     }
-
-    // event.data.object
-    // .customer (id)
-    // .customer_details.email
-    // .metadata.signupEmail
-
-    console.log('\n=============================')
 
     res.status(200).json({msg: 'hi'})
   } catch (err) {
@@ -119,12 +141,4 @@ app.post('/', express.raw({type: 'application/json'}), async (req, res) => {
       res.status(500).json({ msg: 'webhook ❌ ' + (err.message || err)})
     }
   }
-})
-
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(3001, () =>
-    console.log(`---> http://localhost:${3001}`)
-  )
 }
-
-module.exports = app
