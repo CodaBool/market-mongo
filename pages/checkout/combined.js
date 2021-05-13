@@ -47,7 +47,7 @@ function Ship({ customer, size, setPage, router, total, setCustomer }) {
       <Col className={`${size.includes('small') ? 'mx-3 p-0 mt-3' : 'border-right pr-5 mt-3'}`} md={6}>
         <Cart3 className="mr-3 mb-3 d-inline" size={32} />
         <h1 className="display-4 d-inline" style={{fontSize: '2.5em'}}>Verify Cart</h1>
-        <CartCards simple session={session} />
+        <CartCards simple />
         <Card className="p-3">
           <Row>
             <Col className="text-muted">Tax</Col>

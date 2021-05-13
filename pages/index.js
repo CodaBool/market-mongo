@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { Load } from '../components/Load'
+import { Spinner } from 'react-bootstrap'
 
 export default function Index({ time }) {
   useEffect(() => {
@@ -26,7 +28,6 @@ export default function Index({ time }) {
 
   return (
     <div>
-      
       <h1 onClick={test} className="display-1 my-5">Oops,</h1>
       <h3 className="display-4 m-2">This site is under active construction <div className="d-inline-block">🚧</div></h3>
       <a className="text-primary ml-4" href="https://github.com/CodaBool/market-mongo">Source Code</a>

@@ -29,7 +29,7 @@ export default function Cart() {
     <>
       <Col md={8} className="mx-auto">
         <h1 className="display-3">Cart</h1>
-        <CartCards session={session} />
+        <CartCards />
         {Object.keys(cartDetails).length > 0 &&
           <>
             <Card className="p-3 mt-4">
@@ -38,14 +38,14 @@ export default function Cart() {
                 <Col className="text-right"><h3>{formattedTotalPrice}</h3></Col>
               </Row>
             </Card>
-            <Row>
-              {routing
-                ? <Load msg="Creating Checkout" />
-                : <Button className="w-100 mx-3 my-5" variant="primary" disabled={loading} onClick={handleClick}>
+            {routing
+              ? <Load msg="Creating Checkout" small />
+              : <Row>
+                  <Button className="w-100 mx-3 my-5" variant="primary" disabled={loading} onClick={handleClick}>
                     Add Shipping <BoxSeam className="ml-2 mb-1" size={14}/>
                   </Button>
-              }
-            </Row>
+                </Row>
+            }
           </>
         }
       </Col>
