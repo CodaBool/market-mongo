@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SK, { apiVersion: '2020-08-2
 // import express from 'express'
 import { buffer } from "micro"
 import { Order, User } from '../../../models'
-import { connectDB } from '../../../util/db'
+import { connectDB, castToObjectId } from '../../../util/db'
 export const config = {
   api: {
     bodyParser: false,
@@ -11,6 +11,7 @@ export const config = {
 
 export default async (req, res) => {
   try {
+    console.log('req in', process.env.NODE_ENV, 'enviroment')
     const { method, body, headers, socket } = req
     const buf = await buffer(req)
 
@@ -34,25 +35,22 @@ export default async (req, res) => {
 
     if (type === 'payment_intent.succeeded') {
       // console.log(JSON.stringify(event, null, 4))
-      // console.log('✅ Success:', event.id, '| Type:', event.type)
       const { object: o } = event.data
       console.log('\n=====================')
-      console.log('cus_id =', o.customer, '| id =', o.metadata.id, '| email 1 =', o.metadata.email, '| email 2 =', o.charges.data[0].billing_details.email)
-      const user = await User.findOne({ customerId: o.customer })
-
-      if (o.metadata.id || o.metadata.email) {
-        console.log('meta', o.metadata.id, o.metadata.email)
+      let user = null
+      if (process.env.NODE_ENV !== 'production') {
+        user = { _id: '6091e915a717e41c88a8d612'}
+        console.log('local environment detected, using placeholder user')
       } else {
-        console.log('--> No metadata found')
+        console.log('cus_id =', o.customer, '| email =', o.charges.data[0].billing_details.email)
+        user = await User.findOne({ customerId: o.customer }).catch(console.log)
+        console.log('found user with id =', user._id)
       }
       
-      if (!user) throw 'Could not associate intent with user'
-      console.log('found user with id =', user._id)
+      if (!user) throw 'Could not associate intent with a user'
 
-      const charges = o.charges.data.map(charge => {
-        console.log('intent id =', o.id)
-        console.log('charge id =', charge.id)
-        const obj = {
+      const charges = o.charges.data.map(charge => (
+        {
           _id: charge.id,
           id_customer: charge.customer,
           id_user: user._id,
@@ -73,10 +71,8 @@ export default async (req, res) => {
           card_last4: charge.payment_method_details.card.last4,
           refunds: charge.refunds.data,
         }
-        return obj
-      })
-      // console.log('charges', charges)
-      const main = {
+      ))
+      const orderData = {
         _id: o.id,
         user: user._id,
         id_customer: o.customer,
@@ -94,12 +90,10 @@ export default async (req, res) => {
         shipping: o.shipping,
         charges
       }
-      console.log('----->', main)
-      if (main) {
-        await connectDB()
-        const order = await Order.create(main).catch(console.log)
-        console.log('made order', order)
-      }
+      console.log('----->', orderData)
+      await connectDB()
+      const order = await Order.create(orderData).catch(console.log)
+      console.log('made order', order)
       console.log('=====================')
     } else if (type === 'payment_method.attached') {
       // console.log('payment_method.attached =', event)
