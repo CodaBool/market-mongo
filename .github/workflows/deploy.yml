@@ -65,7 +65,11 @@ jobs:
           npx serverless 2>&1 | sed '/› Deploying\|aNA/d' | tee log_file
           echo "opening log_file"
           cat log_file
-          echo "complete"
+          echo "read log_file"
+          echo "exiting if error"
+          if grep -q 'error' log_file; then
+            exit 1
+          fi
         env:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
