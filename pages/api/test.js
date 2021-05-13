@@ -48,7 +48,7 @@ export default applyMiddleware(async (req, res) => {
     if (process.env.NEXT_PUBLIC_NODE_ENV) {
       envVars.NEXT_PUBLIC_NODE_ENV = process.env.NEXT_PUBLIC_NODE_ENV
     } else {
-      envVars.NEXT_PUBLIC_NODE_ENV = 'MISSING'
+      envVars.NEXT_PUBLIC_NODE_ENV = 'MISSING AS IT SHOULD BE'
     }
     await User.findOne({})
       .then(response => {

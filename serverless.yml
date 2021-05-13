@@ -9,10 +9,6 @@ url:
   dev: https://dev.codattest.com 
   prod: https://www.codattest.com
 
-node:
-  dev: development
-  prod: production
-
 serverless:
   component: '@sls-next/serverless-component@1.19.0'
   inputs:
@@ -40,7 +36,7 @@ serverless:
         JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
         RECAPTCHA_SK: ${env.RECAPTCHA_SK}
         BUILD_ID: ${env.BUILD_ID}
-        NODE_ENV: ${node.${stage}}
+        NODE_ENV: production
     cloudfront:
       distributionId: EIWEPBSNER5B3
       # aliases: ["${alias.${stage}}.codattest.com"]
