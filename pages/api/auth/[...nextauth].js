@@ -44,7 +44,7 @@ export default (req, res) => {
               if (validPassword) { // complete successful login
                 return { id: user._id, email: user.email.toLowerCase(), customerId: user.customerId }
               } else { // invalid password
-                return Promise.reject('/auth/login?error=invalid')
+                return Promise.reject(`/auth/login?error=invalid&email=${encodeURIComponent(clientData.email)}`)
               }
             } else {
               return Promise.reject('/auth/login?error=nonexistant')

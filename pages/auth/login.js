@@ -11,14 +11,35 @@ import { signIn, useSession } from 'coda-auth/client'
 export default function Login({ csrf }) {
   const [session, loading] = useSession()
   const [error, setError] = useState(null)
-  const { handleSubmit, errors, control, register } = useForm()
+  const { handleSubmit, errors, control, register, setValue, setFocus } = useForm()
   const router = useRouter()
 
   useEffect(() => {
+    if (router.query.email) fill()
     if (router.query.error === 'nonexistant') setError('No user found by that email')
     if (router.query.error === 'invalid') setError('Invalid login')
     if (router.query.error === 'unkown') setError('Something went wrong')
   }, [router.query.error])
+  
+  // useEffect(() => {
+  //   console.log('mount', control.fieldsRef.current.password.ref)
+  //   const timeout = setTimeout(() => {
+  //     console.log('NOW!')
+  //     control.fieldsRef.current.password.ref.focus()
+  //   }, 5000)
+  //   return () => {
+  //     clearTimeout(timeout)
+  //   }
+  // }, [])
+
+  function fill() {
+    try {
+      setValue('email', router.query.email)
+      control.fieldsRef.current.password.ref.focus()
+    } catch (err) {
+      console.log('fill', err)
+    }
+  }
 
   const onSubmit = async data => {
     console.log(data, router.query.callbackUrl)

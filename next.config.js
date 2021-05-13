@@ -105,7 +105,7 @@ module.exports = {
     MONGODB_URI: process.env.MONGODB_URI,
     JWT_SECRET: process.env.JWT_SECRET,
     STRIPE_SK: process.env.STRIPE_SK,
-    NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
     BUILD_ID: process.env.BUILD_ID,
   },
   images: {

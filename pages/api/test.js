@@ -8,6 +8,7 @@ export default applyMiddleware(async (req, res) => {
     let envVars = {}
     const session = await getSession({req})
     console.log(session)
+    if (!session) throw 'Unathorized'
     console.log(session.user)
     if (process.env.NEXT_PUBLIC_STRIPE_PK) {
       envVars.NEXT_PUBLIC_STRIPE_PK = 'found'
@@ -43,6 +44,11 @@ export default applyMiddleware(async (req, res) => {
       envVars.NODE_ENV = process.env.NODE_ENV
     } else {
       envVars.NODE_ENV = 'MISSING'
+    }
+    if (process.env.NEXT_PUBLIC_NODE_ENV) {
+      envVars.NEXT_PUBLIC_NODE_ENV = process.env.NEXT_PUBLIC_NODE_ENV
+    } else {
+      envVars.NEXT_PUBLIC_NODE_ENV = 'MISSING'
     }
     await User.findOne({})
       .then(response => {
