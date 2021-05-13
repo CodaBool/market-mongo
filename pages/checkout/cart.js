@@ -29,7 +29,7 @@ export default function Cart() {
     <>
       <Col md={8} className="mx-auto">
         <h1 className="display-3">Cart</h1>
-        <CartCards />
+        <CartCards session={session} />
         {Object.keys(cartDetails).length > 0 &&
           <>
             <Card className="p-3 mt-4">

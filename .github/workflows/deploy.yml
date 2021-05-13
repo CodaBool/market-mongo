@@ -59,8 +59,8 @@ jobs:
           fi
           
       - name: Deploy app to AWS
-        run: npx serverless # for verbose deploys
-        # run: npx serverless &> output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
+        # run: npx serverless # for verbose deploys
+        run: npx serverless 2>&1 | tee output && sed '/› Deploying\|aNA/d' output # sed removes the obnoxious output of sls ("aNA" and "*› Deploying*")
         env:
           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}

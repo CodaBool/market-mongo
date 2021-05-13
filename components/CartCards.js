@@ -14,7 +14,7 @@ const QuanSelect = React.forwardRef(({ id, value, onSelect }, ref) => (
   </select>
 ))
 
-export default function CartCards({ simple }) {
+export default function CartCards({ simple, session }) {
   const { cartDetails: cart, removeItem, cartCount, setItemQuantity } = useShoppingCart()
   const [selects, setSelects] = useState()
 
