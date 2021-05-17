@@ -98,6 +98,7 @@ module.exports = {
   env: {
     NEXT_PUBLIC_NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
     NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK,
+    NEXT_PUBLIC_PAYPAL_ID: process.env.NEXT_PUBLIC_PAYPAL_ID,
     NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PK: process.env.JWT_SIGNING_PK,
@@ -105,6 +106,8 @@ module.exports = {
     MONGODB_URI: process.env.MONGODB_URI,
     JWT_SECRET: process.env.JWT_SECRET,
     STRIPE_SK: process.env.STRIPE_SK,
+    PAYPAL_WH: process.env.PAYPAL_WH,
+    PAYPAL_SK: process.env.PAYPAL_SK,
     BUILD_ID: process.env.BUILD_ID,
   },
   images: {
