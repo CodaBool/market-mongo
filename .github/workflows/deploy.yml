@@ -84,7 +84,7 @@ jobs:
         with:
           fromPhoneNumber: ${{ secrets.TWILIO_PHONE_NUMBER }}
           toPhoneNumber: ${{ secrets.MY_PHONE_NUMBER }}
-          message: 'Hello from Twilio'
+          message: 'deployment success from market mongo. Twilio & Sprint/T-Mobile, you guys this is not spam. Don\'t block or you will be banned from my discord'
         env:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
