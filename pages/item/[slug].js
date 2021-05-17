@@ -67,7 +67,7 @@ export default function Item({ product }) {
     <>
       <Card key={product._id} className="p-3">
         <Row>
-          <Col>
+          <Col className="p-0">
             <BoxImg imageUrl={product.images[0]} alt={product.name} />
             <p className="text-center">option picker placeholder</p>
           </Col>

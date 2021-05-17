@@ -2,9 +2,12 @@ import applyMiddleware from '../../util'
 import { connectDB, jparse } from '../../util/db'
 import { getSession } from 'coda-auth/client'
 import { User } from '../../models'
+import { getOrderShipping } from './paypal/order'
 
 export default applyMiddleware(async (req, res) => {
   try {
+    const session = await getSession({ req })
+    if (!session) throw 'Unauthorized'
     const { method, body, query } = req
     if (method === 'POST') {
       throw 'bad route'
@@ -21,11 +24,28 @@ export default applyMiddleware(async (req, res) => {
       //     .catch(err => error = err)
       // }
     } else if (method === 'GET') { // null if user not found
-      const session = await getSession({ req })
-      if (!session) throw 'Unauthorized'
+      
       const user = await User.findById(session.id)
       res.status(200).json(user)
     } else if (method === 'PUT') {
+      console.log('data', body)
+      const orderShipping = await getOrderShipping(body.orderID).catch(console.log)
+      console.log('orderShipping', orderShipping)
+      const putData = {
+        address: {
+          name: '',
+          line1: '',
+          line2: '',
+          postalCode: 12345,
+          city: '',
+          country: '',
+          state: 'FL',
+          phone: ''
+        }
+      }
+      // const user = await User.findOneAndUpdate(session.id, data, { new: true })
+      // res.status(200).json(user)
+      res.status(200).json({msg: 'hi'})
       // if (body.data.admin) { // admin is immutable
       //   error = 'Permission denied'
       // } else {

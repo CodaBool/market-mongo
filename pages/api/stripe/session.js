@@ -39,12 +39,15 @@ export default applyMiddleware(async (req, res) => {
 
     const { method, body, query } = req
     // console.log('in session with customer', session)
-    console.log('in session with customer', jwt.customerId)
+    // console.log('in session with customer', jwt.customerId)
     if (method === 'POST') {
       const products = await Product.find()
       const line_items = validate(products, body)
       // const user = await User.findById(jwt.id)
       // console.log('user =', user)
+      // const customer = await stripe.customers.retrieve(jwt.customerId)
+      //   .catch(err => { throw err.raw.message })
+      // console.log('got customer', customer.shipping)
 
       const session = await stripe.checkout.sessions.create({
         success_url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/checkout/confirmed?id={CHECKOUT_SESSION_ID}`,
@@ -59,6 +62,7 @@ export default applyMiddleware(async (req, res) => {
         shipping_address_collection: {
           allowed_countries: ['US']
         },
+        // shipping: customer.shipping,
         metadata: { id: jwt.id, email: jwt.user.email }
       })
       // console.log('server session', session)
@@ -90,7 +94,7 @@ function validate(source, cart) {
   for (const id in cart) {
     // console.log(source)
     const item = source.find(product => product._id === id)
-    console.log('match', item, '@', id)
+    // console.log('match', item, '@', id)
     // verify that all ids exist in source
     if (!item) throw `No product in source with id "${id}"`
     // verify that the local has the correct price

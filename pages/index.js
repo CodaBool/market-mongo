@@ -5,7 +5,7 @@ import { Spinner } from 'react-bootstrap'
 
 export default function Index({ time }) {
   useEffect(() => {
-    // axios.get('/api/customer', {params: { email: 'codDa@bool.com' } })
+    // axios.get('/api/customer', {params: { email: 'codabool@pm.me' } })
     //   .then(res => console.log(res.data))
     //   .catch(err => console.error(err.response.data.msg))
     

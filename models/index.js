@@ -100,9 +100,24 @@ const userSchema = new Schema({
 
 const chargeSchema = new Schema({
   _id: String, // replace with stripe charge id
+  id_user: String,
+  id_customer: String, // raw = customer
   id_payment_intent: String, // raw = payment_intent
   id_payment_method: String, // raw = payment_method
-  id_customer: String, // raw = customer
+  amount: Number,
+  amount_captured: Number,
+  amount_refunded: Number,
+  captured: Number,
+  created: String,
+  currency: String,
+  paid: Boolean,
+  receipt_url: String,
+  refunded: Boolean,
+  status: String,
+  risk: String,
+  fingerprint: String,
+  card_last4: String,
+  refunds: mongoose.Mixed
 })
 
 const orderSchema = new Schema({
@@ -111,6 +126,21 @@ const orderSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  vendor: String,
+  id_customer: String,
+  id_payment_method: String,
+  payment_status: String,
+  metadata: mongoose.Mixed,
+  amount_intent: Number,
+  amount_capturable: Number,
+  amount_received: Number,
+  client_secret: String,
+  created: String,
+  currency: String,
+  livemode: String,
+  status: String,
+  valid: mongoose.Mixed,
+  shipping: mongoose.Mixed,
   charges: [chargeSchema]
 })
 

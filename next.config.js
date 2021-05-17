@@ -33,7 +33,7 @@ const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' *.stripe.com *.bootstrapcdn.com *.jquery.com * js.delivr.net;
   child-src *.stripe.com;
-  frame-src *.stripe.com *.google.com;
+  frame-src *.stripe.com *.google.com *.paypal.com;
   script-src-elem 'self' 'unsafe-eval' 'unsafe-inline' *.gstatic.com *.google.com;
   img-src * blob: data:;
   connect-src *;

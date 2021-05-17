@@ -135,6 +135,35 @@ main {
   z-index: 2;
 }
 
+.stripeButton:hover {
+  background-color: #e8e6e3;
+}
+
+.stripeButton {
+  background-color: #eee;
+  font-weight: 800;
+  color:#009de1;
+  height: 55px;
+  outline: none;
+  border: none;
+  font-size: 1.2em;
+}
+.paypal-skeleton {
+  background-image: linear-gradient(to right, white 0%, rgb(240, 236, 236) 20%, white 40%, white 100%);
+  background-size: 800px 60px; 
+  animation: linear shine 1s infinite;
+  position: absolute;
+  z-index: -1;
+  height: 55px;
+  width: 100%;
+}
+.paypal-container {
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+  height: 55px;
+}
+
 @keyframes shine {
   0% { background-position: -800px 0; }
   100% { background-position: 800px 0; }

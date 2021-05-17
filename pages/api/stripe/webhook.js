@@ -75,6 +75,7 @@ export default async (req, res) => {
       const orderData = {
         _id: o.id,
         user: user._id,
+        vendor: 'Stripe',
         id_customer: o.customer,
         id_payment_method: o.payment_method,
         payment_status: o.payment_status,

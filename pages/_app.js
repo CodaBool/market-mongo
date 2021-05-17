@@ -4,9 +4,16 @@ import { Provider } from 'coda-auth/client'
 import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
 import { CartProvider } from 'use-shopping-cart'
+import Router from 'next/router'
+import NProgress from 'nprogress'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../styles/globals.css'
+import 'nprogress/nprogress.css'
 
+NProgress.configure({ showSpinner: false, trickleRate: 0.1, trickleSpeed: 300 })
+Router.events.on('routeChangeStart', () => NProgress.start())
+Router.events.on('routeChangeError', () => NProgress.done())
+Router.events.on('routeChangeComplete', () => NProgress.done())
 
 export default function app({ Component, pageProps }) {
   // TODO: use-shopping-cart has moved to instead wanting the stripe public key string directly instead of the promise

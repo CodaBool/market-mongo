@@ -21,6 +21,9 @@ export function usdPretty(price) {
     </h3>
   )
 }
+export function usd(price) {
+  return String(price).slice(0, -2) + '.' + String(price).slice(-2, String(price).length)
+}
 export function genQuanArr(quantity) {
   if (quantity > MAX_DUP_ITEMS) return Array.from({length: MAX_DUP_ITEMS}, (x, i) => i + 1)
   return Array.from({length: quantity}, (x, i) => i + 1)

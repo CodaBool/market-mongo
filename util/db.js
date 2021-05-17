@@ -20,7 +20,8 @@ export function castToObjectId(string) {
   return mongoose.Types.ObjectId(string)
 }
 
-// TODO: replace all usage of stringify for more security
+// TODO: replace for more security
+// https://github.com/yahoo/serialize-javascript
 export function jparse(obj) {
   return JSON.parse(JSON.stringify(obj))
 }

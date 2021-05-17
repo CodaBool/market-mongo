@@ -236,17 +236,40 @@
 // */
 
 // REWRITE v2
-import { useRouter } from 'next/router'
+import { usd } from '../../constants'
 
 // server
-// import { getAuthenticatedUser } from '../api/user'
 import { getSession } from 'coda-auth/client'
+import { connectDB, jparse } from '../../util/db'
+import { Order } from '../../models'
 
-export default function confirmed({ session }) {
-  const router = useRouter()
-  console.log(router.query.id)
-  console.log('client', session)
-  return (
+export default function confirmed({ session, order }) {
+  if (order) {
+   return (
+    <>
+      <h1 className="display-3 my-4">
+        Order Complete
+      </h1>
+      <p>Payment Vendor: {order.vendor}</p>
+      <p>Amount: {usd(order.amount_received)}</p>
+      <p>Currency: {order.currency}</p>
+      <p>Status: {order.status}</p>
+      <p>Created: {order.created}</p>
+      <div>Address: {Object.keys(order.shipping.address).map((el, index) => {
+          return (
+            <div key={index} className="ml-4" style={{lineHeight: '.7'}}>
+              <br/>
+              {`${el}: ${order.shipping.address[el]}`}
+            </div>
+          )
+        })}
+      </div>
+      <p>Name: {order.shipping.name.full_name}</p>
+    </> 
+   )
+  }
+  if (session) {
+   return (
     <>
       <h1 className="display-3 my-4">
         Order Complete
@@ -258,18 +281,27 @@ export default function confirmed({ session }) {
       <p>Metadata: {Object.keys(session.metadata).map(el => `${el}: ${session.metadata[el]}`)}</p>
       <p>Email: {session.customer_details.email}</p>
     </>
-  )
+   ) 
+  }
+  return <h1 className="my-5 display-4">Unauthorized</h1>
 }
 
 export async function getServerSideProps(context) {
-  const stripe = require('stripe')(process.env.STRIPE_SK)
-  console.log('serverside', context.query.id)
-  const session = await stripe.checkout.sessions.retrieve(context.query.id)
-  // const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent)
+  const error = { props: {  } }
   const jwt = await getSession(context)
-  if (!session || !jwt) return { props: {  } }
-  if (session.customer === jwt.customerId) {
-    return { props: { session } }
+  if (!jwt) return error
+  if (context.query.orderID) { // paypal
+    await connectDB()
+    const order = await Order.findById(context.query.orderID)
+    if (jwt.id === String(order.user)) {
+      return { props: { order: jparse(order) } }
+    }
+  } else if (context.query.id) { // stripe
+    const stripe = require('stripe')(process.env.STRIPE_SK)
+    const session = await stripe.checkout.sessions.retrieve(context.query.id)
+    if (session.customer === jwt.customerId) {
+      return { props: { session } }
+    }
   }
-  return { props: {  } }
+  return error
 }

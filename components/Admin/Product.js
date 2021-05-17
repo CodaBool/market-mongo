@@ -59,6 +59,10 @@ export default function Product() {
   }
 
   const onCreateSubmit = (data) => {
+    if (data['c-price'] < 100) {
+      setShowGenericError(true)
+      return
+    }
     axios.post('/api/admin/mongo/product', {
       _id: data['c-id'],
       name: data['c-name'],
