@@ -32,6 +32,7 @@ export default function Combined() {
   const [payError, setPayError] = useState('')
   const [show, setShow] = useState(false)
   const [showError, setShowError] = useState(false)
+  const [showCred, setShowCred] = useState(true)
   const [loadMsg, setLoadMsg] = useState('')
   const top = useRef(null)
 
@@ -95,6 +96,7 @@ export default function Combined() {
           {/* {error && <p>{error}</p>} */}
           <Row className="mt-4">
             <Button className="mx-auto my-5" variant="link" onClick={() => setShow(true)}>Help</Button>
+            <Button className="mx-auto my-5" variant="link" onClick={() => setShowCred(true)}>Payment Credentials</Button>
           </Row>
         </Col>
       </Row>
@@ -104,10 +106,29 @@ export default function Combined() {
         </Modal.Header>
         <Modal.Body>
           <p><strong>Stripe</strong>: Established in 2009 has quickly become a trusted payment processor with over .5B in revenue. 90% of Americans have bought from businesses using Stripe such as Amazon, Google, Lyft and Zoom. There are about 2 million active accounts</p>
-          <p><strong>PayPal</strong>: Established in 1998 and soon founded by Elon Musk, Paypal generates over 18B in revenue. There are over 350 million active accounts</p>
+          <p><strong>PayPal</strong>: Established in 1998, Paypal generates over 18B in revenue. There are over 350 million active accounts</p>
         </Modal.Body>
         <Modal.Footer>
           <p className="text-muted">Transactions are handled entirely through either <strong>Stripe</strong> or <strong>PayPal</strong> and no detailed card information is stored or read by this application.</p>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showCred} onHide={() => setShowCred(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Welcome to the devlopment environment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Stripe</h4>
+          <p><strong>Card Numbers</strong>: 4242 4242 4242 4242</p>
+          <p><strong>Expiration</strong>: 424</p>
+          <p><strong>CVC</strong>: 424</p>
+          <hr/>
+          <br/>
+          <h4>PayPal</h4>
+          <p><strong>Email</strong>: sb-odshu6116493@personal.example.com</p>
+          <p><strong>Password</strong>: {"1wK<1V0="}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <p className="text-muted mx-auto">Please use the sandbox credentials to complete an order</p>
         </Modal.Footer>
       </Modal>
       <Modal show={showError} onHide={() => setShowError(false)}>

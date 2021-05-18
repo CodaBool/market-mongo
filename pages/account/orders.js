@@ -21,7 +21,16 @@ export default function orders({ orders }) {
         <Card key={order._id} className="p-2 my-3" onClick={() => setOrderData(orders[index])} style={{cursor: 'pointer'}}>
           <h4>order: {order._id}</h4>
           <p>payment vendor: {order.vendor}</p>
-          <p>amount: ${usd(order.amount_received)}</p>
+          {order.payment_status === 'unpaid'
+            ? <>
+                <p>status: Processing</p>
+                <p>amount: ${usd(order.amount_intent)}</p>
+              </>
+            : <>
+                <p>status: {order.status}</p>
+                <p>amount: ${usd(order.amount_received)}</p>
+              </>
+          }
         </Card>
       ))}
     </>

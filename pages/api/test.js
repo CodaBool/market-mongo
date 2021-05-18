@@ -7,9 +7,9 @@ export default applyMiddleware(async (req, res) => {
     let resp = []
     let envVars = {}
     const session = await getSession({req})
-    console.log(session)
+    // console.log(session)
     if (!session) throw 'Unathorized'
-    console.log(session.user)
+    // console.log(session.user)
     if (process.env.NEXT_PUBLIC_STRIPE_PK) {
       envVars.NEXT_PUBLIC_STRIPE_PK = 'found'
     } else {
@@ -50,6 +50,9 @@ export default applyMiddleware(async (req, res) => {
     } else {
       envVars.NEXT_PUBLIC_NODE_ENV = 'MISSING AS IT SHOULD BE'
     }
+    const stripe = require('stripe')(process.env.STRIPE_SK)
+    const customer = await stripe.customers.retrieve(session.customerId)
+        .catch(err => { throw err.raw.message })
     await User.findOne({})
       .then(response => {
         if (response) {
@@ -58,7 +61,7 @@ export default applyMiddleware(async (req, res) => {
         resp = response
       })
       .catch(err => console.log('/test', (err.message || err)))
-    res.status(200).json({resp, envVars})
+    res.status(200).json({resp, envVars, customer})
   } catch (err) {
     res.status(500).json({msg: '/test: ' + (err.message || err)})
   }

@@ -9,7 +9,6 @@ export default function Index({ time }) {
     //   .then(res => console.log(res.data))
     //   .catch(err => console.error(err.response.data.msg))
     
-
     // const data = 
     // axios.get('/api/customer', {params: { email: 'who@mail.com' } })
     //   .then(res => console.log(res.data))
@@ -34,9 +33,9 @@ export default function Index({ time }) {
       <br/>
       <span className="text-info ml-4">Envionment: </span><span> {process.env.NEXT_PUBLIC_STAGE}</span>
       <br/>
-      <span className="text-success ml-4">Time: </span><span> {new Date().getHours() + ':' + new Date().getMinutes()}</span>
+      <span className="text-success ml-4">Time: </span><span> {(new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds()) || 'undefined'}</span>
       <br/>
-      <span className="text-danger ml-4">Static: </span><span> {time}</span>
+      <span className="text-danger ml-4">Build Time: </span><span> {time}</span>
       <br/>
       <span className="text-warning ml-4">Build: </span><span> {process.env.BUILD_ID}</span>
     </div>
