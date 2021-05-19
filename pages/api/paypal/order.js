@@ -17,7 +17,6 @@ export default applyMiddleware(async (req, res) => {
     if (method === 'POST') {
       if (body.orderID) { // capture order
 
-        console.log('\n============ CAPTURE ============')
         const request = new sdk.orders.OrdersCaptureRequest(body.orderID)
         request.requestBody({})
         const { result } = await paypal.execute(request)
@@ -47,19 +46,16 @@ export default applyMiddleware(async (req, res) => {
             }
           }
         }
-        console.log('_id='+result.id, '|', result.status , '@', convertPayPalAmount(result.purchase_units[0].payments.captures[0].amount.value))
-        // await Order.findOneAndUpdate({ _id: result.id }, orderData)
-        
-        // DEBUG
-        const order = await Order.findOneAndUpdate({ _id: result.id }, orderData, {new: true})
-        console.log('paypal data', JSON.stringify(result, null, 4))
+        console.log('PAYPAL CAPTURE:\n_id='+result.id, '|', result.status , '@', convertPayPalAmount(result.purchase_units[0].payments.captures[0].amount.value))
+        await Order.findOneAndUpdate({ _id: result.id }, orderData)
 
-        console.log('=================================')
+        // DEBUG
+        // console.log('paypal data', JSON.stringify(result, null, 4))
+
         res.status(200).json({order_id: result.id})
         
       } else { // create order
 
-        console.log('\n============ CREATE =============')
         const products = await Product.find()
         const { vendorLines, total, orderLines } = validate(products, body, 'paypal')
 
@@ -88,7 +84,7 @@ export default applyMiddleware(async (req, res) => {
           console.log(JSON.parse(err._originalError.text))
         })
 
-        console.log('_id=' + order.result.id, '|', vendorLines.length,'items @', usd(total), )
+        console.log('PAYPAL CREATE:\n_id=' + order.result.id, '|', vendorLines.length,'items @', usd(total), )
 
         const orderData = {
           _id: order.result.id,
@@ -104,14 +100,11 @@ export default applyMiddleware(async (req, res) => {
           items: orderLines
         }
         
-        // TODO: try to remove await
-        // await Order.create(orderData)
-
         // DEBUG
-        const debugOrder = await Order.create(orderData)
-        console.log('paypal order', JSON.stringify(order, null, 4))
-
-        console.log('=================================')
+        // console.log('paypal order', JSON.stringify(order, null, 4))
+        
+        // TODO: try to remove await
+        await Order.create(orderData)
 
         res.status(200).json(order)
         

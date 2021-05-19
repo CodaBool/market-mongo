@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SK)
 import { getSession } from 'coda-auth/client'
 import { Product, Order } from '../../../models'
 import applyMiddleware from '../../../util'
-import { MAX_DUP_ITEMS, validate } from '../../../constants'
+import { validate } from '../../../constants'
 
 export default applyMiddleware(async (req, res) => {
   try {
@@ -14,7 +14,6 @@ export default applyMiddleware(async (req, res) => {
     const { method, body, query } = req
     if (method === 'POST') {
 
-      console.log('\n============ CREATE =============')
       const products = await Product.find()
       const { vendorLines, total, orderLines } = validate(products, body, 'stripe')
 
@@ -48,13 +47,12 @@ export default applyMiddleware(async (req, res) => {
         items: orderLines
       })
 
-      console.log('_id='+ order._id, '\n' + String(orderLines.length), 'items @', session.amount_total)
+      console.log('STRIPE CREATE:\n_id='+ order._id, '\n' + String(orderLines.length), 'items @', session.amount_total)
 
       // DEBUG
       // allow_promotion_codes, total_details {}
       // console.log('STRIPE|NEWDATA=', JSON.stringify(session, null, 4))
 
-      console.log('=================================')
       res.status(200).json({id: session.id})
 
     } else if (method === 'GET') {

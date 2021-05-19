@@ -259,7 +259,7 @@ export default function confirmed({ order, id }) {
     // }, 5000)
   }, [])
 
-  console.log('order', order)
+  // console.log('client order', order)
 
   if (!order) return <h1 className="my-5 display-4">Could Not Display Order</h1>
   return (
@@ -286,30 +286,19 @@ export default function confirmed({ order, id }) {
 
 export async function getServerSideProps(context) {
   try {
+    console.log('\n=========== Confirmed ============')
     const jwt = await getSession(context)
     const id = context.query.id
-
-    let ip = ''
-    if (process.env.NODE_ENV === 'production') {
-      console.log('ip =', context.req.headers['x-forwarded-for'])
-      ip = context.req.headers['x-forwarded-for']
-    } else {
-      console.log('ip =', context.req.socket.remoteAddress)
-      ip = context.req.socket.remoteAddress
-    }
-
+    let ip = context.req.socket?.remoteAddress || context.req.headers['x-forwarded-for']
+    console.log('can i get an ip =', ip)
     if (!jwt) throw `Unauthorized: ${id} | ${ip}`
     await connectDB()
     let order = await Order.findById(id)
-    // if (true) { // order.status === 'created'
     if (order.status === 'capture') { // order.status === 'created'
       let newData = { status: 'complete' }
       if (order.vendor === 'stripe') {
         const stripe = require('stripe')(process.env.STRIPE_SK)
         const intent = await stripe.paymentIntents.retrieve(order.id_stripe_intent)
-
-        // DEBUG
-        console.log('CONFIRMED|NEWDATA=', JSON.stringify(intent, null, 4))
 
         // TODO: dry this with the webhook
         const charges = intent.charges.data.map(charge => ({
@@ -328,7 +317,6 @@ export async function getServerSideProps(context) {
           card: charge.payment_method_details.card,
           created: new Date(charge.created * 1000).toISOString(),
         }))
-
         newData = {
           charges,
           status: 'complete',
@@ -339,34 +327,8 @@ export async function getServerSideProps(context) {
           id_stripe_payment_method: intent.id_payment_method,
         }
       }
-
-      console.log('\n=========== Confirmed ============')
-      // await Order.findByIdAndUpdate(id, newData)
-      console.log('_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
-
-      // DEBUG
-      order = await Order.findByIdAndUpdate(id, newData, {new: true}) // write new data
-
-      if (order.vendor === 'paypal') {
-        console.log('\nchecking paypal order for new data\n')
-        console.log('\nPAYPAL_ID =', process.env.NEXT_PUBLIC_PAYPAL_ID)
-        console.log('\PAYPAL_SK =', process.env.PAYPAL_SK)
-        let paypalOrder
-        if (process.env.PAYPAL_SK && process.env.NEXT_PUBLIC_PAYPAL_ID) {
-          paypalOrder = await axios.get(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${id}`, {
-            auth: {
-              username: process.env.NEXT_PUBLIC_PAYPAL_ID,
-              password: process.env.PAYPAL_SK
-            },
-          }).then(res => res.data)
-            .catch(err => console.log('paypal request err =', err))
-        } else {
-          console.log('missing env var for requesting to paypal')
-        }
-        console.log('paypal order data', JSON.stringify(paypalOrder, null, 4))
-      }
-      
-      console.log('==================================')
+      console.log('CONFIRMED:\n_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
+      order = await Order.findByIdAndUpdate(id, newData, {new: true})
     }
     if (jwt.id === String(order.user)) {
       return { props: { order: jparse(order) } }
