@@ -48,7 +48,12 @@ export default applyMiddleware(async (req, res) => {
           }
         }
         console.log('_id='+result.id, '|', result.status , '@', convertPayPalAmount(result.purchase_units[0].payments.captures[0].amount.value))
-        await Order.findOneAndUpdate({ _id: result.id }, orderData)
+        // await Order.findOneAndUpdate({ _id: result.id }, orderData)
+        
+        // DEBUG
+        const order = await Order.findOneAndUpdate({ _id: result.id }, orderData, {new: true})
+        console.log('order', JSON.stringify(order, null, 4))
+
         console.log('=================================')
         res.status(200).json({order_id: result.id})
         
@@ -98,9 +103,14 @@ export default applyMiddleware(async (req, res) => {
           valid: { wh_verified: false },
           items: orderLines
         }
+        
         // TODO: try to remove await
-        await Order.create(orderData)
-        // console.log('captured order', JSON.stringify(order, null, 4))
+        // await Order.create(orderData)
+
+        // DEBUG
+        const debugOrder = await Order.create(orderData)
+        console.log('order', JSON.stringify(debugOrder, null, 4))
+
         console.log('=================================')
 
         res.status(200).json(order)

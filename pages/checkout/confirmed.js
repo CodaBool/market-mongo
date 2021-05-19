@@ -324,9 +324,17 @@ export async function getServerSideProps(context) {
           id_stripe_payment_method: intent.id_payment_method,
         }
       }
-      await Order.findByIdAndUpdate(id, newData)
+
+      
+
       console.log('\n=========== Confirmed ============')
+      // await Order.findByIdAndUpdate(id, newData)
       console.log('_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
+
+      // DEBUG
+      const debugOrder = await Order.findByIdAndUpdate(id, newData, {new: true})
+      console.log('order', JSON.stringify(debugOrder, null, 4))
+      
       console.log('==================================')
     }
     if (jwt.id === String(order.user)) {

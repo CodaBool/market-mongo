@@ -2,7 +2,7 @@ import applyMiddleware from '../../util'
 import { connectDB, jparse } from '../../util/db'
 import { getSession } from 'coda-auth/client'
 import { User } from '../../models'
-import { getOrderShipping } from './paypal/order'
+// import { getOrderShipping } from './paypal/order'
 
 export default applyMiddleware(async (req, res) => {
   try {
@@ -29,20 +29,20 @@ export default applyMiddleware(async (req, res) => {
       res.status(200).json(user)
     } else if (method === 'PUT') {
       console.log('data', body)
-      const orderShipping = await getOrderShipping(body.orderID).catch(console.log)
-      console.log('orderShipping', orderShipping)
-      const putData = {
-        address: {
-          name: '',
-          line1: '',
-          line2: '',
-          postalCode: 12345,
-          city: '',
-          country: '',
-          state: 'FL',
-          phone: ''
-        }
-      }
+      // const orderShipping = await getOrderShipping(body.orderID).catch(console.log)
+      // console.log('orderShipping', orderShipping)
+      // const putData = {
+      //   address: {
+      //     name: '',
+      //     line1: '',
+      //     line2: '',
+      //     postalCode: 12345,
+      //     city: '',
+      //     country: '',
+      //     state: 'FL',
+      //     phone: ''
+      //   }
+      // }
       // const user = await User.findOneAndUpdate(session.id, data, { new: true })
       // res.status(200).json(user)
       res.status(200).json({msg: 'hi'})

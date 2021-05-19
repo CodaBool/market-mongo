@@ -93,8 +93,12 @@ export default async (req, res) => {
       }
       console.log('----->', orderData)
       await connectDB()
-      const order = await Order.create(orderData).catch(console.log)
-      console.log('made order', order)
+
+      const debugOrder = await Order.findById(o.id)
+      console.log('compare', orderData, 'vs', debugOrder)
+
+      // const order = await Order.create(orderData).catch(console.log)
+      // console.log('made order', order)
       console.log('=====================')
     } else if (type === 'payment_method.attached') {
       // console.log('payment_method.attached =', event)
