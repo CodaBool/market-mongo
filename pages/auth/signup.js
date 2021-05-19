@@ -29,7 +29,7 @@ export default function Signup() {
     setSubmitting(true)
     const token = captcha.current.getValue()
     if (token !== "") {
-      bcrypt.hash(data.password, 10, (error, hash) => {
+      bcrypt.hash(data.password, 12, (error, hash) => {
         axios
           .post('/api/customer', {
             email: data.email,

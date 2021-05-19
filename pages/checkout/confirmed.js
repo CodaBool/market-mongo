@@ -237,25 +237,38 @@
 
 // REWRITE v2
 import { usd } from '../../constants'
+import { useEffect } from 'react'
+import axios from 'axios'
+// import { useRouter } from 'next/router'
+
 
 // server
+import { Order } from '../../models'
 import { getSession } from 'coda-auth/client'
 import { connectDB, jparse } from '../../util/db'
-import { Order } from '../../models'
 
-export default function confirmed({ session, order }) {
-  if (order) {
-   return (
+export default function confirmed({ order, id }) {
+  // const router = useRouter()
+  useEffect(() => {
+    // setTimeout(() => {
+    //   let api = '/api/order'
+    //   axios.get('/')
+    //   // console.log('paypal', router.query.orderID)
+    //   // console.log('stripe', router.query.id)
+    //   console.log('check')
+    // }, 5000)
+  }, [])
+
+  if (!order) return <h1 className="my-5 display-4">Could Not Display Order</h1>
+  return (
     <>
       <h1 className="display-3 my-4">
         Order Complete
       </h1>
       <p>Payment Vendor: {order.vendor}</p>
-      <p>Amount: {usd(order.amount_received)}</p>
+      <p>Amount: {usd(order.amount)}</p>
       <p>Currency: {order.currency}</p>
-      <p>Status: {order.status}</p>
-      <p>Created: {order.created}</p>
-      <div>Address: {Object.keys(order.shipping.address).map((el, index) => {
+      <div>Address: {Object.keys(order.shipping?.address || {}).map((el, index) => {
           return (
             <div key={index} className="ml-4" style={{lineHeight: '.7'}}>
               <br/>
@@ -264,44 +277,63 @@ export default function confirmed({ session, order }) {
           )
         })}
       </div>
-      <p>Name: {order.shipping.name.full_name}</p>
-    </> 
-   )
-  }
-  if (session) {
-   return (
-    <>
-      <h1 className="display-3 my-4">
-        Order Complete
-      </h1>
-      <p>Amount: {session.amount_total}</p>
-      <p>Currency: {session.currency}</p>
-      <p>Mode: {session.mode}</p>
-      <p>Status: {session.payment_status}</p>
-      <p>Metadata: {Object.keys(session.metadata).map(el => `${el}: ${session.metadata[el]}`)}</p>
-      <p>Email: {session.customer_details.email}</p>
+      <p>Name: {order.shipping?.name}</p>
     </>
-   ) 
-  }
-  return <h1 className="my-5 display-4">Unauthorized</h1>
+  )
 }
 
 export async function getServerSideProps(context) {
-  const error = { props: {  } }
-  const jwt = await getSession(context)
-  if (!jwt) return error
-  if (context.query.orderID) { // paypal
+  try {
+    const jwt = await getSession(context)
+    const id = context.query.id
+    if (!jwt) throw `Unauthorized: ${id} | ${context.req.socket.remoteAddress}`
     await connectDB()
-    const order = await Order.findById(context.query.orderID)
+    const order = await Order.findById(id)
+    // if (true) { // order.status === 'created'
+    if (order.status === 'capture') { // order.status === 'created'
+      let newData = { status: 'complete' }
+      if (order.vendor === 'stripe') {
+        const stripe = require('stripe')(process.env.STRIPE_SK)
+        const intent = await stripe.paymentIntents.retrieve(order.id_stripe_intent)
+
+        // TODO: dry this with the webhook
+        const charges = intent.charges.data.map(charge => ({
+          _id: charge.id,
+          paid: charge.paid,
+          currency: charge.currency,
+          captured: charge.captured,
+          pay_status: charge.status,
+          refunded: charge.refunded,
+          amount: charge.amount_captured,
+          receipt_url: charge.receipt_url, 
+          receipt_email: charge.receipt_email,
+          receipt_number: charge.receipt_number,
+          risk_level: charge.outcome.risk_level,
+          risk_score: charge.outcome.risk_score,
+          card: charge.payment_method_details.card,
+          created: new Date(charge.created * 1000).toISOString(),
+        }))
+
+        newData = {
+          charges,
+          status: 'complete',
+          pay_status: intent.status,
+          shipping: intent.shipping,
+          client_secret: intent.client_secret,
+          amount_received: intent.amount_received,
+          id_stripe_payment_method: intent.id_payment_method,
+        }
+      }
+      await Order.findByIdAndUpdate(id, newData)
+      console.log('\n=========== Confirmed ============')
+      console.log('_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
+      console.log('==================================')
+    }
     if (jwt.id === String(order.user)) {
       return { props: { order: jparse(order) } }
     }
-  } else if (context.query.id) { // stripe
-    const stripe = require('stripe')(process.env.STRIPE_SK)
-    const session = await stripe.checkout.sessions.retrieve(context.query.id)
-    if (session.customer === jwt.customerId) {
-      return { props: { session } }
-    }
+  } catch (err) {
+    console.log(err)
   }
-  return error
+  return { props: {} }
 }

@@ -77,7 +77,7 @@ export default function Combined() {
               </>
             </Card>
             <Row>
-              <Button className="w-100 m-3" variant="warning" onClick={() => router.push('/checkout/cart')}>Edit Shipping <PencilFill className="ml-2 mb-1" size={14} /></Button>
+              <Button className="w-100 m-3" variant="warning" onClick={() => router.push('/checkout/cart')}>Edit Cart <PencilFill className="ml-2 mb-1" size={14} /></Button>
             </Row>
           </>
         </Col>
@@ -165,9 +165,8 @@ function PayPal({ price, setPayError, setShowError, cart, router }) {
           onApprove={data => {
             axios.post('/api/paypal/order', data)
               .then(res => {
-                console.log(res.data)
-                if (res.data.status === 'COMPLETED') {
-                  router.push(`/checkout/confirmed?orderID=${res.data._id}`)
+                if (res.data.order_id) {
+                  router.push(`/checkout/confirmed?id=${res.data.order_id}`)
                 }
               })
               .catch(err => {

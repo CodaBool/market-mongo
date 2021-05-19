@@ -31,6 +31,13 @@ main {
   font-size: 1.2em;
   text-shadow: 0 0 30px rgba(122, 165, 190, 0.3);
 }
+
+.order-card {
+  cursor: pointer;
+}
+.order-card:hover {
+  background-color: rgba(200, 200, 200, 0.1);
+}
 /* Form error messages */
 /* .errMsg {
   margin: 3px 0 3px 0;

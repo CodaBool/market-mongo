@@ -21,12 +21,89 @@ export function usdPretty(price) {
     </h3>
   )
 }
+export function convertPayPalAmount(amount) {
+  return Number(amount.replace('.', ''))
+}
 export function usd(price) {
   return String(price).slice(0, -2) + '.' + String(price).slice(-2, String(price).length)
 }
 export function genQuanArr(quantity) {
   if (quantity > MAX_DUP_ITEMS) return Array.from({length: MAX_DUP_ITEMS}, (x, i) => i + 1)
   return Array.from({length: quantity}, (x, i) => i + 1)
+}
+
+export function validate(source, cart, vendor) {
+  const vendorLines = [], orderLines = []
+  
+  if (!cart) throw 'No products in cart'
+
+  let total = 0
+  let line = {}, monLine = {}
+  for (const id in cart) {
+    // console.log(source)
+    const item = source.find(product => product._id === id)
+    // console.log('match', item, '@', id)
+    // verify that all ids exist in source
+    if (!item) throw `No product in source with id "${id}"`
+    // verify that the local has the correct price
+    // console.log('compare price', cart[id].price, 'vs', item.price)
+    if (cart[id].price !== item.price) throw 'Price discrepency'
+
+    // verify that the local does not go over store duplicate limit
+    // console.log('check if over max', cart[id].quantity, 'vs', MAX_DUP_ITEMS)
+    if (cart[id].quantity > MAX_DUP_ITEMS) throw 'Exceeding max per customer limit'
+    
+    // verify that the local does not go over store supply
+    // console.log('check if over supply', cart[id].quantity, 'vs', item.quantity)
+    if (cart[id].quantity > item.quantity) throw 'Exceeding supply limit'
+    
+    // don't allow empty quantity
+    if (cart[id].quantity === 0) throw 'Empty quantity'
+
+    if (!item.images[0]) throw 'Improper market image'
+    // if (!item.description) throw 'Improper market description'
+    // if (!item.currency) throw 'Improper market currency'
+
+    if (vendor === 'paypal') {
+      line = {
+        sku: item.id,
+        name: item.name,
+        quantity: cart[id].quantity,
+        description: item.description.substring(0, 120) + '... ', // max 127
+        unit_amount: {
+          currency_code: item.currency,
+          value: usd(item.price)
+        }
+      }
+    } else { // stripe
+      line = {
+        quantity: cart[id].quantity,
+        price_data: {
+          currency: item.currency,
+          unit_amount: item.price,
+          product_data: {
+            name: item.name,
+            description: item.description,
+            images: [item.images[0]]
+          }
+        }
+      }
+    }
+    monLine = {
+      id_prod: item.id,
+      name: item.name,
+      currency: item.currency,
+      quantity: cart[id].quantity,
+      value: item.price
+    }
+
+    
+    total += (item.price * cart[id].quantity)
+    vendorLines.push(line)
+    orderLines.push(monLine)
+  }
+
+  return {vendorLines, total, orderLines}
 }
 
 export function getState(zipString) { // Get State from Zip Code

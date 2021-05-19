@@ -1,11 +1,11 @@
 import { getSession } from 'coda-auth/client'
 import sdk from '@paypal/checkout-server-sdk'
-import { connectDB, castToObjectId } from '../../../util/db'
+import applyMiddleware from '../../../util'
+// import { castToObjectId } from '../../../util/db'
 import { User, Order, Product } from '../../../models'
-import { MAX_DUP_ITEMS, usd } from '../../../constants'
-import axios from 'axios'
+import { convertPayPalAmount, MAX_DUP_ITEMS, usd, validate } from '../../../constants'
 
-export default async (req, res) => {
+export default applyMiddleware(async (req, res) => {
   try {
     const session = await getSession({ req })
     if (!session) throw 'Unauthorized'
@@ -20,45 +20,44 @@ export default async (req, res) => {
         console.log('\n============ CAPTURE ============')
         const request = new sdk.orders.OrdersCaptureRequest(body.orderID)
         request.requestBody({})
-        const capture = await paypal.execute(request)
-
-        const charges = capture.result.purchase_units.map(unit => ({
-          _id: unit.payments.captures[0].id,
-          id_user: session.id,
-          amount: Number(unit.payments.captures[0].amount.value.replace('.', '')), // should only do this for USD
-          amount_refunded: 0,
-          created: unit.payments.captures[0].create_time,
-          currency: unit.payments.captures[0].amount.currency_code,
-          refunded: false,
-          status: unit.payments.captures[0].status,
+        const { result } = await paypal.execute(request)
+        const charges = result.purchase_units[0].payments.captures.map(charge => ({
+          _id: charge.id,
+          pay_status: charge.status,
+          amount: convertPayPalAmount(charge.amount.value),
+          fee: convertPayPalAmount(charge.seller_receivable_breakdown.paypal_fee.value),
+          currency: charge.amount.currency_code,
+          created: charge.create_time
         }))
-
         const orderData = {
-          _id: capture.result.id, // replace with stripe intent id
-          user: session.id,
-          vendor: 'paypal',
-          id_customer: capture.result.payer.payer_id,
-          amount_received: Number(capture.result.purchase_units[0].payments.captures[0].amount.value.replace('.', '')), // should only do this for USD
-          client_secret: body.facilitatorAcessToken,
-          created: capture.result.purchase_units[0].payments.captures[0].create_time,
-          currency: capture.result.purchase_units[0].payments.captures[0].amount.currency_code,
-          livemode: 'NODE_ENV=' + process.env.NODE_ENV,
-          status: capture.result.status,
-          shipping: capture.result.purchase_units[0].shipping,
-          valid: { wh_verified: false },
-          charges
+          charges,
+          status: 'capture',
+          pay_status: result.status,
+          id_customer: result.payer.payer_id,
+          amount_received: convertPayPalAmount(result.purchase_units[0].payments.captures[0].amount.value),
+          shipping: {
+            name: result.purchase_units[0].shipping.name.full_name,
+            address: {
+              city: result.purchase_units[0].shipping.address.admin_area_2,
+              country: result.purchase_units[0].shipping.address.country_code,
+              line1: result.purchase_units[0].shipping.address.address_line_1,
+              line2: result.purchase_units[0].shipping.address.address_line_2,
+              postal_code: result.purchase_units[0].shipping.address.postal_code,
+              state: result.purchase_units[0].shipping.address.admin_area_1,
+            }
+          }
         }
-        await connectDB()
-        const order = await Order.create(orderData)
-        console.log('order', order)
-        console.log('================================')
-        res.status(200).json(order)
+        console.log('_id='+result.id, '|', result.status , '@', convertPayPalAmount(result.purchase_units[0].payments.captures[0].amount.value))
+        await Order.findOneAndUpdate({ _id: result.id }, orderData)
+        console.log('=================================')
+        res.status(200).json({order_id: result.id})
+        
       } else { // create order
 
         console.log('\n============ CREATE =============')
-        await connectDB()
         const products = await Product.find()
-        const { items, total } = validate(products, body)
+        const { vendorLines, total, orderLines } = validate(products, body, 'paypal')
+
         const request = new sdk.orders.OrdersCreateRequest()
         request.prefer("return=representation")
         request.requestBody({
@@ -67,7 +66,7 @@ export default async (req, res) => {
             shipping_preference: 'GET_FROM_FILE'
           },
           purchase_units: [{
-            items,
+            items: vendorLines,
             amount: {
               currency_code: 'USD',
               value: usd(total),
@@ -83,8 +82,27 @@ export default async (req, res) => {
         const order = await paypal.execute(request).catch(err => {
           console.log(JSON.parse(err._originalError.text))
         })
-        console.log(order.result.id, '|', items.length,'items @', usd(total), )
+
+        console.log('_id=' + order.result.id, '|', vendorLines.length,'items @', usd(total), )
+
+        const orderData = {
+          _id: order.result.id,
+          email: session.user.email,
+          vendor: 'paypal',
+          user: session.id,
+          status: 'created',
+          pay_status: order.result.status,
+          currency: order.result.purchase_units[0].amount.currency_code,
+          amount: total,
+          shipping: order.result.purchase_units[0].shipping,
+          valid: { wh_verified: false },
+          items: orderLines
+        }
+        // TODO: try to remove await
+        await Order.create(orderData)
+        // console.log('captured order', JSON.stringify(order, null, 4))
         console.log('=================================')
+
         res.status(200).json(order)
         
       }
@@ -104,7 +122,7 @@ export default async (req, res) => {
       res.status(500).json({ msg: 'order: ' + (err.message || err)})
     }
   }
-}
+})
 
 async function storeOrder(body, paypal, headers) {
   console.log(JSON.stringify(body, null, 4))
@@ -126,11 +144,11 @@ async function storeOrder(body, paypal, headers) {
   //   .catch(err => err.response.data)
   //   .catch(console.log)
 
-  const res = await paypal.execute({
-    verb: "GET",
-    path: `https://api-m.sandbox.paypal.com/v2/checkout/orders/${body.details.id}`,
-    headers: { "Content-Type": "application/json" }
-  }).catch(console.log)
+  // const res = await paypal.execute({
+  //   verb: "GET",
+  //   path: `https://api-m.sandbox.paypal.com/v2/checkout/orders/${body.details.id}`,
+  //   headers: { "Content-Type": "application/json" }
+  // }).catch(console.log)
 
   console.log(res)
   
@@ -174,101 +192,23 @@ async function storeOrder(body, paypal, headers) {
       payerID: `${paypalOrder.payer.payer_id} = ${body.data.payerID}  | ${valid.payerID}`,
     })
   }
-
-
-  const charge = {
-    _id: body.details.purchase_units[0].payments.captures[0].id,
-    id_user: session.id,
-    amount: Number(body.details.purchase_units[0].payments.captures[0].amount.value.replace('.', '')), // should only do this for USD
-    amount_refunded: 0,
-    created: body.details.purchase_units[0].payments.captures[0].create_time,
-    currency: body.details.purchase_units[0].payments.captures[0].amount.currency_code,
-    refunded: false,
-    status: body.details.purchase_units[0].payments.captures[0].status,
-  }
-  const orderData = {
-    _id: body.details.id, // replace with stripe intent id
-    user: session.id,
-    vendor: 'paypal',
-    id_customer: body.data.payerID,
-    amount_received: body.details.purchase_units[0].amount.value,
-    client_secret: body.data.facilitatorAccessToken,
-    created: body.details.create_time,
-    currency: body.details.purchase_units[0].amount.currency_code,
-    livemode: 'NODE_ENV=' + process.env.NODE_ENV,
-    status: body.details.status,
-    shipping: body.details.purchase_units[0].shipping,
-    valid,
-    charges: [charge]
-  }
-  console.log('providing order data', orderData)
-  await connectDB()
-  const order = await Order.create(orderData)
-  console.log('order', order)
-  return order
+  return await Order.create(orderData)
 }
 
-function validate(source, cart) {
-  const items = []
-  
-  if (!cart) throw 'No products in cart'
 
-  let total = 0
-  
-  for (const id in cart) {
-    // console.log(source)
-    const item = source.find(product => product._id === id)
-    // console.log('match', item, '@', id)
-    // verify that all ids exist in source
-    if (!item) throw `No product in source with id "${id}"`
-    // verify that the local has the correct price
-    // console.log('compare price', cart[id].price, 'vs', item.price)
-    if (cart[id].price !== item.price) throw 'Price discrepency'
 
-    // verify that the local does not go over store duplicate limit
-    // console.log('check if over max', cart[id].quantity, 'vs', MAX_DUP_ITEMS)
-    if (cart[id].quantity > MAX_DUP_ITEMS) throw 'Exceeding max per customer limit'
-    
-    // verify that the local does not go over store supply
-    // console.log('check if over supply', cart[id].quantity, 'vs', item.quantity)
-    if (cart[id].quantity > item.quantity) throw 'Exceeding supply limit'
-    
-    // don't allow empty quantity
-    if (cart[id].quantity === 0) throw 'Empty quantity'
-
-    if (!item.images[0]) throw 'Improper market image'
-    // if (!item.description) throw 'Improper market description'
-    // if (!item.currency) throw 'Improper market currency'
-
-    const line = {
-      // sku: 
-      name: item.name,
-      quantity: cart[id].quantity,
-      description: item.description.substring(0, 120) + '... ', // max 127
-      unit_amount: {
-        currency_code: item.currency || 'USD', // TODO: WARNING default should come from MONGO
-        value: usd(item.price)
-      }
-    }
-    total += (item.price * cart[id].quantity)
-    items.push(line)
-  }
-
-  return {items, total}
-}
-
-export function getOrderShipping(id) {
-  return axios.get(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${id}`, {
-    auth: {
-      username: process.env.NEXT_PUBLIC_PAYPAL_ID,
-      password: process.env.PAYPAL_SK
-    },
-  }).then(res => {
-    if (res.data.purchase_units[0].shipping) {
-      console.log('FOUND SHIPPING')
-    } else {
-      console.log('no shipping tied to order')
-    }
-    return res.data.purchase_units[0].shipping
-  })
-}
+// export function getOrderShipping(id) {
+//   return axios.get(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${id}`, {
+//     auth: {
+//       username: process.env.NEXT_PUBLIC_PAYPAL_ID,
+//       password: process.env.PAYPAL_SK
+//     },
+//   }).then(res => {
+//     if (res.data.purchase_units[0].shipping) {
+//       console.log('FOUND SHIPPING')
+//     } else {
+//       console.log('no shipping tied to order')
+//     }
+//     return res.data.purchase_units[0].shipping
+//   })
+// }

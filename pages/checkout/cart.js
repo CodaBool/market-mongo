@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 import { useShoppingCart } from 'use-shopping-cart'
 import { useRouter } from 'next/router'
 import { useSession, signIn } from 'coda-auth/client'
-import { BoxSeam } from 'react-bootstrap-icons'
+import { CreditCard } from 'react-bootstrap-icons'
 import CartCards from '../../components/CartCards'
 import { Load } from '../../components/Load'
 
@@ -42,7 +42,7 @@ export default function Cart() {
               ? <Load msg="Creating Checkout" small />
               : <Row>
                   <Button className="w-100 mx-3 my-5" variant="primary" disabled={loading} onClick={handleClick}>
-                    Add Shipping <BoxSeam className="ml-2 mb-1" size={14}/>
+                    Payment <CreditCard className="ml-2 mb-1" size={14}/>
                   </Button>
                 </Row>
             }

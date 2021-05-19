@@ -6,7 +6,8 @@ export default function index() {
   
   return (
     <>
-      <Button onClick={() => router.push('/account/orders')}>Orders</Button>
+      <h1 className="display-4 my-4" style={{cursor: 'pointer'}}>Account</h1>
+      <Button variant="outline-primary" onClick={() => router.push('/account/orders')}>See My Orders</Button>
     </>
   )
 }
