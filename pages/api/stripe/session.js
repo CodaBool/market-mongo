@@ -52,7 +52,7 @@ export default applyMiddleware(async (req, res) => {
 
       // DEBUG
       // allow_promotion_codes, total_details {}
-      console.log('STRIPE|NEWDATA=', JSON.stringify(session, null, 4))
+      // console.log('STRIPE|NEWDATA=', JSON.stringify(session, null, 4))
 
       console.log('=================================')
       res.status(200).json({id: session.id})

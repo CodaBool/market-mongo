@@ -288,9 +288,17 @@ export async function getServerSideProps(context) {
   try {
     const jwt = await getSession(context)
     const id = context.query.id
-    console.log('CONFIRMED|REQ=', JSON.stringify(context.req, null, 4))
-    // on lambda there is no socket
-    if (!jwt) throw `Unauthorized: ${id} | ${context.req.socket.remoteAddress}`
+
+    let ip = ''
+    if (process.env.NODE_ENV === 'production') {
+      console.log('ip =', context.req.headers['x-forwarded-for'])
+      ip = context.req.headers['x-forwarded-for']
+    } else {
+      console.log('ip =', context.req.socket.remoteAddress)
+      ip = context.req.socket.remoteAddress
+    }
+
+    if (!jwt) throw `Unauthorized: ${id} | ${ip}`
     await connectDB()
     let order = await Order.findById(id)
     // if (true) { // order.status === 'created'
@@ -299,6 +307,9 @@ export async function getServerSideProps(context) {
       if (order.vendor === 'stripe') {
         const stripe = require('stripe')(process.env.STRIPE_SK)
         const intent = await stripe.paymentIntents.retrieve(order.id_stripe_intent)
+
+        // DEBUG
+        console.log('CONFIRMED|NEWDATA=', JSON.stringify(intent, null, 4))
 
         // TODO: dry this with the webhook
         const charges = intent.charges.data.map(charge => ({
@@ -329,15 +340,12 @@ export async function getServerSideProps(context) {
         }
       }
 
-      
-
       console.log('\n=========== Confirmed ============')
       // await Order.findByIdAndUpdate(id, newData)
       console.log('_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
 
       // DEBUG
       order = await Order.findByIdAndUpdate(id, newData, {new: true}) // write new data
-      console.log('CONFIRMED|NEWDATA=', JSON.stringify(intent, null, 4))
 
       if (order.vendor === 'paypal') {
         console.log('\nchecking paypal order for new data\n')
