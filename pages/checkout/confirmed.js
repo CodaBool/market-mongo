@@ -259,6 +259,8 @@ export default function confirmed({ order, id }) {
     // }, 5000)
   }, [])
 
+  console.log('order', order)
+
   if (!order) return <h1 className="my-5 display-4">Could Not Display Order</h1>
   return (
     <>
@@ -286,6 +288,7 @@ export async function getServerSideProps(context) {
   try {
     const jwt = await getSession(context)
     const id = context.query.id
+    console.log('DEBUG confirmed, trying to read socket', context.req.socket)
     if (!jwt) throw `Unauthorized: ${id} | ${context.req.socket.remoteAddress}`
     await connectDB()
     const order = await Order.findById(id)

@@ -17,6 +17,7 @@ export default async (req, res) => {
 
     // Authorize
     if (process.env.NODE_ENV === 'production') {
+      console.log('DEBUG stripe webhook, trying to read socket', socket)
       console.log('prod env', process.env.ALLOW_LIST, socket.remoteAddress, headers.host)
       const allowedIPs = process.env.ALLOW_LIST.split(',')
       if (!allowedIPs.includes(socket.remoteAddress)) throw `Unauthorized IP ${socket.remoteAddress}`

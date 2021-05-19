@@ -9,12 +9,15 @@ import { Order } from '../../models'
 import OrderDetail from '../../components/OrderDetail'
 import Card from 'react-bootstrap/Card'
 import { useRouter } from 'next/router'
+import { format } from 'timeago.js'
 
 export default function orders({ orders }) {
   const router = useRouter()
   const [orderData, setOrderData] = useState()
 
   if (orderData) return <OrderDetail order={orderData} setOrderData={setOrderData} />
+
+  console.log(orders)
   
   return (
     <>
@@ -25,6 +28,8 @@ export default function orders({ orders }) {
           <p>payment vendor: {order.vendor}</p>
           <p>status: <span className={`${order.status === 'complete' ? 'text-success': 'test-primary'}`}>{order.status}</span></p>
           <p>amount: ${usd(order.amount)}</p>
+          <p>created: {format(order.createdAt)}</p>
+          <p>updated: {format(order.updatedAt)}</p>
         </Card>
       ))}
     </>
@@ -33,7 +38,7 @@ export default function orders({ orders }) {
 
 export async function getServerSideProps(context) {
   const jwt = await getSession(context)
-  if (!jwt) return { props: {  } }
+  if (!jwt) return { props: { } }
   await connectDB()
   const orders = await Order.find({user: jwt.id})
   return { props: { orders: jparse(orders) } }

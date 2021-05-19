@@ -52,7 +52,7 @@ export default applyMiddleware(async (req, res) => {
         
         // DEBUG
         const order = await Order.findOneAndUpdate({ _id: result.id }, orderData, {new: true})
-        console.log('order', JSON.stringify(order, null, 4))
+        console.log('paypal data', JSON.stringify(result, null, 4))
 
         console.log('=================================')
         res.status(200).json({order_id: result.id})
@@ -109,7 +109,7 @@ export default applyMiddleware(async (req, res) => {
 
         // DEBUG
         const debugOrder = await Order.create(orderData)
-        console.log('order', JSON.stringify(debugOrder, null, 4))
+        console.log('paypal order', JSON.stringify(order, null, 4))
 
         console.log('=================================')
 
