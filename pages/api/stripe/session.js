@@ -51,7 +51,8 @@ export default applyMiddleware(async (req, res) => {
       console.log('_id='+ order._id, '\n' + String(orderLines.length), 'items @', session.amount_total)
 
       // DEBUG
-      console.log('session', JSON.stringify(session, null, 4))
+      // allow_promotion_codes, total_details {}
+      console.log('STRIPE|NEWDATA=', JSON.stringify(session, null, 4))
 
       console.log('=================================')
       res.status(200).json({id: session.id})

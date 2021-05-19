@@ -288,10 +288,11 @@ export async function getServerSideProps(context) {
   try {
     const jwt = await getSession(context)
     const id = context.query.id
-    console.log('DEBUG confirmed, trying to read socket', context.req.socket)
+    console.log('CONFIRMED|REQ=', JSON.stringify(context.req, null, 4))
+    // on lambda there is no socket
     if (!jwt) throw `Unauthorized: ${id} | ${context.req.socket.remoteAddress}`
     await connectDB()
-    const order = await Order.findById(id)
+    let order = await Order.findById(id)
     // if (true) { // order.status === 'created'
     if (order.status === 'capture') { // order.status === 'created'
       let newData = { status: 'complete' }
@@ -335,8 +336,27 @@ export async function getServerSideProps(context) {
       console.log('_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
 
       // DEBUG
-      const debugOrder = await Order.findByIdAndUpdate(id, newData, {new: true})
-      console.log('order', JSON.stringify(debugOrder, null, 4))
+      order = await Order.findByIdAndUpdate(id, newData, {new: true}) // write new data
+      console.log('CONFIRMED|NEWDATA=', JSON.stringify(intent, null, 4))
+
+      if (order.vendor === 'paypal') {
+        console.log('\nchecking paypal order for new data\n')
+        console.log('\nPAYPAL_ID =', process.env.NEXT_PUBLIC_PAYPAL_ID)
+        console.log('\PAYPAL_SK =', process.env.PAYPAL_SK)
+        let paypalOrder
+        if (process.env.PAYPAL_SK && process.env.NEXT_PUBLIC_PAYPAL_ID) {
+          paypalOrder = await axios.get(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${id}`, {
+            auth: {
+              username: process.env.NEXT_PUBLIC_PAYPAL_ID,
+              password: process.env.PAYPAL_SK
+            },
+          }).then(res => res.data)
+            .catch(err => console.log('paypal request err =', err))
+        } else {
+          console.log('missing env var for requesting to paypal')
+        }
+        console.log('paypal order data', JSON.stringify(paypalOrder, null, 4))
+      }
       
       console.log('==================================')
     }

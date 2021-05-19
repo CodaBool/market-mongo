@@ -18,6 +18,8 @@ export default function orders({ orders }) {
   if (orderData) return <OrderDetail order={orderData} setOrderData={setOrderData} />
 
   console.log(orders)
+
+  if (orders.length === 0) return <p>No orders to show</p>
   
   return (
     <>
