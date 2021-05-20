@@ -12,17 +12,15 @@ export const config = {
 export default async (req, res) => {
   try {
     console.log('req in', process.env.NODE_ENV, 'enviroment')
-    const { method, body, headers, socket } = req
+    const { method, body, headers } = req
     const buf = await buffer(req)
 
     // Authorize
     if (process.env.NODE_ENV === 'production') {
-      console.log('DEBUG stripe webhook, trying to read socket', socket)
-      if (!socket) console.log('issue getting socket for ip', JSON.stringify(req, null, 4))
-      console.log('prod env', process.env.ALLOW_LIST, socket.remoteAddress, headers.host)
+      console.log('prod env', process.env.ALLOW_LIST, headers['x-forwarded-for'], headers['x-forwarded-for'])
       const allowedIPs = process.env.ALLOW_LIST.split(',')
-      if (!allowedIPs.includes(socket.remoteAddress)) throw `Unauthorized IP ${socket.remoteAddress}`
-      if (!headers.host.slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
+      if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${ip}`
+      if (!headers['x-forwarded-for'].slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
     }
 
     // Construct
