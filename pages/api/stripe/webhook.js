@@ -59,12 +59,19 @@ export default cors(async (req, res) => {
 
       await connectDB()
 
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         user = { _id: '6091e915a717e41c88a8d612'}
         // console.log('local environment detected, using placeholder user')
       } else {
         console.log('cus_id =', intent.customer, '| email =', intent.charges.data[0].billing_details.email)
-        user = await User.findOne({ customerId: intent.customer }).catch(console.log)
+        // user = await User.findOne({ customerId: intent.customer }).catch(console.log)
+
+        user = await User.findById('6091e915a717e41c88a8d612')
+          .catch(err => {
+            console.log(err)
+            throw `${err.message}`
+          })
+        if (!user) throw `got user of ${user}`
         console.log('found user with id =', user._id)
       }
       
