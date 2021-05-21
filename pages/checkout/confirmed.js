@@ -290,7 +290,7 @@ export async function getServerSideProps(context) {
     const jwt = await getSession(context)
     const id = context.query.id
     let ip = context.req.socket?.remoteAddress || context.req.headers['x-forwarded-for']
-    console.log('can i get an ip =', ip)
+    console.log('can i get an ip =', ip) // working on dev.
     if (!jwt) throw `Unauthorized: ${id} | ${ip}`
     await connectDB()
     let order = await Order.findById(id)
