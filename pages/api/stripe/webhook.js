@@ -56,6 +56,9 @@ export default cors(async (req, res) => {
       // TODO:
       const { object: intent } = event.data
       let user = null
+
+      await connectDB()
+
       if (process.env.NODE_ENV !== 'production') {
         user = { _id: '6091e915a717e41c88a8d612'}
         // console.log('local environment detected, using placeholder user')
@@ -66,8 +69,7 @@ export default cors(async (req, res) => {
       }
       
       if (!user) throw 'Could not associate intent with a user'
-
-      await connectDB()
+      
       const data = extractRelevantData(intent)
       const products = await Product.find()
       const order = await Order.findOne({ id_stripe_intent: intent.id })
