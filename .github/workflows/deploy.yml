@@ -60,8 +60,6 @@ jobs:
           
       - name: Deploy app to AWS
         run: | # WARNING: hack to reduce 250+ print lines from serverless. sed (remove) redundant prints -> logs to a file -> grep (search) for error -> exit if found
-          echo "stripe wh allow list =${STRIPE_WH_ALLOW_LIST}"
-          echo "stripe api allow list =${STRIPE_API_ALLOW_LIST}"
           npx serverless 2>&1 | sed '/› Deploying\|aNA/d' | tee log_file
           if grep -q 'error' log_file; then
             exit 1
