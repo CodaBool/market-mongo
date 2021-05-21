@@ -18,7 +18,7 @@ export default async (req, res) => {
     if (process.env.NODE_ENV === 'production') {
       console.log('prod env', process.env.STRIPE_WH_ALLOW_LIST, headers['x-forwarded-for'])
       const allowedIPs = process.env.STRIPE_WH_ALLOW_LIST.split(',')
-      if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${ip}`
+      if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${headers['x-forwarded-for']}`
       if (!headers['x-forwarded-for'].slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
     }
 
