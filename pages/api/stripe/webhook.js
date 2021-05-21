@@ -3,7 +3,7 @@ import { buffer } from "micro"
 import Cors from 'micro-cors'
 import { extractRelevantData, webhookOrderValidation } from "../../../constants"
 import { Order, Product, User } from '../../../models'
-import { connectDB, castToObjectId } from '../../../util/db'
+import { connectDB } from '../../../util/db'
 
 const cors = Cors({
   allowMethods: ['POST', 'HEAD'],
@@ -19,6 +19,7 @@ export default cors(async (req, res) => {
   try {
     const { method, body, headers } = req
     const buf = await buffer(req)
+
     // Authorize
     if (process.env.NODE_ENV === 'production') {
       console.log('host', headers.host)
@@ -43,6 +44,7 @@ export default cors(async (req, res) => {
     }
 
     // Construct
+    if (!process.env.STRIPE_WH) throw 'no sign secret provided'
     const event = stripe.webhooks.constructEvent(
       buf.toString(),
       headers['stripe-signature'],
@@ -51,38 +53,32 @@ export default cors(async (req, res) => {
     const { type } = event 
     console.log('✅', event.type)
 
+    const test = (event.id === 'evt_00000000000000' || event.data.object.description === '(created by Stripe CLI)')
+
     if (type === 'payment_intent.succeeded') {
 
       // TODO:
       const { object: intent } = event.data
-      let user = null
+      let user = null, order = null
 
       await connectDB()
 
-      if (false) {
+      if (process.env.NODE_ENV !== 'production' || test) {
         user = { _id: '6091e915a717e41c88a8d612'}
-        // console.log('local environment detected, using placeholder user')
+        order = await Order.findById('cs_test_a1ybxQ4AGIDzWHTP1B23GqrvOsGU4aiU0eEnBvqaEx1wKme7byJJzgcxif')
       } else {
         console.log('cus_id =', intent.customer, '| email =', intent.charges.data[0].billing_details.email)
-        // user = await User.findOne({ customerId: intent.customer }).catch(console.log)
-
-        user = await User.findById('6091e915a717e41c88a8d612')
-          .catch(err => {
-            console.log(err)
-            throw `${err.message}`
-          })
-        if (!user) throw `got user of ${user}`
-        console.log('found user with id =', user._id)
+        user = await User.findOne({ customerId: intent.customer })
+        order = await Order.findOne({ id_stripe_intent: intent.id })
       }
       
-      if (!user) throw 'Could not associate intent with a user'
+      if (!user || !order) throw 'Could not associate intent with a user, or an order'
       
       const data = extractRelevantData(intent)
       const products = await Product.find()
-      const order = await Order.findOne({ id_stripe_intent: intent.id })
       const valid = webhookOrderValidation(products, order.items, data)
       console.log('valid check ----->\n' + JSON.stringify(valid, null, 4))
-      const updatedOrder = await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, {valid}, {new: true})
+      await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, {valid})
 
     } else if (type === 'payment_method.attached') {
       // console.log('payment_method.attached =', event)
@@ -90,14 +86,12 @@ export default cors(async (req, res) => {
       // console.log('payment_intent.created =', event)
     } else if (type === 'charge.succeeded') {
     } else if (type === 'checkout.session.created') {
-      console.log('session created metadata =', event.data.object.metadata)
     } else if (type === 'charge.succeeded') {
       // console.log('charge.succeeded =')
       // console.log(JSON.stringify(event, null, 4))
     } else if (type === 'checkout.session.completed') {
       // console.log('checkout.session.completed =')
       // console.log(JSON.stringify(event, null, 4))
-      console.log('session completed metadata =', event.data.object.metadata)
 
       // TRUE! metadata passed from create to complete
 
