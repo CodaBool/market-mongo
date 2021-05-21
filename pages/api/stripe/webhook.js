@@ -11,11 +11,12 @@ export const config = {
 
 export default async (req, res) => {
   try {
+    console.log('got wb req')
     const { method, body, headers } = req
     const buf = await buffer(req)
     // Authorize
     if (process.env.NODE_ENV === 'production') {
-      console.log('prod env', process.env.ALLOW_LIST, headers['x-forwarded-for'], headers['x-forwarded-for'])
+      console.log('prod env', process.env.ALLOW_LIST, headers['x-forwarded-for'])
       const allowedIPs = process.env.ALLOW_LIST.split(',')
       if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${ip}`
       if (!headers['x-forwarded-for'].slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`

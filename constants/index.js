@@ -40,7 +40,7 @@ export function createOrderValidation(source, cart, vendor) {
   let total = 0
   let line = {}, monLine = {}
   for (const id in cart) {
-    console.log('loop id=', id)
+    // console.log('loop id=', id)
     const item = source.find(product => (product._id === id))
     // console.log('match', item, '@', id)
     // verify that all ids exist in source

@@ -40,6 +40,8 @@ serverless:
         PAYPAL_WH: ${env.PAYPAL_WH}
         PAYPAL_SK: ${env.PAYPAL_SK}
         NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
+        STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
+        STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
     cloudfront:
       distributionId: EIWEPBSNER5B3
       # aliases: ["${alias.${stage}}.codattest.com"]
