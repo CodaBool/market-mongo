@@ -16,7 +16,7 @@ serverless:
     publicDirectoryCache: false
     bucketName: ${name}-${stage}
     domain: ${domain.${stage}}
-    timeout: 60 # 1-900
+    timeout: 30 # 1-900
     memory: # 128-10240
       defaultLambda: 384 #384 got err
       apiLambda: 700 #448 got err
