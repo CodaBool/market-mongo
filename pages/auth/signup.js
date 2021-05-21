@@ -20,9 +20,8 @@ export default function Signup() {
   const [submitting, setSubmitting] = useState(false)
   const [session, loading] = useSession()
   const [success, setSuccess] = useState(false)
-  const [show, setShow] = useState(false)
+  const [toastError, setToastError] = useState('')
   const { handleSubmit, watch, errors, control, getValues } = useForm()
-  const router = useRouter()
   const captcha = useRef(null)
 
   const onSubmit = (data) => {
@@ -44,12 +43,7 @@ export default function Signup() {
               callbackUrl: ''
             })
           })
-          .catch(err => {
-            console.log(err.response.data.msg)
-            if (err.response.data.msg.includes('Email Taken')) {
-              setShow(true)
-            }
-          })
+          .catch(err => setToastError(err.response.data.msg))
         .finally(() => {
           captcha.current.reset()
           setSubmitting(false)
@@ -152,13 +146,13 @@ export default function Signup() {
       </Form>
       <div className="toastHolder" style={{ position: 'fixed', top: '120px', right: '20px' }}>
         <Toast
-          show={show}
-          setShow={setShow}
-          title="Email Taken"
+          show={toastError}
+          setShow={setToastError}
+          title="Signup Issue"
           error
           body={
             <h5 className="text-danger">
-              An account already exists with that Email Address
+              {toastError}
             </h5>
           }
         />

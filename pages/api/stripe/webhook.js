@@ -27,6 +27,7 @@ export default async (req, res) => {
         if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${headers['x-forwarded-for']}`
       }
       if (headers.host) {
+        // dev host is = market-mongo-dev.s3.us-east-1.amazonaws.com
         console.log('slice result =', headers.host.slice(-13))
         console.log('slice exact compare result =', headers.host.slice(-13) !== 'codattest.com')
         console.log('simplier includes result = ', headers.host.includes('codattest.com'))

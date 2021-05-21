@@ -35,7 +35,10 @@ export default (req, res) => {
           try {
             await connectDB()
             const user = await User.findOne({ email: clientData.email }) // null if not found
-              .catch(err => console.log(err))
+              .catch(err => {
+                console.log('signin error', err.message, '| timeout?', err.message.includes('timed out'))
+                if (err.message.includes('timed out')) throw 'timeout'
+              })
             if (user) {
               const validPassword = await compare(
                 clientData.password,
@@ -50,8 +53,11 @@ export default (req, res) => {
               return Promise.reject('/auth/login?error=nonexistant')
             }
           } catch (err) {
-            console.log('Login Failed', err)
-            return Promise.reject('/auth/login?error=unknown')
+            if (err === 'timeout') {
+              return Promise.reject('/auth/login?error=timeout')
+            } else {
+              return Promise.reject('/auth/login?error=unknown')
+            }
           }
         }
       })

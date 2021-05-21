@@ -11,14 +11,24 @@ export default async (req, res) => {
     // Authorize
     if (method !== 'POST') throw 'Bad Request'
     if (process.env.NODE_ENV === 'production') {
-      console.log('DEBUG paypal webhook, trying to read socket', socket)
-      // console.log('prod env', process.env.ALLOW_LIST, socket.remoteAddress, headers.host)
-      // const allowedIPs = process.env.ALLOW_LIST.split(',')
-      // if (!allowedIPs.includes(socket.remoteAddress)) throw `Unauthorized IP ${socket.remoteAddress}`
-      // if (!headers.host.slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
-
-      // is this even a thing?
-      // const liveEnv = new paypal.core.LiveEnviroment(process.env.NEXT_PUBLIC_PAYPAL_ID, process.env.PAYPAL_SK)
+      console.log('host', headers.host)
+      console.log('ip', headers['x-forwarded-for'])
+      // console.log('allowed ips', process.env.STRIPE_WH_ALLOW_LIST)
+      // let allowedIPs
+      // if (process.env.STRIPE_WH_ALLOW_LIST) {
+      //   allowedIPs = process.env.STRIPE_WH_ALLOW_LIST.split(',')
+      // }
+      // console.log('allow list split', allowedIPs)
+      // if (allowedIPs) {
+      //   if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${headers['x-forwarded-for']}`
+      // }
+      // if (headers.host) {
+      //   console.log('slice result =', headers.host.slice(-13))
+      //   console.log('slice exact compare result =', headers.host.slice(-13) !== 'codattest.com')
+      //   console.log('simplier includes result = ', headers.host.includes('codattest.com'))
+      //   console.log('find one to test header host with')
+      //   // if (!headers.host.slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
+      // }
 
       const env = new paypal.core.SandboxEnvironment(process.env.NEXT_PUBLIC_PAYPAL_ID, process.env.PAYPAL_SK)
       const paypalAPI = new paypal.core.PayPalHttpClient(env)

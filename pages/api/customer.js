@@ -30,8 +30,11 @@ export default async (req, res) => {
         password: body.password,
         customerId: customer.id
       }).catch(err => {
-        stripe.customers.del(customer.id) // roll back stripe creation
+        console.log('err', err.message)
+        console.log('rolling back customer creation', customer.id)
+        stripe.customers.del(customer.id)
         if (err.code === 11000) throw 'User already exists'
+        if (err.message.includes('timed out')) throw 'Server Timeout'
       })
       if (user && customer) {
         res.status(200).json({id: user._id})
@@ -64,9 +67,9 @@ export default async (req, res) => {
     }
   } catch (err) {
     if (typeof err === 'string') {
-      res.status(400).json({ msg: '/customer: ' + err })
+      res.status(400).json({ msg: err })
     } else {
-      res.status(500).json({ msg: '/customer: ' + (err.message || err)})
+      res.status(500).json({ msg: err.message || err})
     }
   }
 }

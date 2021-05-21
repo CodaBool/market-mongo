@@ -18,6 +18,7 @@ export default function Login({ csrf }) {
     if (router.query.email) fill()
     if (router.query.error === 'nonexistant') setError('No user found by that email')
     if (router.query.error === 'invalid') setError('Invalid login')
+    if (router.query.error === 'timeout') setError('Server Timeout, try again later')
     if (router.query.error === 'unkown') setError('Something went wrong')
   }, [router.query.error])
   
