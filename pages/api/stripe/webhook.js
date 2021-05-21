@@ -1,16 +1,23 @@
 const stripe = require('stripe')(process.env.STRIPE_SK, { apiVersion: '2020-08-27' })
 import { buffer } from "micro"
+import Cors from 'micro-cors'
 import { extractRelevantData, webhookOrderValidation } from "../../../constants"
 import { Order, Product, User } from '../../../models'
 import { connectDB, castToObjectId } from '../../../util/db'
+
+const cors = Cors({
+  allowMethods: ['POST', 'HEAD'],
+})
+
 export const config = {
   api: {
     bodyParser: false,
   },
 }
 
-export default async (req, res) => {
+export default cors(async (req, res) => {
   try {
+    // console.log('wh secret', process.env.STRIPE_WH, headers['stripe-signature'])
     const { method, body, headers } = req
     const buf = await buffer(req)
     // Authorize
@@ -38,7 +45,7 @@ export default async (req, res) => {
 
     // Construct
     const event = stripe.webhooks.constructEvent(
-      buf,
+      buf.toString(),
       headers['stripe-signature'],
       process.env.STRIPE_WH
     )
@@ -111,4 +118,4 @@ export default async (req, res) => {
       res.status(500).json({ msg: 'webhook ❌ ' + (err.message || err)})
     }
   }
-}
+})
