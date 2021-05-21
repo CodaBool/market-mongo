@@ -236,7 +236,7 @@
 // */
 
 // REWRITE v2
-import { usd } from '../../constants'
+import { extractRelevantData, usd } from '../../constants'
 import { useEffect } from 'react'
 import axios from 'axios'
 // import { useRouter } from 'next/router'
@@ -299,33 +299,8 @@ export async function getServerSideProps(context) {
       if (order.vendor === 'stripe') {
         const stripe = require('stripe')(process.env.STRIPE_SK)
         const intent = await stripe.paymentIntents.retrieve(order.id_stripe_intent)
-
-        // TODO: dry this with the webhook
-        const charges = intent.charges.data.map(charge => ({
-          _id: charge.id,
-          paid: charge.paid,
-          currency: charge.currency,
-          captured: charge.captured,
-          pay_status: charge.status,
-          refunded: charge.refunded,
-          amount: charge.amount_captured,
-          receipt_url: charge.receipt_url, 
-          receipt_email: charge.receipt_email,
-          receipt_number: charge.receipt_number,
-          risk_level: charge.outcome.risk_level,
-          risk_score: charge.outcome.risk_score,
-          card: charge.payment_method_details.card,
-          created: new Date(charge.created * 1000).toISOString(),
-        }))
-        newData = {
-          charges,
-          status: 'complete',
-          pay_status: intent.status,
-          shipping: intent.shipping,
-          client_secret: intent.client_secret,
-          amount_received: intent.amount_received,
-          id_stripe_payment_method: intent.id_payment_method,
-        }
+        newData = extractRelevantData(intent)
+        // console.log('confirmed obj', JSON.stringify(newData, null, 4))
       }
       console.log('CONFIRMED:\n_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
       order = await Order.findByIdAndUpdate(id, newData, {new: true})

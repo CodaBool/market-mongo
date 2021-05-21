@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Load } from '../components/Load'
 import { Spinner } from 'react-bootstrap'
+import { extractRelevantData, webhookOrderValidation } from '../constants'
 
 export default function Index({ time }) {
   useEffect(() => {
@@ -16,13 +17,38 @@ export default function Index({ time }) {
     // axios.get('/api/test')
     //   .then(res => console.log(res.data))
     //   .catch(err => console.error(err.response.data.msg))
+
+    
   }, [])
 
 
   function test() {
+    const items = [
+      {
+        id_prod: 'prod_JQmgyaOTJlD1VG',
+        name: 'thing',
+        currency: 'USD',
+        quantity: 1,
+        value: 100
+      },
+      {
+        id_prod: 'prod_JQmgyaOTJlD1VG',
+        name: 'thing',
+        currency: 'USD',
+        quantity: 1,
+        value: 100
+      },
+    ]
+
     axios.get('/api/test')
-      .then(res => console.log(res.data))
-      .catch(err => console.error(err.response.data.msg))
+      .then(res => {
+        // console.log(res.data)
+        const data = extractRelevantData(res.data.intent)
+        // const valid = webhookOrderValidation(res.data.products, res.data.order.items, data)
+        const valid = webhookOrderValidation(res.data.products, items, data)
+        console.log('result', valid)
+      })
+      .catch(console.error)
   }
 
   return (

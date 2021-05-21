@@ -4,20 +4,20 @@ export const SHIPPING_COST = 7.99
 export const SHIPPING_EST = '2-4 Business Days'
 export const CATEGORY = ['Apparel', 'Electronic', 'Home', 'Grocery', 'Health', 'Toys', 'Handmade', 'Sports', 'Outdoors']
 export const USA_STATES = [
-  'AL','AK','AS','AZ','AR','CA','CO','CT','DE','DC','FM','FL','GA',
-  'GU','HI','ID','IL','IN','IA','KS','KY','LA','ME','MH','MD','MA',
-  'MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND',
-  'MP','OH','OK','OR','PW','PA','PR','RI','SC','SD','TN','TX','UT',
-  'VT','VI','VA','WA','WV','WI','WY'
+  'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
+  'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
+  'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
+  'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
+  'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
 ]
 
 export function usdPretty(price) {
   if (!price) return <p className="text-danger">Undefined Price</p>
   return (
     <h3 className="money">
-      <span className="align-top" style={{lineHeight: '1.7em', fontSize: '0.6em'}}>$</span>
-        {String(price).slice(0, -2)}
-      <span className="d-inline align-top" style={{lineHeight: '1.6em', fontSize: '0.6em'}}>{String(price).slice(-2)}</span>
+      <span className="align-top" style={{ lineHeight: '1.7em', fontSize: '0.6em' }}>$</span>
+      {String(price).slice(0, -2)}
+      <span className="d-inline align-top" style={{ lineHeight: '1.6em', fontSize: '0.6em' }}>{String(price).slice(-2)}</span>
     </h3>
   )
 }
@@ -28,20 +28,20 @@ export function usd(price) {
   return String(price).slice(0, -2) + '.' + String(price).slice(-2, String(price).length)
 }
 export function genQuanArr(quantity) {
-  if (quantity > MAX_DUP_ITEMS) return Array.from({length: MAX_DUP_ITEMS}, (x, i) => i + 1)
-  return Array.from({length: quantity}, (x, i) => i + 1)
+  if (quantity > MAX_DUP_ITEMS) return Array.from({ length: MAX_DUP_ITEMS }, (x, i) => i + 1)
+  return Array.from({ length: quantity }, (x, i) => i + 1)
 }
 
-export function validate(source, cart, vendor) {
+export function createOrderValidation(source, cart, vendor) {
   const vendorLines = [], orderLines = []
-  
+
   if (!cart) throw 'No products in cart'
 
   let total = 0
   let line = {}, monLine = {}
   for (const id in cart) {
-    // console.log(source)
-    const item = source.find(product => product._id === id)
+    console.log('loop id=', id)
+    const item = source.find(product => (product._id === id))
     // console.log('match', item, '@', id)
     // verify that all ids exist in source
     if (!item) throw `No product in source with id "${id}"`
@@ -52,11 +52,11 @@ export function validate(source, cart, vendor) {
     // verify that the local does not go over store duplicate limit
     // console.log('check if over max', cart[id].quantity, 'vs', MAX_DUP_ITEMS)
     if (cart[id].quantity > MAX_DUP_ITEMS) throw 'Exceeding max per customer limit'
-    
+
     // verify that the local does not go over store supply
     // console.log('check if over supply', cart[id].quantity, 'vs', item.quantity)
     if (cart[id].quantity > item.quantity) throw 'Exceeding supply limit'
-    
+
     // don't allow empty quantity
     if (cart[id].quantity === 0) throw 'Empty quantity'
 
@@ -97,13 +97,114 @@ export function validate(source, cart, vendor) {
       value: item.price
     }
 
-    
+
     total += (item.price * cart[id].quantity)
     vendorLines.push(line)
     orderLines.push(monLine)
   }
 
-  return {vendorLines, total, orderLines}
+  return { vendorLines, total, orderLines }
+}
+
+export function webhookOrderValidation(products, items, intent) {
+  let validatedItems = []
+  let expected = 0
+  let paid = 0
+  let issues = false
+  if (intent) { // stripe
+    for (const item of items) {
+      const product = products.find(product => item.id_prod === product._id)
+      validatedItems.push({
+        id: product._id,
+        currency: product.currency === item.currency ? true : `${product.currency}!=${item.currency}`,
+        quantity: product.quantity < item.quantity ? `${product.quantity}<${item.quantity}` : true,
+        price: product.price === item.value ? true : `${product.price}!=${item.value}`
+      })
+      expected += product.price * item.quantity
+    }
+
+  } else { // paypal
+    console.log('you passed a paypal order into webhook validation, and this is not yet built to handle that!')
+  }
+  // check if all are valid
+  const details = validatedItems.filter(item => item.currency !== true || item.price !== true || item.quantity !== true)
+
+  if (intent) {
+    paid = intent.amount_received
+    if (details.length > 0) {
+      // console.log('ISSUES:', details.length, '>', 0)
+      issues = true
+    }
+    if (paid !== expected) {
+      // console.log('PAYMENT:', paid, '!==', expected)
+      issues = true
+    }
+  }
+  if (!issues) return { wh_verified: true, issues }
+  return { wh_verified: true, details, expected: expected, issues, paid }
+}
+
+export function extractRelevantData(source) {
+  let obj = {}
+  if (source.client_secret) { // stripe
+    const charges = source.charges.data.map(charge => ({
+      _id: charge.id,
+      paid: charge.paid,
+      currency: charge.currency,
+      captured: charge.captured,
+      pay_status: charge.status,
+      refunded: charge.refunded,
+      amount: charge.amount_captured,
+      receipt_url: charge.receipt_url,
+      receipt_email: charge.receipt_email,
+      receipt_number: charge.receipt_number,
+      risk_level: charge.outcome.risk_level,
+      risk_score: charge.outcome.risk_score,
+      card: charge.payment_method_details.card,
+      created: new Date(charge.created * 1000).toISOString(),
+    }))
+    obj = {
+      charges,
+      status: 'complete',
+      pay_status: source.status,
+      shipping: source.shipping,
+      client_secret: source.client_secret,
+      amount_received: source.amount_received,
+      id_stripe_payment_method: source.id_payment_method,
+    }
+  } else { // paypal
+    console.log('you passed a paypal order, and this is not yet built to handle that!')
+  }
+  return obj
+}
+
+export function validateOrder(products, order, intent) {
+  const { validatedItems, totalPrice } = validateItems(products, order.items)
+  return false
+  // return {
+  //   wh_verified: true,
+  //   completely_valid: false,
+  //   price: totalPrice === order.amount ? true : `${totalPrice}!=${order.amount}`,
+  //   quantity: product.currency === order.currency ? true : `${product.currency}!=${order.currency}`,
+  // }
+}
+
+
+export function validateItems(products, items) {
+  if (!items) throw 'No items'
+  let validatedItems = []
+  let totalPrice = 0
+  for (const item of items) {
+    const product = products.find(product => item.id_prod === product._id)
+    validatedItems.push({
+      id: product._id,
+      currency: product.currency === item.currency ? true : `${product.currency}!=${item.currency}`,
+      quantity: product.quantity < item.quantity ? `${product.quantity}<${item.quantity}` : true,
+      price: product.price === item.value ? true : `${product.price}!=${item.value}`
+    })
+    totalPrice += product.price * item.quantity
+  }
+  return { validatedItems, totalPrice }
 }
 
 export function getState(zipString) { // Get State from Zip Code
@@ -111,7 +212,7 @@ export function getState(zipString) { // Get State from Zip Code
     return undefined
   }
 
-  const zipcode = parseInt(zipString, 10); 
+  const zipcode = parseInt(zipString, 10);
   let st
 
   if (zipcode >= 35000 && zipcode <= 36999) {
@@ -200,7 +301,7 @@ export function getState(zipString) { // Get State from Zip Code
     st = 'SD';
   } else if (zipcode >= 37000 && zipcode <= 38599) {
     st = 'TN';
-  } else if ( (zipcode >= 75000 && zipcode <= 79999) || (zipcode >= 88500 && zipcode <= 88599) ) {
+  } else if ((zipcode >= 75000 && zipcode <= 79999) || (zipcode >= 88500 && zipcode <= 88599)) {
     st = 'TX';
   } else if (zipcode >= 84000 && zipcode <= 84999) {
     st = 'UT';

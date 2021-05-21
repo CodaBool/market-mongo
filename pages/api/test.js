@@ -1,13 +1,14 @@
 import applyMiddleware from '../../util'
-import { User } from '../../models'
+import { Order, Product, User } from '../../models'
 import { getSession } from 'coda-auth/client'
+import { connectDB } from '../../util/db'
 
 export default applyMiddleware(async (req, res) => {
   try {
     let resp = []
     let envVars = {}
     const session = await getSession({req})
-    console.log(session)
+    // console.log(session)
     if (!session) throw 'Unathorized'
     // console.log(session.user)
     if (process.env.NEXT_PUBLIC_STRIPE_PK) {
@@ -50,13 +51,16 @@ export default applyMiddleware(async (req, res) => {
     } else {
       envVars.NEXT_PUBLIC_NODE_ENV = 'MISSING AS IT SHOULD BE'
     }
+    await connectDB()
+    const orders = await Order.find()
+    const products = await Product.find()
     const stripe = require('stripe')(process.env.STRIPE_SK)
     // const customer = await stripe.customers.retrieve(session.customerId)
     //     .catch(err => { throw err.raw.message })
-    const paymentIntent = await stripe.paymentIntents.retrieve('pi_1IsWJbAJvGrE9xG5QFvf4Mic')
-    const charge = await stripe.charges.retrieve('ch_1IsWJxAJvGrE9xG5Ji35QhPp')
-    const sSession = await stripe.checkout.sessions.retrieve('cs_test_a1NC3WUzhHNbW0eVMaydFhRH2hgBKiV2QPYeqO1cQ8yyJ3G7MvJU344U0e')
-    const line_items_stripe = await stripe.checkout.sessions.listLineItems('cs_test_a1NC3WUzhHNbW0eVMaydFhRH2hgBKiV2QPYeqO1cQ8yyJ3G7MvJU344U0e')
+    const intent = await stripe.paymentIntents.retrieve(orders[0].id_stripe_intent)
+    // const charge = await stripe.charges.retrieve('ch_1IsWJxAJvGrE9xG5Ji35QhPp')
+    // const sSession = await stripe.checkout.sessions.retrieve('cs_test_a1NC3WUzhHNbW0eVMaydFhRH2hgBKiV2QPYeqO1cQ8yyJ3G7MvJU344U0e')
+    // const line_items_stripe = await stripe.checkout.sessions.listLineItems('cs_test_a1NC3WUzhHNbW0eVMaydFhRH2hgBKiV2QPYeqO1cQ8yyJ3G7MvJU344U0e')
     // await User.findOne({})
     //   .then(response => {
     //     if (response) {
@@ -65,7 +69,8 @@ export default applyMiddleware(async (req, res) => {
     //     resp = response
     //   })
     //   .catch(err => console.log('/test', (err.message || err)))
-    res.status(200).json({resp, envVars, paymentIntent, charge, sSession, line_items_stripe})
+    // console.log(products)
+    res.status(200).json({resp, envVars, order: orders[0], intent, products })
   } catch (err) {
     res.status(500).json({msg: '/test: ' + (err.message || err)})
   }

@@ -3,7 +3,7 @@ import sdk from '@paypal/checkout-server-sdk'
 import applyMiddleware from '../../../util'
 // import { castToObjectId } from '../../../util/db'
 import { User, Order, Product } from '../../../models'
-import { convertPayPalAmount, MAX_DUP_ITEMS, usd, validate } from '../../../constants'
+import { convertPayPalAmount, MAX_DUP_ITEMS, usd, createOrderValidation } from '../../../constants'
 
 export default applyMiddleware(async (req, res) => {
   try {
@@ -57,7 +57,7 @@ export default applyMiddleware(async (req, res) => {
       } else { // create order
 
         const products = await Product.find()
-        const { vendorLines, total, orderLines } = validate(products, body, 'paypal')
+        const { vendorLines, total, orderLines } = createOrderValidation(products, body, 'paypal')
 
         const request = new sdk.orders.OrdersCreateRequest()
         request.prefer("return=representation")

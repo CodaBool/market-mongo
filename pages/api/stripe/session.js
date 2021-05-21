@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SK)
 import { getSession } from 'coda-auth/client'
 import { Product, Order } from '../../../models'
 import applyMiddleware from '../../../util'
-import { validate } from '../../../constants'
+import { createOrderValidation } from '../../../constants'
 
 export default applyMiddleware(async (req, res) => {
   try {
@@ -15,7 +15,7 @@ export default applyMiddleware(async (req, res) => {
     if (method === 'POST') {
 
       const products = await Product.find()
-      const { vendorLines, total, orderLines } = validate(products, body, 'stripe')
+      const { vendorLines, total, orderLines } = createOrderValidation(products, body, 'stripe')
 
       // TODO: allow for async calls
       const session = await stripe.checkout.sessions.create({
