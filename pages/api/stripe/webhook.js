@@ -11,15 +11,28 @@ export const config = {
 
 export default async (req, res) => {
   try {
-    console.log('got wb req')
     const { method, body, headers } = req
     const buf = await buffer(req)
     // Authorize
     if (process.env.NODE_ENV === 'production') {
-      console.log('prod env', process.env.STRIPE_WH_ALLOW_LIST, headers['x-forwarded-for'])
-      const allowedIPs = process.env.STRIPE_WH_ALLOW_LIST.split(',')
-      if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${headers['x-forwarded-for']}`
-      if (!headers['x-forwarded-for'].slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
+      console.log('host', headers.host)
+      console.log('ip', headers['x-forwarded-for'])
+      console.log('allowed ips', process.env.STRIPE_WH_ALLOW_LIST)
+      let allowedIPs
+      if (process.env.STRIPE_WH_ALLOW_LIST) {
+        allowedIPs = process.env.STRIPE_WH_ALLOW_LIST.split(',')
+      }
+      console.log('allow list split', allowedIPs)
+      if (allowedIPs) {
+        if (!allowedIPs.includes(headers['x-forwarded-for'])) throw `Unauthorized IP ${headers['x-forwarded-for']}`
+      }
+      if (headers.host) {
+        console.log('slice result =', headers.host.slice(-13))
+        console.log('slice exact compare result =', headers.host.slice(-13) !== 'codattest.com')
+        console.log('simplier includes result = ', headers.host.includes('codattest.com'))
+        console.log('find one to test header host with')
+        // if (!headers.host.slice(-13) === 'codattest.com') throw `Unauthorized origin ${req.get('host')}`
+      }
     }
 
     // Construct
@@ -33,7 +46,7 @@ export default async (req, res) => {
 
     if (type === 'payment_intent.succeeded') {
 
-      // TODO: could update email here too??
+      // TODO:
       const { object: intent } = event.data
       let user = null
       if (process.env.NODE_ENV !== 'production') {
@@ -52,9 +65,8 @@ export default async (req, res) => {
       const products = await Product.find()
       const order = await Order.findOne({ id_stripe_intent: intent.id })
       const valid = webhookOrderValidation(products, order.items, data)
-      // console.log('valid check ----->\n' + JSON.stringify(valid, null, 4))
-      await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, {valid})
-      console.log('updated order', order._id, 'with valid =', !valid.issues)
+      console.log('valid check ----->\n' + JSON.stringify(valid, null, 4))
+      const updatedOrder = await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, {valid}, {new: true})
 
     } else if (type === 'payment_method.attached') {
       // console.log('payment_method.attached =', event)
@@ -69,15 +81,21 @@ export default async (req, res) => {
     } else if (type === 'checkout.session.completed') {
       // console.log('checkout.session.completed =')
       // console.log(JSON.stringify(event, null, 4))
+      console.log('session completed metadata =', event.data.object.metadata)
+
+      // TRUE! metadata passed from create to complete
+
     } else if (type === 'customer.updated') {
+      console.log('customer email updated, bad stripe!')
       // revert email back to original
       const { metadata, email, id } = event.data.object
       if (!metadata.signupEmail || !email || !id) throw `Missing data | signupEmail=${metadata.signupEmail}, email=${email}, id=${id}`
-      console.log('stripe customer email match?', metadata.signupEmail, '===', email)
+      console.log('is match?', metadata.signupEmail, '===', email)
       if (metadata.signupEmail !== email) {
         console.log('reverting customer', id, 'from', email, '=>', metadata.signupEmail)
         const customer = await stripe.customers.update(id, { email: metadata.signupEmail })
-        console.log('fixed customer =', customer.id, 'to', metadata.signupEmail)
+          .catch(err => { console.log(err); throw err.raw.message })
+        console.log('fixed customer =', customer)
       }
     } else {
       // console.log(type, event)
