@@ -109,6 +109,7 @@ module.exports = {
     JWT_SECRET: process.env.JWT_SECRET,
     STRIPE_SK: process.env.STRIPE_SK,
     PAYPAL_WH: process.env.PAYPAL_WH,
+    STRIPE_WH: process.env.STRIPE_WH,
     PAYPAL_SK: process.env.PAYPAL_SK,
     BUILD_ID: process.env.BUILD_ID,
   },

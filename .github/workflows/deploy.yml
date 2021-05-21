@@ -78,6 +78,7 @@ jobs:
           RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
           BUILD_ID: ${{ steps.extract.outputs.build }}
           PAYPAL_WH: ${{ secrets.PAYPAL_WH }}
+          STRIPE_WH: ${{ secrets.STRIPE_WH }}
           PAYPAL_SK: ${{ secrets.PAYPAL_SK }}
           NEXT_PUBLIC_PAYPAL_ID: ${{ secrets.NEXT_PUBLIC_PAYPAL_ID }}
           STRIPE_WH_ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
