@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Load } from '../components/Load'
 import { Spinner } from 'react-bootstrap'
-import { extractRelevantData, webhookOrderValidation } from '../constants'
+import { extractRelevantData, itemsValidation } from '../constants'
 
 export default function Index({ time }) {
   useEffect(() => {
@@ -23,32 +23,94 @@ export default function Index({ time }) {
 
 
   function test() {
-    const items = [
-      {
-        id_prod: 'prod_JQmgyaOTJlD1VG',
-        name: 'thing',
-        currency: 'USD',
-        quantity: 1,
-        value: 100
+    const stuff = {
+      "create_time": "2021-05-24T14:28:54Z",
+      "purchase_units": [
+          {
+              "reference_id": "default",
+              "amount": {
+                  "currency_code": "USD",
+                  "value": "1.00",
+                  "breakdown": {
+                      "item_total": {
+                          "currency_code": "USD",
+                          "value": "1.00"
+                      }
+                  }
+              },
+              "payee": {
+                  "email_address": "sb-1d3np6113856@business.example.com",
+                  "merchant_id": "HABJV8ZAFTWTS"
+              },
+              "items": [
+                  {
+                      "name": "thing",
+                      "unit_amount": {
+                          "currency_code": "USD",
+                          "value": "1.00"
+                      },
+                      "quantity": "1",
+                      "description": "some desc... ",
+                      "sku": "prod_JQmgyaOTJlD1VG"
+                  }
+              ],
+              "shipping": {
+                  "name": {
+                      "full_name": "John Doe"
+                  },
+                  "address": {
+                      "address_line_1": "1 Main St",
+                      "admin_area_2": "San Jose",
+                      "admin_area_1": "CA",
+                      "postal_code": "95131",
+                      "country_code": "US"
+                  }
+              }
+          }
+      ],
+      "id": "5TF317183G7212630",
+      "intent": "CAPTURE",
+      "payer": {
+          "name": {
+              "given_name": "John",
+              "surname": "Doe"
+          },
+          "email_address": "sb-odshu6116493@personal.example.com",
+          "payer_id": "YNJ3F8B4AXDNS",
+          "address": {
+              "country_code": "US"
+          }
       },
-      {
-        id_prod: 'prod_JQmgyaOTJlD1VG',
-        name: 'thing',
-        currency: 'USD',
-        quantity: 1,
-        value: 100
-      },
-    ]
+      "status": "APPROVED"
+    }
+    const data = extractRelevantData(stuff)
+    console.log(data)
+    // const items = [
+    //   {
+    //     id_prod: 'prod_JQmgyaOTJlD1VG',
+    //     name: 'thing',
+    //     currency: 'USD',
+    //     quantity: 1,
+    //     value: 100
+    //   },
+    //   {
+    //     id_prod: 'prod_JQmgyaOTJlD1VG',
+    //     name: 'thing',
+    //     currency: 'USD',
+    //     quantity: 1,
+    //     value: 100
+    //   },
+    // ]
 
-    axios.get('/api/test')
-      .then(res => {
-        // console.log(res.data)
-        const data = extractRelevantData(res.data.intent)
-        // const valid = webhookOrderValidation(res.data.products, res.data.order.items, data)
-        const valid = webhookOrderValidation(res.data.products, items, data)
-        console.log('result', valid)
-      })
-      .catch(console.error)
+    // axios.get('/api/test')
+    //   .then(res => {
+    //     // console.log(res.data)
+    //     const data = extractRelevantData(res.data.intent)
+    //     // const valid = itemsValidation(res.data.products, res.data.order.items, data)
+    //     const valid = itemsValidation(res.data.products, items, data)
+    //     console.log('result', valid)
+    //   })
+    //   .catch(console.error)
   }
 
   return (

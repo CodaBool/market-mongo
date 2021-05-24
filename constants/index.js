@@ -106,39 +106,32 @@ export function createOrderValidation(source, cart, vendor) {
   return { vendorLines, total, orderLines }
 }
 
-export function webhookOrderValidation(products, items, intent) {
+export function itemsValidation(products, items, amount_received) {
   let validatedItems = []
   let expected = 0
   let paid = 0
   let issues = false
-  if (intent) { // stripe
-    for (const item of items) {
-      const product = products.find(product => item.id_prod === product._id)
-      validatedItems.push({
-        id: product._id,
-        currency: product.currency === item.currency ? true : `${product.currency}!=${item.currency}`,
-        quantity: product.quantity < item.quantity ? `${product.quantity}<${item.quantity}` : true,
-        price: product.price === item.value ? true : `${product.price}!=${item.value}`
-      })
-      expected += product.price * item.quantity
-    }
-
-  } else { // paypal
-    console.log('you passed a paypal order into webhook validation, and this is not yet built to handle that!')
+  for (const item of items) {
+    const product = products.find(product => item.id_prod === product._id)
+    validatedItems.push({
+      id: product._id,
+      currency: product.currency === item.currency ? true : `${product.currency}!=${item.currency}`,
+      quantity: product.quantity < item.quantity ? `${product.quantity}<${item.quantity}` : true,
+      price: product.price === item.value ? true : `${product.price}!=${item.value}`
+    })
+    expected += product.price * item.quantity
   }
   // check if all are valid
   const details = validatedItems.filter(item => item.currency !== true || item.price !== true || item.quantity !== true)
 
-  if (intent) {
-    paid = intent.amount_received
-    if (details.length > 0) {
-      // console.log('ISSUES:', details.length, '>', 0)
-      issues = true
-    }
-    if (paid !== expected) {
-      // console.log('PAYMENT:', paid, '!==', expected)
-      issues = true
-    }
+  paid = amount_received
+  if (details.length > 0) {
+    console.log('itemsValidation ISSUES:', details.length, '>', 0)
+    issues = true
+  }
+  if (paid !== expected) {
+    console.log('itemsValidation PAYMENT:', paid, '!==', expected)
+    issues = true
   }
   if (!issues) return { wh_verified: true, issues }
   return { wh_verified: true, details, expected: expected, issues, paid }

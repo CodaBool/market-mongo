@@ -294,17 +294,21 @@ export async function getServerSideProps(context) {
     if (!jwt) throw `Unauthorized: ${id} | ${ip}`
     await connectDB()
     let order = await Order.findById(id)
-    if (order.status === 'capture') { // order.status === 'created'
-      let newData = { status: 'complete' }
-      if (order.vendor === 'stripe') {
-        const stripe = require('stripe')(process.env.STRIPE_SK)
-        const intent = await stripe.paymentIntents.retrieve(order.id_stripe_intent)
-        newData = extractRelevantData(intent)
-        // console.log('confirmed obj', JSON.stringify(newData, null, 4))
-      }
-      console.log('CONFIRMED:\n_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
-      order = await Order.findByIdAndUpdate(id, newData, {new: true})
-    }
+
+    // MOVED TO WEBHOOKS
+
+    // if (order.status === 'capture') { // order.status === 'created'
+    //   let newData = { status: 'complete' }
+    //   if (order.vendor === 'stripe') {
+    //     const stripe = require('stripe')(process.env.STRIPE_SK)
+    //     const intent = await stripe.paymentIntents.retrieve(order.id_stripe_intent)
+    //     newData = extractRelevantData(intent)
+    //     // console.log('confirmed obj', JSON.stringify(newData, null, 4))
+    //   }
+    //   console.log('CONFIRMED:\n_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
+    //   order = await Order.findByIdAndUpdate(id, newData, {new: true})
+    // }
+
     if (jwt.id === String(order.user)) {
       return { props: { order: jparse(order) } }
     }

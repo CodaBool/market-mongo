@@ -1,7 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SK, { apiVersion: '2020-08-27' })
 import { buffer } from "micro"
 import Cors from 'micro-cors'
-import { extractRelevantData, webhookOrderValidation } from "../../../constants"
+import { extractRelevantData, itemsValidation } from "../../../constants"
 import { Order, Product, User } from '../../../models'
 import { connectDB } from '../../../util/db'
 
@@ -57,13 +57,13 @@ export default cors(async (req, res) => {
 
     if (type === 'payment_intent.succeeded') {
 
-      // TODO:
       const { object: intent } = event.data
       let user = null, order = null
 
       await connectDB()
 
       if (process.env.NODE_ENV !== 'production' || test) {
+        // replace with test data from db for testing with cli or gui
         user = { _id: '6091e915a717e41c88a8d612'}
         order = await Order.findById('cs_test_a1ybxQ4AGIDzWHTP1B23GqrvOsGU4aiU0eEnBvqaEx1wKme7byJJzgcxif')
       } else {
@@ -76,7 +76,7 @@ export default cors(async (req, res) => {
       
       const data = extractRelevantData(intent)
       const products = await Product.find()
-      const valid = webhookOrderValidation(products, order.items, data)
+      const valid = itemsValidation(products, order.items, data.amount_received)
       console.log('valid check ----->\n' + JSON.stringify(valid, null, 4))
       await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, {valid})
 
@@ -105,7 +105,7 @@ export default cors(async (req, res) => {
         console.log('reverting customer', id, 'from', email, '=>', metadata.signupEmail)
         const customer = await stripe.customers.update(id, { email: metadata.signupEmail })
           .catch(err => { console.log(err); throw err.raw.message })
-        console.log('fixed customer =', customer)
+        console.log('fixed customer =', customer.id)
       }
     } else {
       // console.log(type, event)
