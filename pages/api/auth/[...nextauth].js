@@ -60,6 +60,22 @@ export default (req, res) => {
             }
           }
         }
+      }),
+      Providers.GitHub({
+        clientId: 'b1dc555d44f6b7d50386',
+        clientSecret: process.env.GIT_CLIENT_SECRET
+      }),
+      // Providers.Twitter({
+      //   clientId: 'b1dc555d44f6b7d50386', // under review
+      //   clientSecret: process.env.TWITTER_CLIENT_SECRET
+      // }),
+      Providers.Google({
+        clientId: '660235104603-0os64a862203ek3lre73o2sinbr2de58.apps.googleusercontent.com',
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET
+      }),
+      Providers.Facebook({
+        clientId: '188652586473126',
+        clientSecret: process.env.FB_CLIENT_SECRET
       })
     ],
     callbacks: {

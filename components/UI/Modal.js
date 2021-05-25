@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button'
 
 export default function SampleModal() {
   const [show, setShow] = useState(true)
-
+  
   return (
     <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
@@ -23,3 +23,4 @@ export default function SampleModal() {
     </Modal>
   )
 }
+

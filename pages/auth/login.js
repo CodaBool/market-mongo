@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { Envelope, Key } from 'react-bootstrap-icons'
+import { Envelope, Key, SkipEndFill, CaretRight, ArrowReturnRight, } from 'react-bootstrap-icons'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
@@ -21,17 +21,14 @@ export default function Login({ csrf }) {
     if (router.query.error === 'timeout') setError('Server Timeout, try again later')
     if (router.query.error === 'unkown') setError('Something went wrong')
   }, [router.query.error])
-  
-  // useEffect(() => {
-  //   console.log('mount', control.fieldsRef.current.password.ref)
-  //   const timeout = setTimeout(() => {
-  //     console.log('NOW!')
-  //     control.fieldsRef.current.password.ref.focus()
-  //   }, 5000)
-  //   return () => {
-  //     clearTimeout(timeout)
-  //   }
-  // }, [])
+
+  function devLogin() {
+    signIn('credentials', {
+      email: 'test@user.com',
+      password: 'testuser',
+      callbackUrl: router.query.callbackUrl || ''
+    })
+  }
 
   function fill() {
     try {
@@ -59,20 +56,10 @@ export default function Login({ csrf }) {
     return <Load />
   }
 
-  // if (isLoad(session, loading, false)) return <Load />
-
   return (
     <>
       <h1 className="my-4 display-3">Login</h1>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        {/* 
-        Docs say this is unecessary since using the signIn method
-        <input
-          name="csrf"
-          type="hidden"
-          defaultValue={csrf}
-          ref={register}
-        /> */}
         <Form.Group>
           <Envelope className="mr-3 mb-1" size={30} />
           <Form.Label>Email</Form.Label>
@@ -112,10 +99,26 @@ export default function Login({ csrf }) {
           <Button
             className="mx-auto mt-5"
             style={{ width: '97.3%' }}
-            variant="primary"
             type="submit"
           >
             Login
+          </Button>
+          <Button
+            className="mx-auto mt-5"
+            style={{ width: '97.3%' }}
+            variant="outline-success"
+            onClick={devLogin}
+          >
+            Or... Use Test Account <ArrowReturnRight className="ml-2" size={20} />
+          </Button>
+          <Button onClick={() => signIn('github')}>
+            Github
+          </Button>
+          <Button onClick={() => signIn('facebook')}>
+            Facebook
+          </Button>
+          <Button onClick={() => signIn('twitter')}>
+            Twitter
           </Button>
         </Row>
         <p

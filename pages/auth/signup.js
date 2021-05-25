@@ -12,7 +12,7 @@ import { useRouter } from 'next/router'
 import { signIn, useSession } from 'coda-auth/client'
 import ReCAPTCHA from "react-google-recaptcha"
 import { Load } from '../../components/Load'
-import Toast from '../../components/Toast'
+import Toast from '../../components/UI/Toast'
 import axios from 'axios'
 
 export default function Signup() {

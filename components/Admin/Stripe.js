@@ -8,7 +8,7 @@ import Row from 'react-bootstrap/Row'
 import axios from 'axios'
 import { ImageFill, CloudCheckFill, ArrowClockwise } from 'react-bootstrap-icons'
 import { useForm, Controller } from 'react-hook-form'
-import Toast from '../Toast'
+import Toast from '../UI/Toast'
 import useDebounce from '../../constants/useDebounce'
 import BoxImg from '../UI/BoxImg'
 

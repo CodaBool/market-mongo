@@ -9,7 +9,7 @@ import { useShoppingCart } from 'use-shopping-cart'
 import { usdPretty, MAX_DUP_ITEMS } from '../constants'
 import { Image, BagCheckFill } from 'react-bootstrap-icons'
 import BoxImg from './UI/BoxImg'
-import Toast from './Toast'
+import Toast from './UI/Toast'
 
 export default function Products({ products, productClick }) {
   const [showSucc, setShowSucc] = useState(false)

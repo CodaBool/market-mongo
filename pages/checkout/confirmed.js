@@ -236,11 +236,10 @@
 // */
 
 // REWRITE v2
-import { extractRelevantData, usd } from '../../constants'
+import { usd } from '../../constants'
 import { useEffect } from 'react'
 import axios from 'axios'
 // import { useRouter } from 'next/router'
-
 
 // server
 import { Order } from '../../models'
@@ -270,6 +269,8 @@ export default function confirmed({ order, id }) {
       <p>Payment Vendor: {order.vendor}</p>
       <p>Amount: {usd(order.amount)}</p>
       <p>Currency: {order.currency}</p>
+      <p>Status: {order.status}</p>
+      <p>Name: {order.shipping?.name}</p>
       <div>Address: {Object.keys(order.shipping?.address || {}).map((el, index) => {
           return (
             <div key={index} className="ml-4" style={{lineHeight: '.7'}}>
@@ -279,36 +280,21 @@ export default function confirmed({ order, id }) {
           )
         })}
       </div>
-      <p>Name: {order.shipping?.name}</p>
     </>
   )
 }
 
 export async function getServerSideProps(context) {
   try {
-    console.log('\n=========== Confirmed ============')
+    // console.log('\n=========== Confirmed ============')
     const jwt = await getSession(context)
     const id = context.query.id
     let ip = context.req.socket?.remoteAddress || context.req.headers['x-forwarded-for']
-    console.log('can i get an ip =', ip) // working on dev.
+    // console.log('can i get an ip =', ip) // working on dev.
     if (!jwt) throw `Unauthorized: ${id} | ${ip}`
     await connectDB()
     let order = await Order.findById(id)
-
-    // MOVED TO WEBHOOKS
-
-    // if (order.status === 'capture') { // order.status === 'created'
-    //   let newData = { status: 'complete' }
-    //   if (order.vendor === 'stripe') {
-    //     const stripe = require('stripe')(process.env.STRIPE_SK)
-    //     const intent = await stripe.paymentIntents.retrieve(order.id_stripe_intent)
-    //     newData = extractRelevantData(intent)
-    //     // console.log('confirmed obj', JSON.stringify(newData, null, 4))
-    //   }
-    //   console.log('CONFIRMED:\n_id=' + order._id, '\nupdated', Object.keys(newData).length, 'fields')
-    //   order = await Order.findByIdAndUpdate(id, newData, {new: true})
-    // }
-
+    if (!order) throw `Could not find order: ${id}`
     if (jwt.id === String(order.user)) {
       return { props: { order: jparse(order) } }
     }

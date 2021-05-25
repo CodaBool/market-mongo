@@ -22,7 +22,7 @@ export default function Cart() {
       signIn()
       return
     }
-    router.push('/checkout/combined')
+    router.push('/checkout/payment')
   }
 
   return (

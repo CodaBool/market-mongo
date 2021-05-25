@@ -78,6 +78,9 @@ jobs:
           PAYPAL_WH: ${{ secrets.PAYPAL_WH }}
           STRIPE_WH: ${{ secrets.STRIPE_WH }}
           PAYPAL_SK: ${{ secrets.PAYPAL_SK }}
+          GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          FB_CLIENT_SECRET: ${{ secrets.FB_CLIENT_SECRET }}
           NEXT_PUBLIC_PAYPAL_ID: ${{ secrets.NEXT_PUBLIC_PAYPAL_ID }}
           STRIPE_WH_ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
           STRIPE_API_ALLOW_LIST: ${{ steps.allow.outputs.ips_api }}
@@ -85,13 +88,13 @@ jobs:
       - name: Upload `.serverless` state to S3
         run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
 
-      - name: 'Sending SMS Notification'
-        uses: twilio-labs/actions-sms@v1
-        with:
-          fromPhoneNumber: ${{ secrets.TWILIO_PHONE_NUMBER }}
-          toPhoneNumber: ${{ secrets.MY_PHONE_NUMBER }}
-          message: 'deployment success from market mongo. Twilio & Sprint/T-Mobile, you guys this is not spam. Do not block or you will be banned from my discord'
-        env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-          TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
-          TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
+      # - name: 'Sending SMS Notification'
+      #   uses: twilio-labs/actions-sms@v1
+      #   with:
+      #     fromPhoneNumber: ${{ secrets.TWILIO_PHONE_NUMBER }}
+      #     toPhoneNumber: ${{ secrets.MY_PHONE_NUMBER }}
+      #     message: 'deployment success from market mongo. Twilio & Sprint/T-Mobile, you guys this is not spam. Do not block or you will be banned from my discord'
+      #   env:
+      #     TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      #     TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
+      #     TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}

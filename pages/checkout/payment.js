@@ -1,29 +1,24 @@
-import { useState, useRef, useEffect } from 'react'
-import { useSession, getSession, signIn } from 'coda-auth/client'
-import { Cart3, PencilFill, BoxSeam, Envelope, Receipt, HandIndexThumb, PlusCircle, Plus, CreditCard } from 'react-bootstrap-icons'
+import { useState, useRef } from 'react'
+import { useSession } from 'coda-auth/client'
+import { PencilFill, Receipt, HandIndexThumb, PlusCircle, CreditCard } from 'react-bootstrap-icons'
 import { useRouter } from 'next/router'
 import { useShoppingCart } from 'use-shopping-cart'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
-import InputGroup from 'react-bootstrap/InputGroup'
 import Accordion from 'react-bootstrap/Accordion'
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios'
 import { loadStripe } from '@stripe/stripe-js'
-import { PayPalButton } from "react-paypal-button-v2"
-import { SHIPPING_COST, SHIPPING_EST } from '../../constants'
+import { SHIPPING_COST } from '../../constants'
 import useScreen from '../../constants/useScreen'
-import Shipping from '../../components/Form/Shipping'
-import Payment from '../../components/Form/Payment'
 import CartCards from '../../components/CartCards'
+import PayPalButton from '../../components/PayPalButton'
 import { Load, isLoad } from '../../components/Load'
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK)
 
-
-
-export default function Combined() {
+export default function Payment() {
   const { cartDetails, totalPrice } = useShoppingCart()
   const total = '$ ' + ((totalPrice + (SHIPPING_COST * 100)) / 100).toFixed(2)
   const [session, loading] = useSession()
@@ -37,6 +32,24 @@ export default function Combined() {
   const top = useRef(null)
 
   if (isLoad(session, loading, true)) return <Load />
+
+  async function stripeCheckout() {
+    let sessionId = null
+    const stripe = await stripePromise
+    await axios.post('/api/stripe/session', cartDetails)
+      .then(res => {
+        console.log('res', res.data)
+        sessionId = res.data.id
+      })
+      .catch(err => console.log('err', err.response.data.msg))
+      .catch(console.log)
+    if (!sessionId) return
+    const result = await stripe.redirectToCheckout({sessionId})
+    console.log('done', result)
+    if (result.error) {
+      console.error(result.error)
+    }
+  }
 
   return (
     <>
@@ -82,16 +95,11 @@ export default function Combined() {
           </>
         </Col>
         <Col className={`${size.includes('small') ? 'mx-3 p-0 mt-3' : 'border-left pl-5 mt-3'}`} md={6}>
-          {/* {orderID
-            ? <Load msg="Order Complete" />
-            : <>
-                <Stripe cart={cartDetails} />
-                <PayPal price={totalPrice} cart={cartDetails} setOrderID={setOrderID} setPayError={setPayError} setShowError={setShowError} />
-              </>
-          } */}
           <>
-            <Stripe cart={cartDetails} />
-            <PayPal price={totalPrice} cart={cartDetails} router={router} setPayError={setPayError} setShowError={setShowError} />
+            <button onClick={stripeCheckout} className="mx-auto w-100 my-5 stripeButton rounded" size="lg">
+              <CreditCard style={{color: '#2f4457', marginBottom: '4px'}} size={28}/> Stripe
+            </button>
+            <PayPalButton setPayError={setPayError} setShowError={setShowError} />
           </>
           {/* {error && <p>{error}</p>} */}
           <Row className="mt-4">
@@ -100,6 +108,8 @@ export default function Combined() {
           </Row>
         </Col>
       </Row>
+
+      {/* Modals */}
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Make a Secure Payment</Modal.Title>
@@ -145,103 +155,3 @@ export default function Combined() {
     </>
   )
 }
-
-function PayPal({ price, setPayError, setShowError, cart, router }) {
-  const amount = String(price).slice(0, -2) + '.' + String(price).slice(-2)
-
-  return (
-    <div className="w-100" style={{position: 'relative'}}>
-      <div className="paypal-skeleton rounded w-100"></div>
-      <div className="paypal-container">
-        <PayPalButton
-          amount={amount}
-          currency="USD"
-          shippingPreference="GET_FROM_FILE" // default is "NO_SHIPPING"
-          createOrder={() => (          
-            axios.post('/api/paypal/order', cart)
-              .then(res => res.data.result.id)
-              .catch(err => console.log(err.response.data.msg))
-          )}
-          onApprove={data => {
-            axios.post('/api/paypal/order', data)
-              .then(res => {
-                if (res.data.order_id) {
-                  router.push(`/checkout/confirmed?id=${res.data.order_id}`)
-                }
-              })
-              .catch(err => {
-                console.log(err)
-                setPayError(`${err.response.data.msg} ${err.response.status}`)
-                setShowError(true)
-              })
-              .catch(console.log)
-          }}
-          onShippingChange={(data, actions) => {
-            console.log('shipping', data, actions)
-            // axios.put('/api/user', data)
-            //   .then(res => console.log(res.data))
-            //   .catch(err => console.log(err.response.data.msg))
-          }}
-          style={{
-            color: 'silver',
-            shape: 'rect',
-            tagline: false,
-            layout:  'horizontal',
-            height: 55
-          }}
-          catchError={err => console.log('catchError', err)}
-          onError={err => {
-            if (err.message === 'Expected an order id to be passed') {
-              console.log('cannot create order')
-            } else {
-              console.log('new error', err.message)
-              console.log('CREATE AN IF FOR THIS')
-            }
-          }}
-          onCancel={err => console.log('onCancel', err)}
-          options={{
-            clientId: process.env.NEXT_PUBLIC_PAYPAL_ID,
-            disableFunding: 'paylater,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort',
-            vault: false,
-            commit: true,
-          }}
-        />
-      </div>
-    </div>
-  )
-}
-
-function Stripe({ cart }) {
-  async function checkout() {
-    let sessionId = null
-    const stripe = await stripePromise
-    console.log('cart', cart)
-    await axios.post('/api/stripe/session', cart)
-      .then(res => {
-        console.log('res', res.data)
-        sessionId = res.data.id
-      })
-      .catch(err => console.log('err', err.response.data.msg))
-      .catch(console.log)
-    if (!sessionId) return
-    const result = await stripe.redirectToCheckout({sessionId});
-    console.log('done', result)
-    if (result.error) {
-      console.error(result.error)
-    }
-  }
-
-  return (
-    <button onClick={checkout} className="mx-auto w-100 my-5 stripeButton rounded" size="lg">
-      <CreditCard style={{color: '#2f4457', marginBottom: '4px'}} size={28}/> Stripe
-    </button>
-  )
-}
-
-// export async function getServerSideProps(context) {
-//   const stripe = require('stripe')(process.env.STRIPE_SK)
-//   const session = await getSession(context)
-//   if (!session?.customerId) return { props: {  } } 
-//   const customer = await stripe.customers.retrieve(session.customerId)
-//   return { props: {  } }
-// }
