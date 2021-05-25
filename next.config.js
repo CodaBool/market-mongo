@@ -79,8 +79,15 @@ const securityHeaders = [
   }
 ];
 
+// analyze build packages
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//   enabled: 'true',
+// })
+// module.exports = withBundleAnalyzer({})
 
+
+// const uselessObj = {
 module.exports = {
   // webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
   //   if (true) {
@@ -94,6 +101,9 @@ module.exports = {
   //   }
   //   return config
   // },
+  future: {
+    webpack5: false,
+  },
   target: 'serverless',
   env: {
     NEXT_PUBLIC_NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_URL,

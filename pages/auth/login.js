@@ -39,7 +39,7 @@ export default function newLogin({ providers }) {
   return (
     <>
       <h1 className="my-4 display-3 text-center">Login</h1>
-      <Col >
+      <Col>
         <Accordion className="my-5" defaultActiveKey={key} activeKey={key}
           style={{ 
             maxWidth: `${screen.includes('m') ? '100%' : '40%'}`,
@@ -136,49 +136,45 @@ function LoginForm({ router, skip }) {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-      <>
-        <div className="in-group">
-          <input 
-            className="in"
-            type="text"
-            {...register("email", { required: true,  })}
-            defaultValue=""
-            required
-          />
-          <span className="bar"></span>
-          <label className="in-label"><Envelope className="mr-2 mb-1" size={20} />Email</label>
-        </div>
-      </>
-      <>
-        <div className="in-group">
-          <input 
-            className="in"
-            type="password"
-            {...register("password", { required: true, minLength: 8 })} // sets rule pass >= 8
-            defaultValue=""
-            required
-          />
-          <span className="bar"></span>
-          <label className="in-label"><Key className="mr-2 mb-1" size={20} />Password</label>
-        </div>
-        {errors.password && <p className="text-danger mt-4 mx-auto">Your password must be at least 8 characters</p>}
-        {error && <h4 className="text-danger mt-4 mx-auto">{error}</h4>}
-        <Button
-          className="w-100"
-          type="submit"
+      <div className="in-group">
+        <input 
+          className="material"
+          type="text"
+          {...register("email", { required: true,  })}
+          defaultValue=""
+          required
+        />
+        <span className="bar"></span>
+        <label className="in-label"><Envelope className="mr-2 mb-1" size={20} />Email</label>
+      </div>
+      <div className="in-group">
+        <input 
+          className="material"
+          type="password"
+          {...register("password", { required: true, minLength: 8 })} // sets rule pass >= 8
+          defaultValue=""
+          required
+        />
+        <span className="bar"></span>
+        <label className="in-label"><Key className="mr-2 mb-1" size={20} />Password</label>
+      </div>
+      {errors.password && <p className="text-danger mt-4 mx-auto">Your password must be at least 8 characters</p>}
+      {error && <h4 className="text-danger mt-4 mx-auto">{error}</h4>}
+      <Button
+        className="w-100"
+        type="submit"
+      >
+        Login
+      </Button>
+      <Row className="mt-4" style={{height: '4em'}}>
+        <Button 
+          variant="link" 
+          onClick={() => router.push(`/auth/signup`)} 
+          className="signup-button mx-auto"
         >
-          Login
+          Signup
         </Button>
-        <Row className="mt-4" style={{height: '4em'}}>
-          <Button 
-            variant="link" 
-            onClick={() => router.push(`/auth/signup`)} 
-            className="signup-button mx-auto"
-          >
-            Signup
-          </Button>
-        </Row>
-      </>
+      </Row>
     </Form>
   )
 }

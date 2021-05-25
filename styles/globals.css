@@ -192,7 +192,7 @@ main {
   margin-bottom:45px;
   width: 100%;
 }
-.in {
+.material {
   width: 100%;
   font-size:18px;
   padding:10px 10px 10px 5px;
@@ -200,7 +200,7 @@ main {
   border:none;
   border-bottom:1px solid #757575;
 }
-.in:focus {
+.material:focus {
   outline:none;
 }
 /* Label */
@@ -215,12 +215,12 @@ main {
   transition: 300ms ease all;
 }
 /* active state */
-.in:focus ~ label, .in:valid ~ label {
+.material:focus ~ label, .material:valid ~ label {
   top: -14px;
   font-size: 12px;
   color: #0062cc;
 }
-.in:focus ~ .bar:before {
+.material:focus ~ .bar:before {
   width: 100%;
 }
 .bar {
@@ -246,6 +246,9 @@ main {
   100% { background-position: 800px 0; }
 }
 @media (max-width: 576px) { /* Small devices (landscape phones, 576px and DOWN) */ 
+  .display-1, .display-2, .display-3, .display-4 {
+    font-size: 3em;
+  }
   .box-small, .box-small .shine {
     height: 326px;
     width: 326px;

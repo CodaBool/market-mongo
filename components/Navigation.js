@@ -24,7 +24,7 @@ export default function Navigation() {
             <>
               {session.user?.email === 'codabool@pm.me' &&
                 <>
-                  <Link href="/admin" >
+                  <Link href="/admin">
                     <div className={`${router.asPath === '/admin' && 'active'} nav-link`}>
                       Admin
                     </div>

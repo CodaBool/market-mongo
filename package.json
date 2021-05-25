@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@next/bundle-analyzer": "^10.2.3",
     "@paypal/checkout-server-sdk": "^1.0.2",
     "@stripe/react-stripe-js": "^1.4.0",
     "@stripe/stripe-js": "^1.14.0",
@@ -23,7 +24,7 @@
     "micro": "^9.3.4",
     "micro-cors": "^0.1.1",
     "mongoose": "^5.12.1",
-    "next": "^10.2.3",
+    "next": "^10.2.2",
     "next-connect": "^0.10.1",
     "nookies": "^2.5.2",
     "nprogress": "^0.2.0",
