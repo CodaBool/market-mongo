@@ -80,6 +80,8 @@ jobs:
           PAYPAL_SK: ${{ secrets.PAYPAL_SK }}
           GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+          TWITTER_CLIENT_SECRET: ${{ secrets.TWITTER_CLIENT_SECRET }}
           FB_CLIENT_SECRET: ${{ secrets.FB_CLIENT_SECRET }}
           NEXT_PUBLIC_PAYPAL_ID: ${{ secrets.NEXT_PUBLIC_PAYPAL_ID }}
           STRIPE_WH_ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}

@@ -65,13 +65,17 @@ export default (req, res) => {
         clientId: 'b1dc555d44f6b7d50386',
         clientSecret: process.env.GIT_CLIENT_SECRET
       }),
-      // Providers.Twitter({
-      //   clientId: 'b1dc555d44f6b7d50386', // under review
-      //   clientSecret: process.env.TWITTER_CLIENT_SECRET
-      // }),
+      Providers.Twitter({
+        clientId: '8xYV207SzsGDbh3GGscA8ogGG',
+        clientSecret: process.env.TWITTER_CLIENT_SECRET
+      }),
       Providers.Google({
         clientId: '660235104603-0os64a862203ek3lre73o2sinbr2de58.apps.googleusercontent.com',
         clientSecret: process.env.GOOGLE_CLIENT_SECRET
+      }),
+      Providers.Discord({
+        clientId: '846746476742311956',
+        clientSecret: process.env.DISCORD_CLIENT_SECRET
       }),
       Providers.Facebook({
         clientId: '188652586473126',

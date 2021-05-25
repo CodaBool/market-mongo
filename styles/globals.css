@@ -1,3 +1,6 @@
+* { 
+  box-sizing:border-box;
+}
 /* Pins footer bottom of the page regardless of page size */
 .site {
   display: flex;
@@ -7,6 +10,7 @@
 main {
   flex: 1;
 }
+
 /* Override Bootstrap Nav */
 .nav-link, .navbar-brand {
   cursor: pointer;
@@ -19,17 +23,13 @@ main {
   font-size: 1.3em;
   margin: 30px 0 12px 0;
 }
-.signupText {
-  color: rgb(2, 117, 216);
-  margin: 0 auto 0 auto;
-  width: 250px;
-  cursor: pointer;
-  transition: font-size 0.2s, text-shadow 1s;
+.signup-button {
+  height: 1em;
+  transition: font-size 0.2s;
+  text-decoration: none !important;
 }
-.signupText:hover {
-  color: rgb(10, 98, 175);
+.signup-button:hover {
   font-size: 1.2em;
-  text-shadow: 0 0 30px rgba(122, 165, 190, 0.3);
 }
 
 .order-card {
@@ -71,13 +71,28 @@ main {
 	100% { background-position: 0% 50%; }
 }
 /*override Bootstrap Accordian Style */
-.card-header {
+/* .card-header {
   font-weight: 500;
   font-size: 1.4em;
   cursor: pointer;
   background: linear-gradient(-45deg, #2a85d450, #527da350, #0d11ee50, #2fe0e050);
 	background-size: 400% 400%;
   animation: gradient 20s ease infinite;
+} */
+.card-header {
+  cursor: pointer;
+  background: linear-gradient(-45deg, #007bff4f, #00c3ff3d, #0026ff3d, #007bff4f);
+	background-size: 500% 500%;
+  animation: gradient 30s ease infinite;
+}
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+@keyframes fadein {
+  0% { opacity: 0; }
+  80% { opacity: 0; }
+  100% { opacity: 1; }
 }
 .fadeIn {
   opacity: 1;
@@ -170,6 +185,61 @@ main {
   width: 100%;
   height: 55px;
 }
+
+/* Custom Form */
+.in-group { 
+  position:relative; 
+  margin-bottom:45px;
+  width: 100%;
+}
+.in {
+  width: 100%;
+  font-size:18px;
+  padding:10px 10px 10px 5px;
+  display:block;
+  border:none;
+  border-bottom:1px solid #757575;
+}
+.in:focus {
+  outline:none;
+}
+/* Label */
+.in-label {
+  color: #4d4d4d;
+  font-size: 16px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 5px;
+  top: 10px;
+  transition: 300ms ease all;
+}
+/* active state */
+.in:focus ~ label, .in:valid ~ label {
+  top: -14px;
+  font-size: 12px;
+  color: #0062cc;
+}
+.in:focus ~ .bar:before {
+  width: 100%;
+}
+.bar {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.bar:before {
+  content: "";
+  height: 2px;
+  width: 0;
+  bottom: 0px;
+  position: absolute;
+  background: #0062cc;
+  transition: 300ms ease all;
+  left: 0%;
+}
+
+
 
 @keyframes shine {
   0% { background-position: -800px 0; }

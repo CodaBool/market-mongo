@@ -4,10 +4,11 @@ export default function useScreen() {
 	const [screenType, setScreenType] = useState('medium')
 
 	useEffect(() => {
+		setScreenType(getSize())
 		window.addEventListener('resize', () => setScreenType(getSize()))
 		return () => {
 			window.removeEventListener('resize', () => setScreenType(getSize()))
-		};
+		}
 	}, [])
 
 	return screenType || 'medium'

@@ -1,28 +1,29 @@
-import React, { useState, useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { Envelope, Key, SkipEndFill, CaretRight, ArrowReturnRight, } from 'react-bootstrap-icons'
+import { useState, useEffect } from 'react'
 import Form from 'react-bootstrap/Form'
+import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Card from 'react-bootstrap/Card'
+import { Envelope, Key, ArrowReturnRight, BoxArrowUpRight, FileLock } from 'react-bootstrap-icons'
+import { getProviders, signIn, useSession } from 'coda-auth/client'
+import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
+import useScreen from '../../constants/useScreen'
 import { Load } from '../../components/Load'
-import { signIn, useSession } from 'coda-auth/client'
 
-export default function Login({ csrf }) {
-  const [session, loading] = useSession()
-  const [error, setError] = useState(null)
-  const { handleSubmit, errors, control, register, setValue, setFocus } = useForm()
+export default function newLogin({ providers }) {
+  const [showKey0Hint, setShowKey0Hint] = useState(false)
+  const [showKey1Hint, setShowKey1Hint] = useState(false)
+  const [skip, setSkip] = useState(false)
+  const [key, setKey] = useState('0')
+  const screen = useScreen()
   const router = useRouter()
-
-  useEffect(() => {
-    if (router.query.email) fill()
-    if (router.query.error === 'nonexistant') setError('No user found by that email')
-    if (router.query.error === 'invalid') setError('Invalid login')
-    if (router.query.error === 'timeout') setError('Server Timeout, try again later')
-    if (router.query.error === 'unkown') setError('Something went wrong')
-  }, [router.query.error])
+  const [session, loading] = useSession()
 
   function devLogin() {
+    setKey('1')
+    setSkip(true)
     signIn('credentials', {
       email: 'test@user.com',
       password: 'testuser',
@@ -30,17 +31,75 @@ export default function Login({ csrf }) {
     })
   }
 
-  function fill() {
-    try {
-      setValue('email', router.query.email)
-      control.fieldsRef.current.password.ref.focus()
-    } catch (err) {
-      console.log('fill', err)
-    }
+  if (session) {
+    router.push('/')
+    return <Load />
   }
 
-  const onSubmit = async data => {
-    console.log(data, router.query.callbackUrl)
+  return (
+    <>
+      <h1 className="my-4 display-3 text-center">Login</h1>
+      <Col >
+        <Accordion className="my-5" defaultActiveKey={key} activeKey={key}
+          style={{ 
+            maxWidth: `${screen.includes('m') ? '100%' : '40%'}`,
+            margin: 'auto'
+          }}
+        >
+          <Card className="shadow" style={{border: 'none'}}>
+            <Accordion.Toggle as={Card.Header} eventKey="0" onClick={() => setKey('0')}
+              onMouseEnter={() => setShowKey0Hint(true)}
+              onMouseLeave={() => setShowKey0Hint(false)}
+            >
+              <BoxArrowUpRight className="ml-1"  size={35} />
+              {<span className="ml-4 fade-in" style={{opacity: `${showKey0Hint ? '1': '0'}`}}>External</span>}
+            </Accordion.Toggle>
+            <Accordion.Collapse eventKey="0">
+              <Card.Body className="d-flex" style={{justifyContent: 'center', flexDirection: 'column', flexWrap: 'nowrap'}}>
+                {Object.values(providers).map(provider => (
+                  <div key={provider.name} className="mx-auto my-2">
+                    <Button onClick={() => signIn(provider.id)} style={{width: '10em'}}>{provider.name}</Button>
+                  </div>
+                ))}
+                <hr className="border w-100"/>
+                <Button className="mx-auto my-2" onClick={() => setKey('1')} style={{width: '10em'}}>Credential</Button>
+                <Button
+                  className="mx-auto my-2"
+                  variant="success"
+                  style={{width: '10em'}}
+                  onClick={devLogin}
+                >
+                  Skip <ArrowReturnRight className="ml-2" size={18} />
+                </Button>
+              </Card.Body>
+            </Accordion.Collapse>
+          </Card>
+          <Card className="shadow" style={{border: 'none'}}>
+            <Accordion.Toggle as={Card.Header} eventKey="1" onClick={() => setKey('1')}
+              onMouseEnter={() => setShowKey1Hint(true)}
+              onMouseLeave={() => setShowKey1Hint(false)}
+            >
+              <FileLock className="" size={40} />
+              {<span className="ml-4 fade-in" style={{opacity: `${showKey1Hint ? '1': '0'}`}}>Credential</span>}
+            </Accordion.Toggle>
+            <Accordion.Collapse eventKey="1">
+              <Card.Body>
+                <LoginForm router={router} skip={skip} />
+              </Card.Body>
+            </Accordion.Collapse>
+          </Card>
+        </Accordion>
+      </Col>
+    </>
+  )
+}
+
+function LoginForm({ router, skip }) {
+  const { handleSubmit, formState:{ errors }, control, register, setValue } = useForm()
+  const [error, setError] = useState(null)
+
+  async function onSubmit(data) {
+    console.log(data)
     if (data.email && data.password) {
       const callback = router.query.callbackUrl || ''
       signIn('credentials', {
@@ -51,83 +110,81 @@ export default function Login({ csrf }) {
     }
   }
 
-  if (session) {
-    router.push('/')
-    return <Load />
+  useEffect(() => {
+    if (router.query.email) fill()
+    if (router.query.error === 'nonexistant') setError('No user found by that email')
+    if (router.query.error === 'invalid') setError('Invalid login')
+    if (router.query.error === 'timeout') setError('Server Timeout, try again later')
+    if (router.query.error === 'unkown') setError('Something went wrong')
+  }, [router.query.error])
+
+  useEffect(() => {
+    if (skip) {
+      setValue('email', 'test@user.com')
+      setValue('password', 'testuser')
+    }
+  }, [skip])
+
+  function fill() {
+    try {
+      setValue('email', router.query.email)
+      control.fieldsRef.current.password.ref.focus()
+    } catch (err) {
+      console.log('fill', err)
+    }
   }
 
   return (
-    <>
-      <h1 className="my-4 display-3">Login</h1>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group>
-          <Envelope className="mr-3 mb-1" size={30} />
-          <Form.Label>Email</Form.Label>
-          <Controller
-            as={<Form.Control />}
-            control={control}
-            type="email"
-            name="email"
+    <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+      <>
+        <div className="in-group">
+          <input 
+            className="in"
+            type="text"
+            {...register("email", { required: true,  })}
             defaultValue=""
-            placeholder="name@example.com"
             required
           />
-        </Form.Group>
-        <Form.Group>
-          <Key className="mr-3 mb-1" size={30} />
-          <Form.Label>Password</Form.Label>
-          <Controller
-            as={<Form.Control />}
-            control={control}
+          <span className="bar"></span>
+          <label className="in-label"><Envelope className="mr-2 mb-1" size={20} />Email</label>
+        </div>
+      </>
+      <>
+        <div className="in-group">
+          <input 
+            className="in"
             type="password"
-            name="password"
-            placeholder="Password"
+            {...register("password", { required: true, minLength: 8 })} // sets rule pass >= 8
             defaultValue=""
             required
-            rules={{
-              minLength: 8 // sets rule pass >= 8
-            }}
           />
-          {errors.password && (
-            <p className="errMsg">
-              Your password must be at least 8 characters
-            </p>
-          )}
-        </Form.Group>
-        <Row>
-          {error && <h4 className="text-danger mt-4 mx-auto">{error}</h4>}
-          <Button
-            className="mx-auto mt-5"
-            style={{ width: '97.3%' }}
-            type="submit"
+          <span className="bar"></span>
+          <label className="in-label"><Key className="mr-2 mb-1" size={20} />Password</label>
+        </div>
+        {errors.password && <p className="text-danger mt-4 mx-auto">Your password must be at least 8 characters</p>}
+        {error && <h4 className="text-danger mt-4 mx-auto">{error}</h4>}
+        <Button
+          className="w-100"
+          type="submit"
+        >
+          Login
+        </Button>
+        <Row className="mt-4" style={{height: '4em'}}>
+          <Button 
+            variant="link" 
+            onClick={() => router.push(`/auth/signup`)} 
+            className="signup-button mx-auto"
           >
-            Login
-          </Button>
-          <Button
-            className="mx-auto mt-5"
-            style={{ width: '97.3%' }}
-            variant="outline-success"
-            onClick={devLogin}
-          >
-            Or... Use Test Account <ArrowReturnRight className="ml-2" size={20} />
-          </Button>
-          <Button onClick={() => signIn('github')}>
-            Github
-          </Button>
-          <Button onClick={() => signIn('facebook')}>
-            Facebook
-          </Button>
-          <Button onClick={() => signIn('twitter')}>
-            Twitter
+            Signup
           </Button>
         </Row>
-        <p
-          className="my-5 text-center signupText"
-          onClick={() => router.push(`/auth/signup`)}
-        >
-          New Around? Signup Here.
-        </p>
-      </Form>
-    </>
+      </>
+    </Form>
   )
+}
+
+export async function getServerSideProps(context){
+  const providers = await getProviders()
+  delete providers.credentials
+  return { props: { providers } }
 }
