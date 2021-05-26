@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import useScreen from '../../constants/useScreen'
 import { Load } from '../../components/Load'
+import Toast from '../../components/UI/Toast'
 
 export default function newLogin({ providers }) {
   const [showKey0Hint, setShowKey0Hint] = useState(false)
@@ -84,7 +85,7 @@ export default function newLogin({ providers }) {
             </Accordion.Toggle>
             <Accordion.Collapse eventKey="1">
               <Card.Body>
-                <LoginForm router={router} skip={skip} />
+                <LoginForm router={router} skip={skip} accordianKey={key} setKey={setKey} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>
@@ -94,23 +95,19 @@ export default function newLogin({ providers }) {
   )
 }
 
-function LoginForm({ router, skip }) {
+function LoginForm({ router, skip, accordianKey, setKey }) {
   const { handleSubmit, formState:{ errors }, control, register, setValue } = useForm()
   const [error, setError] = useState(null)
 
-  async function onSubmit(data) {
-    console.log(data)
-    if (data.email && data.password) {
-      const callback = router.query.callbackUrl || ''
-      signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        callbackUrl: callback
-      })
+  useEffect(() => {
+    if (accordianKey === '1') {
+      const timeout = setTimeout(() =>  control.fieldsRef.current.email._f.ref.focus(), 300)
+      return () => clearTimeout(timeout)
     }
-  }
+  }, [accordianKey])
 
   useEffect(() => {
+    if (Object.keys(router.query).length > 0) setKey('1')
     if (router.query.email) fill()
     if (router.query.error === 'nonexistant') setError('No user found by that email')
     if (router.query.error === 'invalid') setError('Invalid login')
@@ -128,19 +125,32 @@ function LoginForm({ router, skip }) {
   function fill() {
     try {
       setValue('email', router.query.email)
-      control.fieldsRef.current.password.ref.focus()
+      // control.fieldsRef.current.password.ref.focus()
+      control.fieldsRef.current.password._f.ref.focus()
     } catch (err) {
       console.log('fill', err)
+    }
+  }
+  async function onSubmit(data) {
+    console.log(data)
+    if (data.email && data.password) {
+      const callback = router.query.callbackUrl || ''
+      signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        callbackUrl: callback
+      })
     }
   }
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+      {errors.email && <p className="text-danger text-center">Please provide a valid email</p>}
       <div className="in-group">
         <input 
           className="material"
           type="text"
-          {...register("email", { required: true,  })}
+          {...register("email", { required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/i })}
           defaultValue=""
           required
         />
@@ -159,7 +169,6 @@ function LoginForm({ router, skip }) {
         <label className="in-label"><Key className="mr-2 mb-1" size={20} />Password</label>
       </div>
       {errors.password && <p className="text-danger mt-4 mx-auto">Your password must be at least 8 characters</p>}
-      {error && <h4 className="text-danger mt-4 mx-auto">{error}</h4>}
       <Button
         className="w-100"
         type="submit"
@@ -175,6 +184,9 @@ function LoginForm({ router, skip }) {
           Signup
         </Button>
       </Row>
+      <div className="toastHolder" style={{position: 'fixed', top: '10%', right: '10%'}}>
+        <Toast show={!!error} setShow={setError} title='Could not Sign you in' body={<p className="text-danger"><strong>{error}</strong></p>} error />
+      </div>
     </Form>
   )
 }

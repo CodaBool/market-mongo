@@ -62,11 +62,11 @@ export default function Login({ providers }) {
   return (
     <>
       <h1 className="my-4 display-3">Login</h1>
-      {Object.values(providers).map(provider => (
+      {/* {Object.values(providers).map(provider => (
         <div key={provider.name}>
           <Button onClick={() => signIn(provider.id)}>{provider.name}</Button>
         </div>
-      ))}
+      ))} */}
       <Form onSubmit={handleSubmit(onSubmit)}>
         <>
           <Envelope className="mr-3 mb-1" size={30} />

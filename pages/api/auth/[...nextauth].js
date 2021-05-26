@@ -34,6 +34,7 @@ export default (req, res) => {
         authorize: async (clientData) => {
           try {
             await connectDB()
+            console.log('authorize check on', clientData.email)
             const user = await User.findOne({ email: clientData.email }) // null if not found
               .catch(err => {
                 console.log('signin error', err.message, '| timeout?', err.message.includes('timed out'))
@@ -45,6 +46,7 @@ export default (req, res) => {
                 user.password
               )
               if (validPassword) { // complete successful login
+                // TODO: change this to db_id
                 return { id: user._id, email: user.email.toLowerCase(), customerId: user.customerId }
               } else { // invalid password
                 return Promise.reject(`/auth/login?error=invalid&email=${encodeURIComponent(clientData.email)}`)
@@ -81,14 +83,17 @@ export default (req, res) => {
         clientId: '188652586473126',
         clientSecret: process.env.FB_CLIENT_SECRET
       })
+      // https://dev.codattest.com/api/auth/callback/PROVIDER_NAME
     ],
     callbacks: {
       session: async (session, user) => {
+        console.log('AUTH --> session', session)
         if (session) session.id = user.id
         if (session) session.customerId = user.customerId
         return Promise.resolve(session)
       },
       jwt: async (token, user, account, profile, isNewUser) => {
+        console.log('AUTH --> jwt', token, user)
         if (user) token.id = user.id
         if (user) token.customerId = user.customerId
         return Promise.resolve(token)

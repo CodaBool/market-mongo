@@ -72,22 +72,19 @@ export default function Signup() {
       }}>
         <Card className="shadow p-4 rounded">
           <Form className="mt-2" onSubmit={handleSubmit(onSubmit)}>
+            {errors.email && <p className="text-danger mt-2"> Please enter a valid email</p>}
             <div className="in-group">
               <input 
                 className="material"
                 type="text"
-                {...register("email", { pattern: /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/i })}
+                {...register("email", { required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/i })}
                 defaultValue=""
                 required
               />
               <span className="bar"></span>
               <label className="in-label"><Envelope className="mr-3 mb-1" size={20} />Email</label>
             </div>
-            {errors.email && (
-              <p className="text-danger text-center mt-4">
-                Please enter a valid email
-              </p>
-            )}
+            {errors.password && <p className="errMsg text-danger">Your password must be at least 8 characters</p>}
             <div className="in-group">
               <input 
                 className="material"
@@ -99,9 +96,7 @@ export default function Signup() {
               <span className="bar"></span>
               <label className="in-label"><Key className="mr-2 mb-1" size={20} />Password</label>
             </div>
-            {errors.password && (
-              <p className="errMsg text-danger">Your password must be at least 8 characters</p>
-            )}
+            {errors.confirmPass && <p className="errMsg text-danger">Your password must match</p>}
             <div className="in-group">
               <input 
                 className="material"
@@ -115,9 +110,6 @@ export default function Signup() {
               <span className="bar"></span>
               <label className="in-label"><Key className="mr-2 mb-1" size={20} />{`${screen.includes('s') ? 'Confirm' : 'Confirm Password'}`}</label>
             </div>
-            {errors.confirmPass && (
-              <p className="errMsg text-danger">Your password must match</p>
-            )}
             <Row>
               <ReCAPTCHA
                 className="mx-auto mt-3"
@@ -144,7 +136,7 @@ export default function Signup() {
       
       <div className="toastHolder" style={{ position: 'fixed', top: '120px', right: '20px' }}>
         <Toast
-          show={toastError}
+          show={!!toastError}
           setShow={setToastError}
           title="Signup Issue"
           error
