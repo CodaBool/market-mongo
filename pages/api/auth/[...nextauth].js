@@ -1,6 +1,7 @@
 import NextAuth from 'coda-auth'
 import Providers from 'coda-auth/providers'
 import { compare } from 'bcryptjs'
+import axios from 'axios'
 import { connectDB } from '../../../util/db'
 import { User } from '../../../models'
 
@@ -64,8 +65,8 @@ export default (req, res) => {
         }
       }),
       Providers.GitHub({
-        clientId: 'b1dc555d44f6b7d50386',
-        clientSecret: process.env.GIT_CLIENT_SECRET
+        clientId: process.env.NODE_ENV === 'production' ? 'b1dc555d44f6b7d50386' : '667a50a643e6e59c65e3',
+        clientSecret:  process.env.NODE_ENV === 'production' ? process.env.GIT_CLIENT_SECRET : process.env.GITH_LOCAL_SECRET
       }),
       Providers.Twitter({
         clientId: '8xYV207SzsGDbh3GGscA8ogGG',
@@ -94,6 +95,17 @@ export default (req, res) => {
       },
       jwt: async (token, user, account, profile, isNewUser) => {
         console.log('AUTH --> jwt', token, user, account, profile, isNewUser)
+        if (token.email === null) {
+          if (!account) {
+            console.log('missing email, suspecting github oauth but no account is being passed')
+          } else {
+            const primaryRecord = getGithubEmail(account.accessToken)
+            console.log('found email', primaryRecord.email, ' | verified', primaryRecord.verified)
+            token.email = primaryRecord.email
+          }
+        } else {
+          console.log('likely not github')
+        }
         if (user) token.id = user.id
         if (user) token.customerId = user.customerId
         return Promise.resolve(token)
@@ -110,7 +122,21 @@ export default (req, res) => {
   })
 }
 
-
+async function getGithubEmail(token) {
+  try {
+    console.log('fetching github data with token', token)
+    const { data } = await axios.get('https://api.github.com/user/emails', {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    })
+    console.log('raw github data', data)
+    console.log('extracting email', data.filter(record => record.primary === true))
+    return data.filter(record => record.primary === true)
+  } catch (err) {
+    console.log('error in getGithubEmail', err)
+  }
+}
 
 /*
 function find
@@ -146,4 +172,10 @@ account.token_type
 profile.email
 profile.verified
 profile.locale
+
+Github
+account.accessToken
+account.token_type
+
+profile.url
 */
