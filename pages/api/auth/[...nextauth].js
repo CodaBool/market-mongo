@@ -93,7 +93,7 @@ export default (req, res) => {
         return Promise.resolve(session)
       },
       jwt: async (token, user, account, profile, isNewUser) => {
-        console.log('AUTH --> jwt', token, user)
+        console.log('AUTH --> jwt', token, user, account, profile, isNewUser)
         if (user) token.id = user.id
         if (user) token.customerId = user.customerId
         return Promise.resolve(token)
@@ -109,3 +109,41 @@ export default (req, res) => {
     secret: process.env.NEXTAUTH_SECRET
   })
 }
+
+
+
+/*
+function find
+
+github no email
+
+
+Google
+account.accessToken (?)
+account.idToken (jwt)
+account.token_type (Bearer)
+
+profile.email
+profile.verified_email: true
+
+Twitter
+account.accessToken
+
+profile.email
+
+  simple verify
+profile.suspended
+profile.verified
+profile.statuses_count
+profile.followers_count
+profile.created_at
+
+Discord
+
+account.accessToken
+account.token_type
+
+profile.email
+profile.verified
+profile.locale
+*/
