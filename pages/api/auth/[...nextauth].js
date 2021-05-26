@@ -99,12 +99,16 @@ export default (req, res) => {
           if (!account) {
             console.log('missing email, suspecting github oauth but no account is being passed')
           } else {
-            const primaryRecord = getGithubEmail(account.accessToken)
-            console.log('found email', primaryRecord.email, ' | verified', primaryRecord.verified)
-            token.email = primaryRecord.email
+            const data = await getGithubEmail(account.accessToken)
+            console.log('found email', data.email, ' | verified', data.verified)
+            token.email = data.email
           }
         } else {
-          console.log('likely not github')
+          if (token.picture.includes('github')) {
+            console.log('Success!')
+          } else {
+            console.log('likely not a github oauth')
+          }
         }
         if (user) token.id = user.id
         if (user) token.customerId = user.customerId
@@ -132,7 +136,7 @@ async function getGithubEmail(token) {
     })
     console.log('raw github data', data)
     console.log('extracting email', data.filter(record => record.primary === true))
-    return data.filter(record => record.primary === true)
+    return data.filter(record => record.primary === true)[0]
   } catch (err) {
     console.log('error in getGithubEmail', err)
   }
