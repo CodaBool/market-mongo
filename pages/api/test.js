@@ -9,7 +9,7 @@ export default applyMiddleware(async (req, res) => {
     let envVars = {}
     const session = await getSession({req})
     // console.log(session)
-    if (!session) throw 'Unathorized'
+    // if (!session) throw 'Unathorized'
     // console.log(session.user)
     if (process.env.NEXT_PUBLIC_STRIPE_PK) {
       envVars.NEXT_PUBLIC_STRIPE_PK = 'found'
@@ -52,12 +52,12 @@ export default applyMiddleware(async (req, res) => {
       envVars.NEXT_PUBLIC_NODE_ENV = 'MISSING AS IT SHOULD BE'
     }
     await connectDB()
-    const orders = await Order.find()
-    const products = await Product.find()
-    const stripe = require('stripe')(process.env.STRIPE_SK)
+    // const orders = await Order.find()
+    // const products = await Product.find()
+    // const stripe = require('stripe')(process.env.STRIPE_SK)
     // const customer = await stripe.customers.retrieve(session.customerId)
     //     .catch(err => { throw err.raw.message })
-    const intent = await stripe.paymentIntents.retrieve(orders[0].id_stripe_intent)
+    // const intent = await stripe.paymentIntents.retrieve(orders[0].id_stripe_intent)
     // const charge = await stripe.charges.retrieve('ch_1IsWJxAJvGrE9xG5Ji35QhPp')
     // const sSession = await stripe.checkout.sessions.retrieve('cs_test_a1NC3WUzhHNbW0eVMaydFhRH2hgBKiV2QPYeqO1cQ8yyJ3G7MvJU344U0e')
     // const line_items_stripe = await stripe.checkout.sessions.listLineItems('cs_test_a1NC3WUzhHNbW0eVMaydFhRH2hgBKiV2QPYeqO1cQ8yyJ3G7MvJU344U0e')
@@ -70,8 +70,25 @@ export default applyMiddleware(async (req, res) => {
     //   })
     //   .catch(err => console.log('/test', (err.message || err)))
     // console.log(products)
-    res.status(200).json({resp, envVars, order: orders[0], intent, products })
+
+    
+    const user = await User.find({ email: 'codabool@pm.me' }).catch(console.log)
+    if (!user.length) { // create a new user
+      
+    }
+    if (user.length > 1) { // duplicates
+
+    }
+    // if ()
+    if (!user) throw 'no user found by that email'
+    res.status(200).json(user)
+    // res.status(200).json({ resp, envVars, order: orders[0], intent, products })
   } catch (err) {
-    res.status(500).json({msg: '/test: ' + (err.message || err)})
+    console.log(err)
+    if (typeof err === 'string') {
+      res.status(400).json({ msg: '/test: ' + err })
+    } else {
+      res.status(500).json({ msg: '/test: ' + (err.message || err)})
+    }
   }
 })

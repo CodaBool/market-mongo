@@ -22,7 +22,7 @@ export default function Navigation() {
           </Link>
           {session ? (
             <>
-              {session.user?.email === 'codabool@pm.me' &&
+              {session.user?.email === 'codabool@pm.me' && // TODO: revaluate since oauth
                 <>
                   <Link href="/admin">
                     <div className={`${router.asPath === '/admin' && 'active'} nav-link`}>

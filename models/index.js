@@ -33,6 +33,11 @@ const userSchema = new Schema({
     trim: true,
     required: true
   },
+  oauth: String,
+  phone: {
+    type: String,
+    trim: true
+  },
   customerId: { 
     type: String
   },

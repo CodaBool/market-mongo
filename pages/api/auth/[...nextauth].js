@@ -88,30 +88,37 @@ export default (req, res) => {
     ],
     callbacks: {
       session: async (session, user) => {
-        console.log('AUTH --> session', session)
-        if (session) session.id = user.id
+        // console.log('AUTH --> session', session, user)
+        if (session) session.db_id = user.db_id
         if (session) session.customerId = user.customerId
+        console.log('session, db_id', session.db_id, ' | sub', user.sub)
         return Promise.resolve(session)
       },
       jwt: async (token, user, account, profile, isNewUser) => {
-        console.log('AUTH --> jwt', token, user, account, profile, isNewUser)
-        if (token.email === null) {
-          if (!account) {
-            console.log('missing email, suspecting github oauth but no account is being passed')
-          } else {
-            const data = await getGithubEmail(account.accessToken)
-            console.log('found email', data.email, ' | verified', data.verified)
-            token.email = data.email
+        // console.log('AUTH --> jwt', token, user)
+        if (token.email === null && account) {
+          const data = await getGithubEmail(account.accessToken)
+          token.email = data.email
+          // console.log('found email', data.email, ' | verified', data.verified)
+        }
+        if (!token.db_id) {
+          // console.log('Adding Database Data')
+          const result = await getDBID(token.email)
+          if (result?.hasMore) {
+
           }
-        } else {
-          if (token.picture.includes('github')) {
-            console.log('Success!')
-          } else {
-            console.log('likely not a github oauth')
+          // console.log('data', data)
+          if (result?.db_id) {
+            token.db_id = result.db_id
+            // console.log('sub', )
+            // console.log('final token --->', token)
           }
         }
         if (user) token.id = user.id
         if (user) token.customerId = user.customerId
+        // console.log('AUTH --> jwt', token)
+        console.log('jwt, db_id', token.db_id, ' | sub', token.sub)
+        if (!token.db_id) return Promise.reject('wowee')
         return Promise.resolve(token)
       }
     },
@@ -119,27 +126,33 @@ export default (req, res) => {
       signIn: '/auth/login',
       signOut: '/auth/logout',
       newUser: '/auth/signup',
-      error: '/' // Error code passed in query string as ?error=
+      error: '/auth/login' // Error code passed in query string as ?error=
     },
     baseUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
     secret: process.env.NEXTAUTH_SECRET
   })
 }
 
+async function getDBID(email) {
+  await connectDB()
+  if (!email) return
+  const user = await User.findOne({ email }).catch(console.log)
+  if (!user) return
+  console.log('get dbid =', user._id)
+  return { db_id: user._id, verified: user.verified }
+}
+
 async function getGithubEmail(token) {
-  try {
-    console.log('fetching github data with token', token)
-    const { data } = await axios.get('https://api.github.com/user/emails', {
-      headers: {
-        authorization: `Bearer ${token}`
-      }
-    })
-    console.log('raw github data', data)
-    console.log('extracting email', data.filter(record => record.primary === true))
-    return data.filter(record => record.primary === true)[0]
-  } catch (err) {
-    console.log('error in getGithubEmail', err)
-  }
+  // console.log('fetching github data with token', token)
+  const res = await axios.get('https://api.github.com/user/emails', {
+    headers: {
+      authorization: `Bearer ${token}`
+    }
+  })
+  if (!res) return
+  // console.log('raw github data', data)
+  // console.log('extracting email', data.filter(record => record.primary === true))
+  return res.data.filter(record => record.primary === true)[0]
 }
 
 /*
