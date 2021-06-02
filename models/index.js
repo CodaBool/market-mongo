@@ -18,6 +18,8 @@ import mongoose, { Schema } from 'mongoose'
 //   risk: String,
 // })
 
+// Extend the built-in models using class inheritance
+
 const userSchema = new Schema({
   email: {
     type: String,
@@ -28,12 +30,10 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
     minlength: 8,
-    trim: true,
-    required: true
+    trim: true
   },
-  oauth: String,
+  provider: String,
   phone: {
     type: String,
     trim: true
@@ -57,50 +57,7 @@ const userSchema = new Schema({
     type: Number,
     default: 0
   },
-  address: {
-    name: {
-      type: String,
-      minlength: 2,
-      maxlength: 35,
-      trim: true
-    },
-    line1: {
-      type: String,
-      minlength: 3,
-      maxlength: 60,
-      trim: true
-    },
-    line2: {
-      type: String,
-      minlength: 3,
-      maxlength: 50,
-      trim: true
-    },
-    postalCode: Number,
-    city: {
-      type: String,
-      minlength: 3,
-      maxlength: 20,
-      trim: true
-    },
-    country: {
-      type: String,
-      maxlength: 30,
-      trim: true
-    },
-    state: {
-      type: String,
-      uppercase: true,
-      minlength: 2,
-      maxlength: 2,
-      trim: true
-    },
-    phone: {
-      type: String,
-      minlength: 12,
-      maxlength: 14
-    }
-  }
+  shipping: mongoose.Mixed,
 }, { timestamps: true })
 
 const orderSchema = new Schema({
@@ -137,6 +94,8 @@ const orderSchema = new Schema({
   charges: [mongoose.Mixed],
   items: [mongoose.Mixed]
 }, { timestamps: true })
+
+const accountSchema = new Schema({ any: {} })
 
 const productSchema = new Schema({
   _id: {
@@ -214,7 +173,9 @@ const reviewSchema = new Schema({
 }, { timestamps: true })
 
 
+// export const oldUser = mongoose.models.user || mongoose.model('user', depreciatedUserSchema)
 export const User = mongoose.models.user || mongoose.model('user', userSchema)
 export const Order = mongoose.models.order || mongoose.model('order', orderSchema)
 export const Review = mongoose.models.review || mongoose.model('review', reviewSchema)
 export const Product = mongoose.models.product || mongoose.model('product', productSchema)
+export const Account = mongoose.models.account || mongoose.model('account', accountSchema)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
@@ -12,41 +12,27 @@ import useScreen from '../../constants/useScreen'
 import { Load } from '../../components/Load'
 import Toast from '../../components/UI/Toast'
 
-const pattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/i
-
 export default function newLogin({ providers }) {
   const { handleSubmit, formState:{ errors }, watch, control, register, setValue, getValues } = useForm()
   const [session, loading] = useSession()
   const screen = useScreen()
   const router = useRouter()
-  const [option, setOption] = useState('quick')
-  const [showNext, setShowNext] = useState(false)
+  const [option, setOption] = useState('')
   const [error, setError] = useState(null)
-
-  // debounces button disabling when typing email
-  // for example after typing the '.' in 'gmail.com'
-  // the email is invalid until another char is typed
-  // this is bad ux and debounce allows for better ux
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (pattern.test(getValues('email'))) {
-        setShowNext(true)
-      } else {
-        setShowNext(false)
-      }
-    }, 500)
-    return () => clearTimeout(handler)
-  }, [watch('email')]) 
 
   useEffect(() => {
     if (router.query.email) fill()
-    if (router.query.error === 'nonexistant') setError('No user found by that email')
     if (router.query.error === 'invalid') setError('Invalid login')
-    if (router.query.error === 'timeout') setError('Server Timeout, try again later')
     if (router.query.error === 'unkown') setError('Something went wrong')
+    if (router.query.error === 'timeout') setError('Server Timeout, try again later')
+    if (router.query.error === 'nonexistant') setError('No user found by that email')
+    if (router.query.error === 'OAuthAccountNotLinked') setError('To confirm your identity, sign in with the same account you used originally.')
+    if (router.query.error?.includes('oauth@')) {
+      setError('Invalid login credentials, but an account with that email was discovered and may belong to you, please try logging in with one of these providers: '
+        + router.query.error.slice(6).replaceAll(',', ' ')
+      )
+    }
   }, [router.query.error])
-
-  // console.log('getValues(\'email\')', getValues('email'))
 
   if (session) {
     router.push('/')
@@ -87,11 +73,6 @@ export default function newLogin({ providers }) {
     }
   }
 
-  function handleSignIn(id) {
-    console.log('handle an exists check on', email)
-    // signIn(id)
-  }
-
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
       <h1 className="my-4 display-3 text-center">Login</h1>
@@ -102,21 +83,28 @@ export default function newLogin({ providers }) {
             margin: 'auto'
           }}
         >
-          {!option 
-            ?
-            <Row className="">
-              <Col lg={6} className="">
-                <Button variant="outline-primary" className="w-100 my-2" onClick={() => setOption('password')}>
-                  Password
-                </Button>
-              </Col>
-              <Col lg={6} className="">
-                <Button variant="outline-primary" className="w-100 my-2" onClick={() => setOption('quick')}>
-                  Passwordless
-                </Button>
-              </Col>
-            </Row>
-            :
+          {!option &&
+            <>
+              <Button variant="outline-primary" className="mx-auto my-2" style={{width: '9em'}} onClick={() => setOption('password')}>
+                Password
+              </Button>
+              <div className="border w-100 my-3"></div>
+              <div className="d-flex" style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
+                {Object.values(providers).map(provider => (
+                  <Button 
+                    onClick={() => signIn(provider.id)} 
+                    style={{width: '9em'}}
+                    key={provider.name}
+                    variant="outline-primary"
+                    className="m-1"
+                  >
+                      {provider.name}
+                  </Button>
+                ))} 
+              </div>
+            </>
+          }
+          {option && 
             <>
               <Button variant="light" className="rounded-circle mb-5 border" onClick={() => setOption(null)} style={{width: '3rem', height: '3rem'}}>
                 <ArrowLeft className="mb-1" size={18} /> 
@@ -126,60 +114,40 @@ export default function newLogin({ providers }) {
                 <input 
                   className="material"
                   type="text"
-                  {...register("email", { required: true, pattern })}
+                  {...register("email", { required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/i })}
                   defaultValue=""
                   required
                 />
                 <span className="bar"></span>
                 <label className="in-label"><Envelope className="mr-2 mb-1" size={20} />Email</label>
               </div>
-              {option === 'password' &&
-                <>
-                  <div className="in-group">
-                    <input 
-                      className="material"
-                      type="password"
-                      {...register("password", { required: true, minLength: 8 })} // sets rule pass >= 8
-                      defaultValue=""
-                      required
-                    />
-                    <span className="bar"></span>
-                    <label className="in-label"><Key className="mr-2 mb-1" size={20} />Password</label>
-                  </div>
-                  <Button
-                    className="w-100"
-                    type="submit"
-                  >
-                    Login
-                  </Button>
-                  <Row className="mt-4" style={{height: '4em'}}>
-                    <Button 
-                      variant="link" 
-                      onClick={() => router.push(`/auth/signup`)} 
-                      className="signup-button mx-auto"
-                    >
-                      Signup
-                    </Button>
-                  </Row>
-                </>
-              }
               {errors.password && <p className="text-danger mt-4 mx-auto">Your password must be at least 8 characters</p>}
-              {(option === 'quick' && showNext) &&
-                <div className="d-flex" style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
-                  {Object.values(providers).map(provider => (
-                    <Button 
-                      onClick={() => handleSignIn(provider.id)} 
-                      disabled={!getValues('email')} 
-                      style={{width: '9em'}}
-                      key={provider.name}
-                      variant="outline-primary"
-                      className="m-1"
-                    >
-                        {provider.name}
-                    </Button>
-                  ))} 
-                </div>
-              }
+              <div className="in-group">
+                <input 
+                  className="material"
+                  type="password"
+                  {...register("password", { required: true, minLength: 8 })} // sets rule pass >= 8
+                  defaultValue=""
+                  required
+                />
+                <span className="bar"></span>
+                <label className="in-label"><Key className="mr-2 mb-1" size={20} />Password</label>
+              </div>
+              <Button
+                className="w-100"
+                type="submit"
+              >
+                Login
+              </Button>
+              <Row className="mt-4" style={{height: '4em'}}>
+                <Button 
+                  variant="link" 
+                  onClick={() => router.push(`/auth/signup`)} 
+                  className="signup-button mx-auto"
+                >
+                  Signup
+                </Button>
+              </Row>
             </>
           }
         </Card>

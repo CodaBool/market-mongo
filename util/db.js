@@ -6,7 +6,8 @@ export async function connectDB() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
-      useCreateIndex: true
+      useCreateIndex: true,
+      poolSize: 10, // default is 5
     },
     () => console.log('connected!')
   )

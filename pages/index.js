@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import axios from 'axios'
+// import { signIn } from 'coda-auth/dist/client'
 
 export default function Index({ time }) {
   
@@ -16,7 +17,7 @@ export default function Index({ time }) {
 
   return (
     <div>
-      
+      {/* <button onClick={() => signIn()} >Signin</button> */}
       <h1 onClick={test} className="display-1 my-5" style={{cursor: 'default'}}>Oops,</h1>
       <h3 className="display-4 m-2">This site is under active construction <div className="d-inline-block">🚧</div></h3>
       <a className="text-primary ml-4" href="https://github.com/CodaBool/market-mongo">Source Code</a>

@@ -49,3 +49,4 @@ Runtime Environment Variables Issues
 # Developer Notes
 - look into paypal integration
 - setup webhook file
+- use blog https://blog.devtylerjones.com/how_to_configure_next-auth_with_mongodb_atlas_mongoose

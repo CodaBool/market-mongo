@@ -27,6 +27,7 @@ export default function Signup() {
   const { handleSubmit, watch, formState:{ errors }, control, getValues, register } = useForm()
   const captcha = useRef(null)
   const screen = useScreen()
+  const router = useRouter()
 
   const onSubmit = (data) => {
     console.log(data.email)

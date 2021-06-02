@@ -1,7 +1,7 @@
 import applyMiddleware from '../../util'
-import { Order, Product, User } from '../../models'
+import { Order, Product, User, Account } from '../../models'
 import { getSession } from 'coda-auth/client'
-import { connectDB } from '../../util/db'
+// import { connectDB } from '../../util/db'
 
 export default applyMiddleware(async (req, res) => {
   try {
@@ -51,7 +51,6 @@ export default applyMiddleware(async (req, res) => {
     } else {
       envVars.NEXT_PUBLIC_NODE_ENV = 'MISSING AS IT SHOULD BE'
     }
-    await connectDB()
     // const orders = await Order.find()
     // const products = await Product.find()
     // const stripe = require('stripe')(process.env.STRIPE_SK)
@@ -72,16 +71,39 @@ export default applyMiddleware(async (req, res) => {
     // console.log(products)
 
     
-    const user = await User.find({ email: 'codabool@pm.me' }).catch(console.log)
-    if (!user.length) { // create a new user
-      
-    }
-    if (user.length > 1) { // duplicates
+    // const user = await User.findOne({ email: 'codabool@protonmail.com' }).catch(console.log)
+    // console.log('user', user)
+    // const accounts = await Account.find().catch(console.log)
+    // console.log('accounts', accounts)
+    // const ormUser = await userSchema.findOne({ email: 'codabool@protonmail.com' }).catch(console.log)
+    // console.log('ormUser', ormUser)
 
-    }
+    // const simpleAddress = {
+    //   "city": "San Jose",
+    //   "country": "US",
+    //   "line1": "1 Main St",
+    //   "line2": null,
+    //   "postal_code": "95131",
+    //   "state": "CA"
+    // }
+    // const id = '60b6a1204371382438c0f0fd'
+    // const spent =  Number(Math.random() * 100)
+    // console.log('rand', spent)
+    // console.log('type of shipping', typeof shipping)
+    // const newUser1 = await User.findByIdAndUpdate(id, { spent, shipping: JSON.stringify(shipping), active: true }, { new: true })
+    // console.log('new updated user', newUser1)
+    // console.log('UserSchema', UserSchema)
+    // console.log('NewUser', NewUser)
+    // if (!user.length) { // create a new user
+      
+    // }
+    // if (user.length > 1) { // duplicates
+
+    // }
+    // console.log('session', session)
     // if ()
-    if (!user) throw 'no user found by that email'
-    res.status(200).json(user)
+    // if (!newUser1) throw 'no user found by that email'
+    res.status(200).json({msg: 'hi'})
     // res.status(200).json({ resp, envVars, order: orders[0], intent, products })
   } catch (err) {
     console.log(err)

@@ -13,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@next/bundle-analyzer": "^10.2.3",
     "@paypal/checkout-server-sdk": "^1.0.2",
     "@stripe/react-stripe-js": "^1.4.0",
     "@stripe/stripe-js": "^1.14.0",

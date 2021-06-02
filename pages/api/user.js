@@ -6,11 +6,11 @@ import { User } from '../../models'
 
 export default applyMiddleware(async (req, res) => {
   try {
-    const session = await getSession({ req })
-    if (!session) throw 'Unauthorized'
+    // const session = await getSession({ req })
+    // if (!session) throw 'Unauthorized'
     const { method, body, query } = req
     if (method === 'POST') {
-      throw 'bad route'
+      // throw 'bad route'
       // const valid = await verify(body.token)
       // if (valid) {
       //   await postUser({email: body.email, password: body.password})
@@ -23,10 +23,26 @@ export default applyMiddleware(async (req, res) => {
       //     })
       //     .catch(err => error = err)
       // }
+      const session = await getSession({ req })
+      console.log('session', session)
+      const valid = await verify(body.token)
+      console.log('got request with captcha', valid, 'and body', body)
+      if (!valid) throw 'Bad Captcha'
+      // console.log('post with', body)
+      if (!body.email || !body.id) throw 'Missing data'
+      const newUser = await User.create({ email: body.email, provider: body.id, passwordless: true })
+      if (!newUser) throw 'Cannot create'
+      res.status(200).json({created: true})
     } else if (method === 'GET') { // null if user not found
-      
-      const user = await User.findById(session.id)
-      res.status(200).json(user)
+      const session = await getSession({ req })
+      const user = await User.findOne({ email: query.email })
+      if (!user) {
+        res.status(200).json({ exists: false })
+      } else if (session) {
+        res.status(200).json(user)
+      } else {
+        res.status(200).json({ exists: true })
+      }
     } else if (method === 'PUT') {
       console.log('data', body)
       // const orderShipping = await getOrderShipping(body.orderID).catch(console.log)
@@ -71,6 +87,14 @@ export default applyMiddleware(async (req, res) => {
     }
   }
 })
+
+async function verify(token) {
+  let valid = false
+  await fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SK}&response=${token}`, {method: 'POST'})
+    .then(res => res.json())
+    .then(data => valid = data.success === true)
+  return valid
+}
 
 // Seperated to allow for use in pages with getServerSideProps and in next-auth
 // WARNING: always place in try catch, returns null when no user is found

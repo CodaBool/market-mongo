@@ -1,9 +1,11 @@
 import NextAuth from 'coda-auth'
 import Providers from 'coda-auth/providers'
+import Adapters from 'coda-auth/adapters'
 import { compare } from 'bcryptjs'
 import axios from 'axios'
-import { connectDB } from '../../../util/db'
-import { User } from '../../../models'
+import { connectDB, jparse } from '../../../util/db'
+import { User, Account } from '../../../models'
+import UserModelTypeORM, { UserSchemaTypeORM } from '../../../models/user'
 
 export const config = {
   // nextjs doc for custom config https://nextjs.org/docs/api-routes/api-middlewares#custom-config
@@ -42,6 +44,14 @@ export default (req, res) => {
                 if (err.message.includes('timed out')) throw 'timeout'
               })
             if (user) {
+              if (!user.password) {
+                // find providers
+                const accounts = await Account.find({ userId: user._id })
+                // BUG: without JSON.strifiy & JSON.parse only the _id can be read
+                const providers = accounts.map(acc => jparse(acc).providerId) 
+                console.log('found providers', providers.toString())
+                if (providers.length > 0) throw 'oauth@' + providers.toString()
+              }
               const validPassword = await compare(
                 clientData.password,
                 user.password
@@ -58,6 +68,8 @@ export default (req, res) => {
           } catch (err) {
             if (err === 'timeout') {
               return Promise.reject('/auth/login?error=timeout')
+            } else if (err.includes('oauth')) {
+              return Promise.reject('/auth/login?error=oauth' + err.slice(5))
             } else {
               return Promise.reject('/auth/login?error=unknown')
             }
@@ -86,61 +98,91 @@ export default (req, res) => {
       })
       // https://dev.codattest.com/api/auth/callback/PROVIDER_NAME
     ],
+    adapter: Adapters.TypeORM.Adapter(
+      // The first argument should be a database connection string or TypeORM config object
+      process.env.MONGODB_URI,
+      // The second argument can be used to pass custom models and schemas
+      {
+        models: {
+          User: { model: UserModelTypeORM, schema: UserSchemaTypeORM },
+          // User: Model.User
+        },
+      }
+    ),
     callbacks: {
       session: async (session, user) => {
-        // console.log('AUTH --> session', session, user)
-        if (session) session.db_id = user.db_id
-        if (session) session.customerId = user.customerId
-        console.log('session, db_id', session.db_id, ' | sub', user.sub)
+        // console.log('---> session callback', session, user)
+
+        if (user) session.id = user.id
+        console.log('session', session)
         return Promise.resolve(session)
       },
-      jwt: async (token, user, account, profile, isNewUser) => {
-        // console.log('AUTH --> jwt', token, user)
-        if (token.email === null && account) {
-          const data = await getGithubEmail(account.accessToken)
-          token.email = data.email
-          // console.log('found email', data.email, ' | verified', data.verified)
-        }
-        if (!token.db_id) {
-          // console.log('Adding Database Data')
-          const result = await getDBID(token.email)
-          if (result?.hasMore) {
+      jwt: async (token, user, acc, profile, isNewUser) => {
+        // console.log('jwt callback', token, user, acc, profile)
+        console.log('JWT | provider =', acc?.provider, ' | email', token.email)
+        if (token.email === null && acc?.provider === 'github') {
 
-          }
-          // console.log('data', data)
-          if (result?.db_id) {
-            token.db_id = result.db_id
-            // console.log('sub', )
-            // console.log('final token --->', token)
-          }
+          // add email to jwt
+          const data = await getGithubEmail(acc.accessToken)
+          token.email = data.email
+
+          // add email to db
+          await connectDB()
+          await User.findByIdAndUpdate(user.id, { email: data.email })
+
+        } else if (token.email === null && acc?.provider === 'discord') {
+          console.log('found no email provided for a discord oauth signin!')
         }
-        if (user) token.id = user.id
-        if (user) token.customerId = user.customerId
-        // console.log('AUTH --> jwt', token)
-        console.log('jwt, db_id', token.db_id, ' | sub', token.sub)
-        if (!token.db_id) return Promise.reject('wowee')
+        token.id = token.sub
+        console.log('token', token)
         return Promise.resolve(token)
-      }
+      },
+      async signIn(user, acc, profile) {
+        // console.log('raw', user, acc, profile)
+        console.log('---> signIn callback', user, acc, profile)
+        // console.log('signIn callback | signIn id', user.id, ' | provider', acc.provider)
+        if (acc.provider === 'github') {
+          // await connectDB()
+          // const canCast = castToObjectId(user.id)
+          // console.log('canCast', canCast)
+          // const dbUser = await User.findById(user.id)
+          // if (!dbUser.email) {
+            // const data = await getGithubEmail(acc.accessToken)
+            // console.log('found email', data.email, ' | verified', data.verified)
+            // const newUser = await User.findByIdAndUpdate(user.id, { email: data.email }, { new: true })
+            // console.log('--> newUser', newUser)
+          // }
+        }
+        // const dbAccount = await Account.findOne({ userId: user.id })
+        // console.log('--> dbAccount', dbAccount)
+        return true
+      },
     },
     pages: {
       signIn: '/auth/login',
       signOut: '/auth/logout',
-      newUser: '/auth/signup',
+      // newUser: '/auth/signup',
       error: '/auth/login' // Error code passed in query string as ?error=
     },
+    session: {
+      jwt: true, 
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
+    debug: true,
     baseUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
     secret: process.env.NEXTAUTH_SECRET
   })
 }
 
-async function getDBID(email) {
-  await connectDB()
-  if (!email) return
-  const user = await User.findOne({ email }).catch(console.log)
-  if (!user) return
-  console.log('get dbid =', user._id)
-  return { db_id: user._id, verified: user.verified }
-}
+// async function getDBID(email) {
+//   await connectDB()
+//   if (!email) return
+//   console.log('searching for dbid for email', email)
+//   const thisUser = await User.findOne({ email }).catch(console.log)
+//   if (!thisUser) return
+//   console.log('get dbid =', thisUser._id)
+//   return { db_id: thisUser._id, verified: thisUser.verified }
+// }
 
 async function getGithubEmail(token) {
   // console.log('fetching github data with token', token)
@@ -148,51 +190,9 @@ async function getGithubEmail(token) {
     headers: {
       authorization: `Bearer ${token}`
     }
-  })
+  }).catch(err => console.log('github get email error', err.response.data.message, 'token', token))
   if (!res) return
   // console.log('raw github data', data)
   // console.log('extracting email', data.filter(record => record.primary === true))
   return res.data.filter(record => record.primary === true)[0]
 }
-
-/*
-function find
-
-github no email
-
-
-Google
-account.accessToken (?)
-account.idToken (jwt)
-account.token_type (Bearer)
-
-profile.email
-profile.verified_email: true
-
-Twitter
-account.accessToken
-
-profile.email
-
-  simple verify
-profile.suspended
-profile.verified
-profile.statuses_count
-profile.followers_count
-profile.created_at
-
-Discord
-
-account.accessToken
-account.token_type
-
-profile.email
-profile.verified
-profile.locale
-
-Github
-account.accessToken
-account.token_type
-
-profile.url
-*/

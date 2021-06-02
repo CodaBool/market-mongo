@@ -12,31 +12,32 @@ export default async (req, res) => {
       const valid = await verify(body.token)
       if (!valid) throw 'Invalid Captcha'
 
+      // reverting back to mongo user creation only
+
       // STRIPE
-      const email = body.email.toLowerCase().trim()
-      const result = await stripe.customers.list({ email })
-      if (result.data.length > 0) throw 'Email Taken'
-      const customer = await stripe.customers.create({ 
-        email,
-        metadata: { signupEmail: email }
-      })
-        .catch(err => { throw err.raw.message })
-      if (!customer) throw 'Could not create Stripe Customer'
+      // const email = body.email.toLowerCase().trim()
+      // const result = await stripe.customers.list({ email })
+      // if (result.data.length > 0) throw 'Email Taken'
+      // const customer = await stripe.customers.create({ 
+      //   email,
+      //   metadata: { signupEmail: email }
+      // })
+      //   .catch(err => { throw err.raw.message })
+      // if (!customer) throw 'Could not create Stripe Customer'
 
       // MONGO
       await connectDB()
       const user = await User.create({
         email: body.email,
-        password: body.password,
-        customerId: customer.id
+        password: body.password
       }).catch(err => {
         console.log('err', err.message)
-        console.log('rolling back customer creation', customer.id)
-        stripe.customers.del(customer.id)
+        // console.log('rolling back customer creation', customer.id)
+        // stripe.customers.del(customer.id)
         if (err.code === 11000) throw 'User already exists'
         if (err.message.includes('timed out')) throw 'Server Timeout'
       })
-      if (user && customer) {
+      if (user) {
         res.status(200).json({id: user._id})
       } else throw 'Could not signup'
     } else if (method === 'GET') {
