@@ -92,7 +92,7 @@ export default function newLogin({ providers }) {
               <div className="d-flex" style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
                 {Object.values(providers).map(provider => (
                   <Button 
-                    onClick={() => signIn(provider.id)} 
+                    onClick={() => signIn(provider.id, { callbackUrl: router.query.callbackUrl || '' })} 
                     style={{width: '9em'}}
                     key={provider.name}
                     variant="outline-primary"

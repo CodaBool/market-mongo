@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import axios from 'axios'
 // import { signIn } from 'coda-auth/dist/client'
+import { useSession, signIn } from 'coda-auth/client'
 
 export default function Index({ time }) {
-  
+  const [session, loading] = useSession()
   useEffect(() => {
+    console.log('session', session)
   }, [])
 
   function test() {

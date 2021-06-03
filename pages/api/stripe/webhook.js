@@ -64,13 +64,17 @@ export default cors(async (req, res) => {
 
       if (process.env.NODE_ENV !== 'production' || test) {
         // replace with test data from db for testing with cli or gui
-        user = { _id: '6091e915a717e41c88a8d612'}
-        order = await Order.findById('cs_test_a1ybxQ4AGIDzWHTP1B23GqrvOsGU4aiU0eEnBvqaEx1wKme7byJJzgcxif')
+        user = { _id: '60b8607d79196d593c408e6d'}
+        order = await Order.findById('cs_test_a1ha9PLc14a1NChqleLL7P1AmNVnvtLjeaebwlaV0gtAJIRiyWywqBY4tQ')
       } else {
         console.log('cus_id =', intent.customer, '| email =', intent.charges.data[0].billing_details.email)
         user = await User.findOne({ customerId: intent.customer })
         order = await Order.findOne({ id_stripe_intent: intent.id })
       }
+
+      // console.log('dup status?', intent.charges.data[0].status)
+      console.log('intent ----->\n' + JSON.stringify(intent, null, 4))
+      // console.log('status?', intent.charges.data[0].status)
       
       if (!user || !order) throw 'Could not associate intent with a user, or an order'
       
@@ -78,7 +82,8 @@ export default cors(async (req, res) => {
       const products = await Product.find()
       const valid = itemsValidation(products, order.items, data.amount_received)
       console.log('valid check ----->\n' + JSON.stringify(valid, null, 4))
-      await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, {valid})
+      console.log('updating order from webhook')
+      await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, { status: 'complete', valid, ...data })
 
     } else if (type === 'payment_method.attached') {
       // console.log('payment_method.attached =', event)
@@ -96,12 +101,12 @@ export default cors(async (req, res) => {
       // TRUE! metadata passed from create to complete
 
     } else if (type === 'customer.updated') {
-      console.log('customer email updated, bad stripe!')
       // revert email back to original
       const { metadata, email, id } = event.data.object
       if (!metadata.signupEmail || !email || !id) throw `Missing data | signupEmail=${metadata.signupEmail}, email=${email}, id=${id}`
       console.log('is match?', metadata.signupEmail, '===', email)
       if (metadata.signupEmail !== email) {
+        console.log('customer email updated, bad stripe!')
         console.log('reverting customer', id, 'from', email, '=>', metadata.signupEmail)
         const customer = await stripe.customers.update(id, { email: metadata.signupEmail })
           .catch(err => { console.log(err); throw err.raw.message })

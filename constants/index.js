@@ -113,15 +113,20 @@ export function itemsValidation(products, items, amount_received) {
   let issues = false
   for (const item of items) {
     const product = products.find(product => item.id_prod === product._id)
+    expected += product.price * item.quantity
+
+    // console.log('generating expect comparison values', product.price, '*', item.quantity, '===', item.value, '*', item.quantity)
+    // console.log('generating expect comparison result', product.price * item.quantity, '===', item.value * item.quantity, )
+    // console.log((product.price * item.quantity === item.value * item.quantity))
+
     validatedItems.push({
       id: product._id,
       currency: product.currency === item.currency ? true : `${product.currency}!=${item.currency}`,
       quantity: product.quantity < item.quantity ? `${product.quantity}<${item.quantity}` : true,
-      price: product.price === item.value ? true : `${product.price}!=${item.value}`
+      price: product.price === item.value ? true : `${product.price}!=${item.value}`,
     })
-    expected += product.price * item.quantity
+    
   }
-  // check if all are valid
   const details = validatedItems.filter(item => item.currency !== true || item.price !== true || item.quantity !== true)
 
   paid = amount_received

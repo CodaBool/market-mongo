@@ -17,13 +17,45 @@ export default applyMiddleware(async (req, res) => {
       const products = await Product.find()
       const { vendorLines, total, orderLines } = createOrderValidation(products, body, 'stripe')
 
+      // TODO: create customer since stripe can't figure out it's shit
+
+      // get all customers with matching email
+      console.log('input --> email', jwt.user.email, '| id', jwt.id)
+      const { data } = await stripe.customers.list({ email: jwt.user.email })
+      const customers = data.filter(customer => customer.metadata.userId === jwt.id)
+      console.log('customers with your email', data.length, ' | found matching your id', customers.length)
+
+      if (customers.length > 1) throw 'Duplicate Stripe Customer found'
+
+      let customerId = ''
+      if (customers.length === 1) {
+        customerId = customers[0].id
+
+        console.log('found matching customer', customerId)
+      }
+      if (customers.length === 0) { // create new
+
+        console.log('creating new customer since none found with id', jwt.id, ' | email', jwt.user.email)
+
+        const customer = await stripe.customers.create({
+          email: jwt.user.email,
+          metadata: { signupEmail: jwt.user.email, userId: jwt.id }
+        }).catch(err => { throw err.raw.message })
+        if (!customer) console.log('issue creating stripe customer')
+        customerId = customer.id
+
+        console.log('created customer', customer.id)
+
+      }
+
       // TODO: allow for async calls
       const session = await stripe.checkout.sessions.create({
         success_url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/checkout/confirmed?id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/checkout/cancelled?id={CHECKOUT_SESSION_ID}`,
-        metadata: { id: jwt.id, email: jwt.user.email },
+        metadata: { userId: jwt.id, email: jwt.user.email, customerId  },
         payment_method_types: ['card'],
-        customer: jwt.customerId,
+        customer: customerId,
+        // customer_email: jwt.user.email,
         mode: 'payment',
         line_items: vendorLines,
         shipping_address_collection: {
@@ -34,7 +66,7 @@ export default applyMiddleware(async (req, res) => {
         _id: session.id,
         user: jwt.id,
         email: jwt.user.email,
-        id_customer: jwt.customerId,
+        // id_customer: jwt.customerId,
         vendor: 'stripe',
         status: 'capture',
         amount: session.amount_total,

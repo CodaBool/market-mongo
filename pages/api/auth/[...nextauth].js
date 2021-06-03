@@ -114,32 +114,39 @@ export default (req, res) => {
         // console.log('---> session callback', session, user)
 
         if (user) session.id = user.id
-        console.log('session', session)
+        // console.log('session', session)
         return Promise.resolve(session)
       },
       jwt: async (token, user, acc, profile, isNewUser) => {
-        // console.log('jwt callback', token, user, acc, profile)
-        console.log('JWT | provider =', acc?.provider, ' | email', token.email)
-        if (token.email === null && acc?.provider === 'github') {
+        // console.log('jwt', token, user, acc, profile)
 
-          // add email to jwt
-          const data = await getGithubEmail(acc.accessToken)
-          token.email = data.email
+        let email = token.email?.toLowerCase().trim()
+        if (user) {
+          if (acc.provider === 'github') {
+            const data = await getGithubEmail(acc.accessToken)
+            email = data.email
+            // console.log('called github and got email', data.email)
 
-          // add email to db
-          await connectDB()
-          await User.findByIdAndUpdate(user.id, { email: data.email })
-
-        } else if (token.email === null && acc?.provider === 'discord') {
-          console.log('found no email provided for a discord oauth signin!')
+            // TODO: can also add data.verified data to User
+            await connectDB()
+            await User.findByIdAndUpdate(user.id, { email: email.toLowerCase().trim() })
+          }
         }
+
         token.id = token.sub
-        console.log('token', token)
+        token.email = email
+
+        // console.log('token', token)
+
         return Promise.resolve(token)
       },
       async signIn(user, acc, profile) {
         // console.log('raw', user, acc, profile)
-        console.log('---> signIn callback', user, acc, profile)
+        // console.log('---> signIn callback', user, acc)
+
+        // ensure a stripe customer is attached
+
+
         // console.log('signIn callback | signIn id', user.id, ' | provider', acc.provider)
         if (acc.provider === 'github') {
           // await connectDB()
@@ -168,7 +175,7 @@ export default (req, res) => {
       jwt: true, 
       maxAge: 30 * 24 * 60 * 60, // 30 days
     },
-    debug: true,
+    // debug: true,
     baseUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
     secret: process.env.NEXTAUTH_SECRET
   })
