@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SK, { apiVersion: '2020-08-2
 import { buffer } from "micro"
 import Cors from 'micro-cors'
 import { extractRelevantData, itemsValidation } from "../../../constants"
-import { Order, Product, User } from '../../../models'
+import { Order, Product } from '../../../models'
 import { connectDB } from '../../../util/db'
 
 const cors = Cors({
@@ -65,11 +65,28 @@ export default cors(async (req, res) => {
       // console.log('intent ----->\n' + JSON.stringify(intent, null, 4))
 
       if (process.env.NODE_ENV !== 'production' || test) {
-        // replace with test data from db for testing with cli or gui
-        order = await Order.findById('cs_test_a1ha9PLc14a1NChqleLL7P1AmNVnvtLjeaebwlaV0gtAJIRiyWywqBY4tQ')
+        order = {
+          "_id": "cs_test_a1snMJ8zjh1VwBTAN7sHeONoXcMIGTRsTE8rmZN99DsAbR8nFkTIzEmy2C",
+          "amount_received": 0,
+          "user": "60b879e9807edb000861d419",
+          "email": "some@email.com",
+          "amount": 100,
+          "id_stripe_intent": "pi_1IyAO8AJvGrE9xG5M07QvpHg",
+          "currency": "usd",
+          "valid": { "wh_verified": false },
+          "items": [
+            {
+              "id_prod": "prod_JQmgyaOTJlD1VG",
+              "name": "thing",
+              "currency": "USD",
+              "quantity": 1,
+              "value": 100
+            }
+          ],
+        }
       } else {
         console.log('cus_id =', intent.customer, '| email =', intent.charges.data[0].billing_details.email)
-        user = await User.findOne({ customerId: intent.customer })
+        order = await Order.findOne({ id_stripe_intent: intent.id })
       }
 
       // console.log('dup status?', intent.charges.data[0].status)
