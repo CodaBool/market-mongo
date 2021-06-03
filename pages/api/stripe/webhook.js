@@ -58,25 +58,25 @@ export default cors(async (req, res) => {
     if (type === 'payment_intent.succeeded') {
 
       const { object: intent } = event.data
-      let user = null, order = null
+      let order = null
 
       await connectDB()
 
+      // console.log('intent ----->\n' + JSON.stringify(intent, null, 4))
+
       if (process.env.NODE_ENV !== 'production' || test) {
         // replace with test data from db for testing with cli or gui
-        user = { _id: '60b8607d79196d593c408e6d'}
         order = await Order.findById('cs_test_a1ha9PLc14a1NChqleLL7P1AmNVnvtLjeaebwlaV0gtAJIRiyWywqBY4tQ')
       } else {
         console.log('cus_id =', intent.customer, '| email =', intent.charges.data[0].billing_details.email)
         user = await User.findOne({ customerId: intent.customer })
-        order = await Order.findOne({ id_stripe_intent: intent.id })
       }
 
       // console.log('dup status?', intent.charges.data[0].status)
       console.log('intent ----->\n' + JSON.stringify(intent, null, 4))
       // console.log('status?', intent.charges.data[0].status)
       
-      if (!user || !order) throw 'Could not associate intent with a user, or an order'
+      if (!order) throw 'Could not associate intent with a user, or an order'
       
       const data = extractRelevantData(intent)
       const products = await Product.find()
