@@ -63,6 +63,7 @@ export default cors(async (req, res) => {
       await connectDB()
 
       // console.log('intent ----->\n' + JSON.stringify(intent, null, 4))
+      const data = extractRelevantData(intent)
 
       if (process.env.NODE_ENV !== 'production' || test) {
         order = {
@@ -89,34 +90,19 @@ export default cors(async (req, res) => {
         order = await Order.findOne({ id_stripe_intent: intent.id })
       }
 
-      // console.log('dup status?', intent.charges.data[0].status)
-      console.log('intent ----->\n' + JSON.stringify(intent, null, 4))
-      // console.log('status?', intent.charges.data[0].status)
+      if (!order) throw 'Could not associate intent with an order'
       
-      if (!order) throw 'Could not associate intent with a user, or an order'
-      
-      const data = extractRelevantData(intent)
       const products = await Product.find()
       const valid = itemsValidation(products, order.items, data.amount_received)
-      console.log('valid check ----->\n' + JSON.stringify(valid, null, 4))
-      console.log('updating order from webhook')
+      // console.log('valid check ----->\n' + JSON.stringify(valid, null, 4))
       await Order.findOneAndUpdate({ id_stripe_intent: intent.id }, { status: 'complete', valid, ...data })
 
     } else if (type === 'payment_method.attached') {
-      // console.log('payment_method.attached =', event)
     } else if (type === 'payment_intent.created') {
-      // console.log('payment_intent.created =', event)
     } else if (type === 'charge.succeeded') {
     } else if (type === 'checkout.session.created') {
     } else if (type === 'charge.succeeded') {
-      // console.log('charge.succeeded =')
-      // console.log(JSON.stringify(event, null, 4))
     } else if (type === 'checkout.session.completed') {
-      // console.log('checkout.session.completed =')
-      // console.log(JSON.stringify(event, null, 4))
-
-      // TRUE! metadata passed from create to complete
-
     } else if (type === 'customer.updated') {
       // revert email back to original
       const { metadata, email, id } = event.data.object
@@ -129,11 +115,9 @@ export default cors(async (req, res) => {
           .catch(err => { console.log(err); throw err.raw.message })
         console.log('fixed customer =', customer.id)
       }
-    } else {
-      // console.log(type, event)
     }
 
-    res.status(200).json({msg: 'hi'})
+    res.status(200).json({msg: 'no runtime errors'})
   } catch (err) {
     console.error(err)
     if (typeof err === 'string') {

@@ -45,8 +45,44 @@ Runtime Environment Variables Issues
 ### [next-auth][warn][jwt_auto_generated_signing_key] 
 - requires configuration [docs](https://next-auth.js.org/warnings#jwt_auto_generated_signing_key)
 
-
 # Developer Notes
-- look into paypal integration
-- setup webhook file
-- use blog https://blog.devtylerjones.com/how_to_configure_next-auth_with_mongodb_atlas_mongoose
+## TODO
+- debug userUser collection being made
+- login
+  - signup button too small height, this can be seen when clicked
+  - autofill email on failed attempt
+  - remove modal and check for if a email from a provider exists in [...nextauth].js file
+- email verification
+- product review
+- receipts
+- return
+- landing page
+- search
+- product extras
+  - size
+  - color
+  - pictures
+  - description
+
+## Bugs
+- navigation sometimes does not pickup session
+
+## OAuth Providers
+- Github
+  - manage: https://github.com/settings/applications/1631352
+  - allowed in local: Yes
+- Facebook
+  - manage: https://developers.facebook.com/apps (incognito)
+  - allowed in local: No
+- Google
+  - manage: https://console.cloud.google.com/apis/credentials?authuser=1&project=market-mongo-314800
+  - allowed in local: Yes
+- Twitter
+  - manage: https://developer.twitter.com/en/portal/projects/1397214706897756161/apps/20974732/keys
+  - allowed in local: Yes
+- Apple
+  - denied: https://developer.apple.com/account/resources/identifiers/list/serviceId
+  - status: https://developer.apple.com/enroll/identity/status
+- Discord
+  - manage: https://discord.com/developers/applications (incognito)
+  - allowed in local: Yes
