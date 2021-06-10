@@ -11,12 +11,13 @@ import { BagCheckFill } from 'react-bootstrap-icons'
 import { useRouter } from 'next/router'
 import { useShoppingCart } from 'use-shopping-cart'
 import { usdPretty, genQuanArr, MAX_DUP_ITEMS } from '../../constants'
+import Reviews from '../../components/Reviews'
 
 // server
 import { connectDB, jparse } from '../../util/db'
-import { Product } from '../../models'
+import { Product, Review } from '../../models'
 
-export default function Item({ product }) {
+export default function Item({ product, reviews, slug }) {
   const [ session, loading ] = useSession()
   const { addItem, totalPrice, cartDetails, formattedTotalPrice, clearCart, setItemQuantity } = useShoppingCart()
   const [showSucc, setShowSucc] = useState(false)
@@ -106,6 +107,7 @@ export default function Item({ product }) {
       </Card>
       <Card className="p-5">
         <h1>Reviews</h1>
+        <Reviews buildTimeReviews={reviews} productId={slug} session={session} />
       </Card>
       <div className="toastHolder" style={{position: 'fixed', top: '80px', right: '10px'}}>
         <Toast show={showSucc} setShow={setShowSucc} title='Product Added' body={<>
@@ -129,7 +131,11 @@ export async function getStaticProps(context) {
   let { slug } = context.params
   await connectDB()
   const product = await Product.findById(slug)
-  return { props: { product: jparse(product) } }
+  const allReviews = await Review.find({ productId: slug })
+  const reviews = allReviews.filter(review => {
+    if (review.published) return true
+  })
+  return { props: { product: jparse(product), reviews: jparse(reviews), slug } }
 }
 
 export async function getStaticPaths() {

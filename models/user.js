@@ -29,6 +29,11 @@ export const UserSchemaTypeORM = {
       type: "varchar",
       nullable: true,
     },
+    verified: {
+      type: "boolean",
+      default: false,
+      nullable: true,
+    },
     trust: {
       type: "int",
       nullable: true,

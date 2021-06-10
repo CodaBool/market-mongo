@@ -13,9 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.17.0",
     "@paypal/checkout-server-sdk": "^1.0.2",
     "@stripe/react-stripe-js": "^1.4.0",
     "@stripe/stripe-js": "^1.14.0",
+    "aws-sdk": "^2.921.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.6.0",
@@ -36,6 +38,6 @@
     "react-paypal-button-v2": "^2.6.3",
     "stripe": "^8.145.0",
     "timeago.js": "^4.0.2",
-    "use-shopping-cart": "^2.4.3"
+    "use-shopping-cart": "^3.0.0-beta.17"
   }
 }

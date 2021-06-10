@@ -45,12 +45,14 @@ export default (req, res) => {
               })
             if (user) {
               if (!user.password) {
-                // find providers
-                const accounts = await Account.find({ userId: user._id })
-                // BUG: without JSON.strifiy & JSON.parse only the _id can be read
-                const providers = accounts.map(acc => jparse(acc).providerId) 
-                console.log('found providers', providers.toString())
-                if (providers.length > 0) throw 'oauth@' + providers.toString()
+                console.log('likely originally signed up with oauth but is trying credentials')
+                return Promise.reject('/auth/login?error=invalid')
+                // // find providers
+                // const accounts = await Account.find({ userId: user._id })
+                // // BUG: without JSON.strifiy & JSON.parse only the _id can be read
+                // const providers = accounts.map(acc => jparse(acc).providerId) 
+                // console.log('found providers', providers.toString())
+                // if (providers.length > 0) throw 'oauth@' + providers.toString()
               }
               const validPassword = await compare(
                 clientData.password,
@@ -118,7 +120,7 @@ export default (req, res) => {
         return Promise.resolve(session)
       },
       jwt: async (token, user, acc, profile, isNewUser) => {
-        // console.log('jwt', token, user, acc, profile)
+        // console.log('---> jwt')
 
         let email = token.email?.toLowerCase().trim()
         if (user) {
@@ -130,6 +132,8 @@ export default (req, res) => {
             // TODO: can also add data.verified data to User
             await connectDB()
             await User.findByIdAndUpdate(user.id, { email: email.toLowerCase().trim() })
+            // const newUser = await User.findByIdAndUpdate(user.id, { email: email.toLowerCase().trim() }, {new: true})
+            // console.log('newUser', newUser)
           }
         }
 
@@ -142,7 +146,7 @@ export default (req, res) => {
       },
       async signIn(user, acc, profile) {
         // console.log('raw', user, acc, profile)
-        // console.log('---> signIn callback', user, acc)
+        console.log('---> signIn')
 
         // ensure a stripe customer is attached
 

@@ -32,6 +32,16 @@ export function genQuanArr(quantity) {
   return Array.from({ length: quantity }, (x, i) => i + 1)
 }
 
+export function genHexFromString(seed) {
+  let color = ''
+  color = Math.floor((Math.abs(Math.sin(seed.charCodeAt(0)) * 16777215)) % 16777215)
+  color = color.toString(16)
+  while (color.length < 6) {
+    color = '0' + color
+  }
+  return color
+}
+
 export function createOrderValidation(source, cart, vendor) {
   const vendorLines = [], orderLines = []
 
@@ -140,6 +150,13 @@ export function itemsValidation(products, items, amount_received) {
   }
   if (!issues) return { wh_verified: true, issues }
   return { wh_verified: true, details, expected: expected, issues, paid }
+}
+
+export function randString(size) { // max 66
+  const value = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)
+  console.log(value)
+  if (size) return value.slice(0, size)
+  return value
 }
 
 export function extractRelevantData(source) {

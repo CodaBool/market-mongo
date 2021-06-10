@@ -2,12 +2,17 @@ import { useEffect } from 'react'
 import axios from 'axios'
 // import { signIn } from 'coda-auth/dist/client'
 import { useSession, signIn } from 'coda-auth/client'
+import { useRouter } from 'next/router'
 
 export default function Index({ time }) {
   const [session, loading] = useSession()
+  const router = useRouter()
+
+
+
   useEffect(() => {
-    console.log('session', session)
   }, [])
+  console.log('session', session)
 
   function test() {
     axios.get('/api/test')

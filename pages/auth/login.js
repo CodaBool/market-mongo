@@ -21,18 +21,33 @@ export default function newLogin({ providers }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (router.query.email) fill()
+    console.log('email', router.query.email)
+    if (router.query.option) setOption('password')
+    if (router.query.email) setOption('password')
     if (router.query.error === 'invalid') setError('Invalid login')
     if (router.query.error === 'unkown') setError('Something went wrong')
     if (router.query.error === 'timeout') setError('Server Timeout, try again later')
     if (router.query.error === 'nonexistant') setError('No user found by that email')
     if (router.query.error === 'OAuthAccountNotLinked') setError('To confirm your identity, sign in with the same account you used originally.')
-    if (router.query.error?.includes('oauth@')) {
-      setError('Invalid login credentials, but an account with that email was discovered and may belong to you, please try logging in with one of these providers: '
-        + router.query.error.slice(6).replaceAll(',', ' ')
-      )
-    }
   }, [router.query.error])
+
+  useEffect(() => {
+    if (option === 'password' && router.query.error === 'invalid') {
+      setValue('email', router.query.email)
+      try {
+        control.fieldsRef.current.password._f.ref.focus()
+      } catch (err) {
+        console.log('fill', err)
+      }
+    }
+    if (option === 'password' && router.query.option) {
+      try {
+        control.fieldsRef.current.email._f.ref.focus()
+      } catch (err) {
+        console.log('set focus error', err)
+      }
+    }
+  }, [option])
 
   if (session) {
     router.push('/')
@@ -49,17 +64,6 @@ export default function newLogin({ providers }) {
       // redirect: false,
       callbackUrl: router.query.callbackUrl || ''
     })
-  }
-
-  function fill() {
-    try {
-      setOption('password')
-      setValue('email', router.query.email)
-      // control.fieldsRef.current.password.ref.focus()
-      control.fieldsRef.current.password._f.ref.focus()
-    } catch (err) {
-      console.log('fill', err)
-    }
   }
 
   async function onSubmit(data) {
@@ -140,6 +144,13 @@ export default function newLogin({ providers }) {
                 Login
               </Button>
               <Row className="mt-4" style={{height: '4em'}}>
+                <Button 
+                  variant="link" 
+                  onClick={() => router.push(`/auth/request`)} 
+                  className="signup-button mx-auto"
+                >
+                  Forgot Password?
+                </Button>
                 <Button 
                   variant="link" 
                   onClick={() => router.push(`/auth/signup`)} 

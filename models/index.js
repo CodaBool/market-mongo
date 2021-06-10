@@ -23,8 +23,6 @@ import mongoose, { Schema } from 'mongoose'
 const userSchema = new Schema({
   email: {
     type: String,
-    required: true,
-    unique: true,
     lowercase: true,
     trim: true
   },
@@ -33,21 +31,18 @@ const userSchema = new Schema({
     minlength: 8,
     trim: true
   },
-  provider: String,
+  verified: {
+    type: Boolean,
+    default: false
+  },
   phone: {
     type: String,
     trim: true
   },
-  customerId: { 
-    type: String
-  },
+  customerId: String,
   admin: { 
     type: Boolean, 
     default: false 
-  },
-  active: { 
-    type: Boolean, 
-    default: true
   },
   trust: { 
     type: Number,
@@ -147,15 +142,18 @@ const reviewSchema = new Schema({
   },
   content: {
     type: String,
-    maxlength: 2000,
-    required: true
+    maxlength: 3000
+  },
+  title: {
+    type: String,
+    maxlength: 75
   },
   stars: {
     type: Number,
     min: 0,
     max: 5,
   },
-  image: {
+  avatar: {
     type: String,
   },
   helpful: {
@@ -172,6 +170,19 @@ const reviewSchema = new Schema({
   }
 }, { timestamps: true })
 
+const tokenSchema = new Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  token: { type: String, required: true },
+  intent: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    index: { expires: '3m' }
+  },
+})
 
 // export const oldUser = mongoose.models.user || mongoose.model('user', depreciatedUserSchema)
 export const User = mongoose.models.user || mongoose.model('user', userSchema)
@@ -179,3 +190,4 @@ export const Order = mongoose.models.order || mongoose.model('order', orderSchem
 export const Review = mongoose.models.review || mongoose.model('review', reviewSchema)
 export const Product = mongoose.models.product || mongoose.model('product', productSchema)
 export const Account = mongoose.models.account || mongoose.model('account', accountSchema)
+export const Token = mongoose.models.token || mongoose.model('token', tokenSchema)

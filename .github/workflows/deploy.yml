@@ -86,6 +86,8 @@ jobs:
           NEXT_PUBLIC_PAYPAL_ID: ${{ secrets.NEXT_PUBLIC_PAYPAL_ID }}
           STRIPE_WH_ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
           STRIPE_API_ALLOW_LIST: ${{ steps.allow.outputs.ips_api }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Upload `.serverless` state to S3
         run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete

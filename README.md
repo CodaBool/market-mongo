@@ -49,15 +49,12 @@ Runtime Environment Variables Issues
 ## TODO
 - debug userUser collection being made
 - login
-  - signup button too small height, this can be seen when clicked
-  - autofill email on failed attempt
-  - remove modal and check for if a email from a provider exists in [...nextauth].js file
-- email verification
+  - autofill email on failed attempt -> should be fixed, needs testing on dev
+- email verification -> working local
 - product review
 - receipts
-- return
+- return???
 - landing page
-- search
 - product extras
   - size
   - color
