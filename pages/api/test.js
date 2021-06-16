@@ -1,6 +1,7 @@
 import applyMiddleware from '../../util'
 import { Order, Product, User, Account } from '../../models'
 import { getSession } from 'coda-auth/client'
+import { itemsValidation } from '../../constants'
 // import { connectDB } from '../../util/db'
 
 export default applyMiddleware(async (req, res) => {
@@ -8,6 +9,12 @@ export default applyMiddleware(async (req, res) => {
     let resp = []
     let envVars = {}
     const session = await getSession({req})
+
+    const products = await Product.find()
+    const order = await Order.findById('cs_test_b1DvHTx2hr95Hql6AiYYLBv00tFxN1QgDO2un302UIrBe7UyD5pducWYeR')
+    const valid = itemsValidation(products, order.items, 301)
+    console.log('valid', valid)
+
     // console.log(session)
     // if (!session) throw 'Unathorized'
     // console.log(session.user)

@@ -127,10 +127,7 @@ export function itemsValidation(products, items, amount_received) {
   for (const item of items) {
     const product = products.find(product => item.id_prod === product._id)
     console.log('product', product)
-    const variant = product.variants.find(variant => {
-      console.log(item.id_variant, '===', variant._id, '|', typeof item.id_variant, '===', typeof variant._id)
-      return item.id_variant === variant._id
-    })
+    const variant = product.variants.find(variant => String(item.id_variant) === String(variant._id))
     console.log('variant', variant)
     expected += variant.price * item.quantity
     console.log('expected', variant.price, '*', item.quantity, ' = ', expected)

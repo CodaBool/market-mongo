@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 // import { signIn } from 'coda-auth/dist/client'
 import { useSession, signIn } from 'coda-auth/client'
 import { useRouter } from 'next/router'
+import axios from 'axios'
 
 export default function Index({ time }) {
   const [session, loading] = useSession()
