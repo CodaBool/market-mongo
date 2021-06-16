@@ -35,7 +35,7 @@ export default function Item({ product, reviews, slug }) {
       return
     }
     const selectedQuantity = Number(quantity.current.value)
-    const item = { name: variant.name, description: product.description, id: product._id, price: Number(variant.price), image: variant.images[0]}
+    const item = { name: variant.name, description: product.description, id: product._id, price: Number(variant.price), image: variant.images[0], variantId: variant._id}
     if (cartDetails[product._id]) { // in cart
       if (cartDetails[product._id].quantity + selectedQuantity > MAX_DUP_ITEMS) { // BUST
         const overflow = cartDetails[product._id].quantity + selectedQuantity - MAX_DUP_ITEMS

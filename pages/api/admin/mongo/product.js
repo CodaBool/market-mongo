@@ -89,7 +89,7 @@ export default applyMiddleware(async (req, res) => {
       throw `Cannot use ${method} method for this route`
     }
   } catch (err) {
-    console.log('mongo', err, typeof err)
+    console.log(err)
 
     if (typeof err === 'string') {
       res.status(400).json({ msg: '/admin/mongo/product: ' + err })

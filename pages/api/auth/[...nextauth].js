@@ -4,7 +4,7 @@ import Adapters from 'coda-auth/adapters'
 import { compare } from 'bcryptjs'
 import axios from 'axios'
 import { connectDB, jparse } from '../../../util/db'
-import { User, Account } from '../../../models'
+import { User, Account, userSchema } from '../../../models'
 import UserModelTypeORM, { UserSchemaTypeORM } from '../../../models/user'
 
 export const config = {
@@ -107,7 +107,7 @@ export default (req, res) => {
       {
         models: {
           User: { model: UserModelTypeORM, schema: UserSchemaTypeORM },
-          // User: Model.User
+          // User: { model: User, schema: userSchema },
         },
       }
     ),

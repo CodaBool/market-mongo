@@ -15,7 +15,10 @@ export default applyMiddleware(async (req, res) => {
     if (method === 'POST') {
 
       const products = await Product.find()
+      // console.log('body', body)
       const { vendorLines, total, orderLines } = createOrderValidation(products, body, 'stripe')
+      // console.log('output', vendorLines, total, orderLines)
+      // res.status(200).json({msg: 'hi'})
 
       // TODO: create customer since stripe can't figure out it's shit
 
@@ -95,8 +98,7 @@ export default applyMiddleware(async (req, res) => {
       throw `Cannot use ${method} method for this route`
     }
   } catch (err) {
-    // console.log('type', typeof err)
-    console.log('raw', err)
+    console.log('session', err)
     if (typeof err === 'string') {
       res.status(400).json({ msg: 'session: ' + err })
     } else {

@@ -52,12 +52,15 @@ export function createOrderValidation(source, cart, vendor) {
   for (const id in cart) {
     // console.log('loop id=', id)
     const item = source.find(product => (product._id === id))
+    const variant = item.variants.find(variant => String(variant._id) === cart[id].variantId)
+
     // console.log('match', item, '@', id)
     // verify that all ids exist in source
     if (!item) throw `No product in source with id "${id}"`
+    if (!variant) throw `The variant of id "${cart[id].variantId}" was not found in product "${id}"`
     // verify that the local has the correct price
     // console.log('compare price', cart[id].price, 'vs', item.price)
-    if (cart[id].price !== item.price) throw 'Price discrepency'
+    if (cart[id].price !== variant.price) throw 'Price discrepency'
 
     // verify that the local does not go over store duplicate limit
     // console.log('check if over max', cart[id].quantity, 'vs', MAX_DUP_ITEMS)
@@ -65,24 +68,24 @@ export function createOrderValidation(source, cart, vendor) {
 
     // verify that the local does not go over store supply
     // console.log('check if over supply', cart[id].quantity, 'vs', item.quantity)
-    if (cart[id].quantity > item.quantity) throw 'Exceeding supply limit'
+    if (cart[id].quantity > variant.quantity) throw 'Exceeding supply limit'
 
     // don't allow empty quantity
     if (cart[id].quantity === 0) throw 'Empty quantity'
 
-    if (!item.images[0]) throw 'Improper market image'
+    if (!variant.images[0]) throw 'Improper market image'
     // if (!item.description) throw 'Improper market description'
     // if (!item.currency) throw 'Improper market currency'
 
     if (vendor === 'paypal') {
       line = {
         sku: item.id,
-        name: item.name,
+        name: variant.name,
         quantity: cart[id].quantity,
         description: item.description.substring(0, 120) + '... ', // max 127
         unit_amount: {
           currency_code: item.currency,
-          value: usd(item.price)
+          value: usd(variant.price)
         }
       }
     } else { // stripe
@@ -90,25 +93,25 @@ export function createOrderValidation(source, cart, vendor) {
         quantity: cart[id].quantity,
         price_data: {
           currency: item.currency,
-          unit_amount: item.price,
+          unit_amount: variant.price,
           product_data: {
-            name: item.name,
+            name: variant.name,
             description: item.description,
-            images: [item.images[0]]
+            images: [variant.images[0]]
           }
         }
       }
     }
     monLine = {
       id_prod: item.id,
-      name: item.name,
+      name: variant.name,
       currency: item.currency,
       quantity: cart[id].quantity,
-      value: item.price
+      id_variant: variant._id,
+      value: variant.price
     }
 
-
-    total += (item.price * cart[id].quantity)
+    total += (variant.price * cart[id].quantity)
     vendorLines.push(line)
     orderLines.push(monLine)
   }
@@ -123,7 +126,14 @@ export function itemsValidation(products, items, amount_received) {
   let issues = false
   for (const item of items) {
     const product = products.find(product => item.id_prod === product._id)
-    expected += product.price * item.quantity
+    console.log('product', product)
+    const variant = product.variants.find(variant => {
+      console.log(item.id_variant, '===', variant._id, '|', typeof item.id_variant, '===', typeof variant._id)
+      return item.id_variant === variant._id
+    })
+    console.log('variant', variant)
+    expected += variant.price * item.quantity
+    console.log('expected', variant.price, '*', item.quantity, ' = ', expected)
 
     // console.log('generating expect comparison values', product.price, '*', item.quantity, '===', item.value, '*', item.quantity)
     // console.log('generating expect comparison result', product.price * item.quantity, '===', item.value * item.quantity, )
@@ -132,8 +142,8 @@ export function itemsValidation(products, items, amount_received) {
     validatedItems.push({
       id: product._id,
       currency: product.currency === item.currency ? true : `${product.currency}!=${item.currency}`,
-      quantity: product.quantity < item.quantity ? `${product.quantity}<${item.quantity}` : true,
-      price: product.price === item.value ? true : `${product.price}!=${item.value}`,
+      quantity: variant.quantity < item.quantity ? `${variant.quantity}<${item.quantity}` : true,
+      price: variant.price === item.value ? true : `${variant.price}!=${item.value}`,
     })
     
   }

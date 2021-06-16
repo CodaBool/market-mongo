@@ -1,25 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
 
-// const chargeSchema = new Schema({ 
-//   _id: String,
-//   id_payment_intent: String,
-//   id_payment_method: String,
-//   id_customer: String,
-//   amount: Number,
-//   amount_captured: Number,
-//   amount_refunded: Number,
-//   captured: Number,
-//   created: Number,
-//   currency: String,
-//   paid: Boolean,
-//   receipt_url: String,
-//   refunded: Boolean,
-//   status: String,
-//   risk: String,
-// })
-
-// Extend the built-in models using class inheritance
-
 const userSchema = new Schema({
   email: {
     type: String,
@@ -185,7 +165,6 @@ const tokenSchema = new Schema({
   },
 })
 
-// export const oldUser = mongoose.models.user || mongoose.model('user', depreciatedUserSchema)
 export const User = mongoose.models.user || mongoose.model('user', userSchema)
 export const Order = mongoose.models.order || mongoose.model('order', orderSchema)
 export const Review = mongoose.models.review || mongoose.model('review', reviewSchema)

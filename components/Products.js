@@ -38,7 +38,9 @@ export default function Products({ products, productClick }) {
       return
     }
     const product = products.find(product => product._id === id)
-    const item = { name: product.name, description: product.description, id: product._id, price: Number(product.price), image: product.coverImg}
+    const variant = product.variants.find(variant => !!variant.default)
+    const item = { name: variant.name, description: product.description, id: product._id, price: Number(variant.price), image: product.coverImg, variantId: variant._id }
+    console.log('item', item)
     const cartId = Object.keys(cart).find(cartId => cartId === id)
     if (cartId) {
       if (cart[cartId].quantity < MAX_DUP_ITEMS) { // increment

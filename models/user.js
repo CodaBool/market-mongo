@@ -23,6 +23,7 @@ export const UserSchemaTypeORM = {
     },
     admin: {
       type: "boolean",
+      default: false,
       nullable: true,
     },
     active: {
