@@ -31,6 +31,11 @@ export default function Products({ products, productClick }) {
 
   // console.log('cart', cart)
 
+  function defaultVariant(id) {
+    const product = products.find(product => product._id === id)
+    return product.variants.find(variant => !!variant.default)
+  }
+
   function addToCart(e, id) {
     e.stopPropagation()
     if (!session) {
@@ -39,18 +44,17 @@ export default function Products({ products, productClick }) {
     }
     const product = products.find(product => product._id === id)
     const variant = product.variants.find(variant => !!variant.default)
-    const item = { name: variant.name, description: product.description, id: product._id, price: Number(variant.price), image: product.coverImg, variantId: variant._id }
-    console.log('item', item)
+    const item = { name: variant.name, description: product.description, id: variant._id, price: Number(variant.price), image: product.coverImg, productId: product._id }
     const cartId = Object.keys(cart).find(cartId => cartId === id)
     if (cartId) {
       if (cart[cartId].quantity < MAX_DUP_ITEMS) { // increment
-        productClick(product.name, false)
+        productClick(variant.name, false)
         incrementItem(id)
       } else { //too many
         productClick(null, true)
       }
     } else { // new
-      productClick(product.name, false)
+      productClick(variant.name, false)
       addItem(item)
     }
   }
@@ -71,11 +75,11 @@ export default function Products({ products, productClick }) {
         {products.map(product => (
           <Col key={product._id} md={6}>
             <Card className="m-5" style={{cursor: 'pointer'}} onClick={() => router.push(`/item/${product._id}`)}>
-              <BoxImg imageUrl={product.coverImg} alt={product.name} />
+              <BoxImg imageUrl={product.coverImg} alt={defaultVariant(product._id).name} />
               <div className="p-3">
-                <h2>{product.name}</h2>
+                <h2>{defaultVariant(product._id).name}</h2>
                 <h4>~Review Placeholder~</h4>
-                {usdPretty(product.variants.find(variant => !!variant.default).price)}
+                {usdPretty(defaultVariant(product._id).price)}
                 <h4>~Shipping Placeholder~</h4>
               </div>
               <Button variant="info" onClick={(e) => addToCart(e, product._id)}>Add to Cart</Button>

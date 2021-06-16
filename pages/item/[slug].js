@@ -35,31 +35,35 @@ export default function Item({ product, reviews, slug }) {
       return
     }
     const selectedQuantity = Number(quantity.current.value)
-    const item = { name: variant.name, description: product.description, id: product._id, price: Number(variant.price), image: variant.images[0], variantId: variant._id}
-    if (cartDetails[product._id]) { // in cart
-      if (cartDetails[product._id].quantity + selectedQuantity > MAX_DUP_ITEMS) { // BUST
-        const overflow = cartDetails[product._id].quantity + selectedQuantity - MAX_DUP_ITEMS
+    const item = { name: variant.name, description: product.description, id: variant._id, price: Number(variant.price), image: variant.images[0], productId: product._id}
+    if (cartDetails[variant._id]) { // in cart
+      if (cartDetails[variant._id].quantity + selectedQuantity > MAX_DUP_ITEMS) { // BUST
+        const overflow = cartDetails[variant._id].quantity + selectedQuantity - MAX_DUP_ITEMS
         const maxAdd = Math.abs(selectedQuantity - overflow)
         // console.log('Fraction of', product.name, '| maxAdd', maxAdd)
         if (maxAdd) {
           setOverflow(maxAdd)
           setShowErr(true)
-          setItemQuantity(product._id, cartDetails[product._id].quantity + maxAdd)
+          setItemQuantity(variant._id, cartDetails[variant._id].quantity + maxAdd)
         } else {
           setShowMaxErr(true)
         }
       } else { // add all
         // console.log('adding ALL of existing item', product.name, 'set quantity to', cartDetails[product._id].quantity + selectedQuantity)
-        setItemQuantity(product._id, cartDetails[product._id].quantity + selectedQuantity)
+        setItemQuantity(variant._id, cartDetails[variant._id].quantity + selectedQuantity)
         setShowSucc(true)
       }
     } else { // new
       // adding item with quantity not supported in latest use-shopping-cart
       // instead adding single item and then calling setItemQuantity to match quantity
       addItem(item)
-      setItemQuantity(product._id, selectedQuantity)
+      setItemQuantity(variant._id, selectedQuantity)
       setShowSucc(true)
     }
+  }
+
+  function variantChange(id) {
+    setVariant(product.variants.find(variant => variant._id === id))
   }
 
   return (
@@ -67,23 +71,17 @@ export default function Item({ product, reviews, slug }) {
       <Card key={product._id} className="p-3">
         <Row>
           <Col className="p-0">
-            <ProductImg variants={product.variants} alt={product.name} coverImg={product.coverImg} />
-            <p className="text-center">option picker placeholder</p>
-            <select className="form-control my-2" onChange={e => setVariant(e.target.value)}>
-              {product.variants.map(variant => variant.name).map((option, index) => (
-                <option key={index}>{option}</option>)
-              )}
-            </select>
+            <ProductImg variants={product.variants} alt={variant.name} coverImg={product.coverImg} variantChange={variantChange}  />
           </Col>
           <Col>
-            <h1>{product.name}</h1>
+            <h1>{variant.name}</h1>
             {/* Tags */}
             {/* {product.metadata.categories?.split(',').map((tag, index) => (
               <Badge pill variant="secondary" className="mr-2 py-1" key={index}>
                 {tag}
               </Badge>
             ))} */}
-            <h4>{product.description}</h4>
+            <p>{product.description}</p>
             <div className="" style={{width: '200px'}}>
               <Row>
                 <Col sm={6} className="text-center">

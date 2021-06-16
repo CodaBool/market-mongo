@@ -42,7 +42,7 @@ export default function CartCards({ simple }) {
     }
     removeItem(item)
   }
-  
+
   return (
     <>
       {Object.keys(cart).length === 0 && <h1 className="my-5">🛒 No items found. Please go to <a href="/browse/1">Browse</a> and pick some up</h1>}
@@ -59,7 +59,7 @@ export default function CartCards({ simple }) {
                 <>
                   <Row className="text-muted mt-3">
                     <Col>Price</Col>
-                    <Col className="text-right">{cart[item].formattedValue}</Col>
+                    <Col className="text-right">{cart[item].formattedPrice}</Col>
                   </Row>
                   <Row className="text-muted">
                     <Col>Quantity</Col>
@@ -70,7 +70,7 @@ export default function CartCards({ simple }) {
               {(selects && !simple) && 
                 <Row>
                   <Col className="my-auto">
-                    <h5 className="d-inline">{cart[item].formattedValue}</h5>
+                    <h5 className="d-inline">{cart[item].formattedPrice}</h5>
                     <X className="float-right" size={27}/>
                   </Col>
                   <Col>{selects[index]}</Col>

@@ -34,7 +34,7 @@ export default function Navigation() {
               }
               <Link href="/account">
                 <div className={`${router.asPath.includes('/account') && 'active'} nav-link`}>
-                  Account & Orders
+                  Account
                 </div>
               </Link>
               <Link href="/checkout/cart">

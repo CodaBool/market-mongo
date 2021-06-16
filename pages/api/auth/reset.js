@@ -37,7 +37,7 @@ export default applyMiddleware(async (req, res) => {
                 <strong>Reset Your Password</strong>
                 <p>We have gotten a request that you would like to reset your password</p>
                 <p>If you did make this request, then use the link provided to finish the password reset for your account</p>
-                <a href="http://localhost:3000/auth/reset?id=${newToken.token}">http://localhost:3000/auth/reset?id=${newToken.token}</a>
+                <a href="${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/auth/reset?id=${newToken.token}">${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/auth/reset?id=${newToken.token}</a>
                 <p>If you didn’t want to reset your password, you can safely ignore this email and carry on as usual</p>
               `,
             },
@@ -96,7 +96,7 @@ export default applyMiddleware(async (req, res) => {
                 <p>If you made this reset, then you can safely delete this email</p>
                 <p>If you did not do this reset, this could mean someone has gotten into your account.</p>
                 <p>Please immediately reset your password to prevent unauthorized activity.</p>
-                <a href="http://localhost:3000/auth/request">http://localhost:3000/auth/request</p>
+                <a href="${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/auth/request">${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/auth/request</p>
               `,
             },
             Text: {

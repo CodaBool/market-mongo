@@ -37,8 +37,8 @@ export default function Variants() {
         setProducts(res.data)
         if (refresh) {
           // TODO: uncomment
-          console.log(res.data)
-          // setProduct(res.data.find(prod => prod._id === product._id))
+          // console.log(res.data)
+          setProduct(res.data.find(prod => prod._id === product._id))
         }
       })
       .catch(err => console.error(err.response.data.msg))
@@ -186,7 +186,7 @@ function CreateVariantForm({ setShowCreate, _id, getProducts }) {
 
       {[0, 1, 2, 3, 4].map(value => (
         <InputGroup key={value}>
-          <InputGroup.Text style={{width: '10rem'}}>Image URL {value + 1}</InputGroup.Text>
+          <InputGroup.Text style={{width: '8.2rem'}}>Image URL {value + 1}</InputGroup.Text>
           <input className="form-control" defaultValue="" {...register("img-" + value)} />
         </InputGroup>
       ))}

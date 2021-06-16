@@ -117,7 +117,9 @@ main {
   100% { transform: rotate(0deg); } 
 }
 /* Products */
-
+.variant-selector:hover {
+  cursor: pointer;
+}
 /* X Icon in Chart */
 .x-icon:hover {
   cursor: pointer;

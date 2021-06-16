@@ -51,13 +51,13 @@ export function createOrderValidation(source, cart, vendor) {
   let line = {}, monLine = {}
   for (const id in cart) {
     // console.log('loop id=', id)
-    const item = source.find(product => (product._id === id))
-    const variant = item.variants.find(variant => String(variant._id) === cart[id].variantId)
-
+    const item = source.find(product => (product._id === cart[id].productId))
+    const variant = item.variants.find(variant => String(variant._id) === id)
+    // console.log('variant', variant)
     // console.log('match', item, '@', id)
     // verify that all ids exist in source
-    if (!item) throw `No product in source with id "${id}"`
-    if (!variant) throw `The variant of id "${cart[id].variantId}" was not found in product "${id}"`
+    if (!item) throw `No product in source with id "${cart[id].productId}"`
+    if (!variant) throw `The variant of id "${id}" was not found in product "${cart[id].productId}"`
     // verify that the local has the correct price
     // console.log('compare price', cart[id].price, 'vs', item.price)
     if (cart[id].price !== variant.price) throw 'Price discrepency'
@@ -79,7 +79,7 @@ export function createOrderValidation(source, cart, vendor) {
 
     if (vendor === 'paypal') {
       line = {
-        sku: item.id,
+        sku: variant._id,
         name: variant.name,
         quantity: cart[id].quantity,
         description: item.description.substring(0, 120) + '... ', // max 127
@@ -97,13 +97,13 @@ export function createOrderValidation(source, cart, vendor) {
           product_data: {
             name: variant.name,
             description: item.description,
-            images: [variant.images[0]]
+            images: variant.images
           }
         }
       }
     }
     monLine = {
-      id_prod: item.id,
+      id_prod: item._id,
       name: variant.name,
       currency: item.currency,
       quantity: cart[id].quantity,

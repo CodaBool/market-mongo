@@ -1,6 +1,6 @@
 import applyMiddleware from '../../util'
 import { getSession } from 'coda-auth/client'
-import { Review, Order } from '../../models'
+import { Review, Order, User } from '../../models'
 
 export default applyMiddleware(async (req, res) => {
   try {
@@ -8,17 +8,25 @@ export default applyMiddleware(async (req, res) => {
     const session = await getSession({ req })
     if (!session) throw 'Unauthorized'
     if (method === 'POST') {
-      console.log('body', body)
-      // VALIDATION: check that an order is processing AND check that a review does not exist already
-      const userOrders = await Order.find({ user: session.id })
+      // console.log('body', body)
+
+      // verify email validation
+      const user = await User.findById(session.id)
+      console.log('user', user)
+      if (!user.verified) throw 'You must verify your account before writing a review'
+
+      // verify first review written for this product
       const userReviews = await Review.find({ author: session.id })
+      const reviewExists = userReviews.find(review => review.productId === body.productId)
+      if (reviewExists) throw 'A review for this product already exists'
+
+      // verify an this product has been ordered
+      const userOrders = await Order.find({ user: session.id })
       const orderExists = userOrders.find(order => {
         const hasThisProduct = order.items.find(item => item.id_prod === body.productId)
         if (hasThisProduct) return true
       })
       if (!orderExists) throw 'Only customers who have purchased the product can write reviews'
-      const reviewExists = userReviews.find(review => review.productId === body.productId)
-      if (reviewExists) throw 'A review for this product already exists'
 
       const review = await Review.create({
         productId: body.productId,

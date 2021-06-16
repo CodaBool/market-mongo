@@ -36,8 +36,9 @@ export default function index({ user }) {
         </Alert>
       }
 
-      <h1 className="display-4 my-4" style={{cursor: 'pointer'}}>Account</h1>
-      <Button variant="outline-primary" onClick={() => router.push('/account/orders')}>See My Orders</Button>
+      <h1 className="display-4 my-4">Account</h1>
+      <p>{user.email}</p>
+      <Button variant="outline-primary" onClick={() => router.push('/account/orders')}>My Orders</Button>
     </>
   )
 }
@@ -46,7 +47,6 @@ export async function getServerSideProps(context) {
   const jwt = await getSession(context)
   if (!jwt) return { props: { } }
   await connectDB()
-  console.log('jwt', jwt)
   const user = await User.findById(jwt.id)
   if (!user) return { props: { } }
   user.password = undefined

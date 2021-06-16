@@ -1,6 +1,7 @@
 // REWRITE v2
 import { useState } from 'react'
 import { usd } from '../../constants'
+import { ArrowLeft } from 'react-bootstrap-icons'
 
 // server
 import { getSession } from 'coda-auth/client'
@@ -8,6 +9,7 @@ import { connectDB, jparse } from '../../util/db'
 import { Order } from '../../models'
 import OrderDetail from '../../components/OrderDetail'
 import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button'
 import { useRouter } from 'next/router'
 import { format } from 'timeago.js'
 
@@ -19,21 +21,27 @@ export default function orders({ orders }) {
 
   console.log(orders)
 
-  if (orders.length === 0) return <p>No orders to show</p>
-  
   return (
     <>
-      <h1 className="display-4 my-4" onClick={() => router.push('/account')} style={{cursor: 'pointer'}}>Account</h1>
-      {orders.length > 0 && orders.map((order, index) => (
-        <Card key={order._id} className="p-3 my-3 rounded shadow order-card" onClick={() => setOrderData(orders[index])}>
-          <h4>order: {order._id}</h4>
-          <p>payment vendor: {order.vendor}</p>
-          <p>status: <span className={`${order.status === 'complete' ? 'text-success': 'test-primary'}`}>{order.status}</span></p>
-          <p>amount: ${usd(order.amount)}</p>
-          <p>created: {format(order.createdAt)}</p>
-          <p>updated: {format(order.updatedAt)}</p>
-        </Card>
-      ))}
+      <Button variant="light" className="rounded-circle my-5 border" onClick={() => router.push('/account')} style={{width: '3rem', height: '3rem'}}>
+        <ArrowLeft className="mb-1" size={18} />
+      </Button>
+      {orders.length === 0
+        ? <h4 className="display-4">No orders found</h4>
+        : <>
+            <h4 className="display-4">Orders</h4>
+            {orders.length > 0 && orders.map((order, index) => (
+              <Card key={order._id} className="p-3 my-3 rounded shadow order-card" onClick={() => setOrderData(orders[index])}>
+                <h4>order: {order._id}</h4>
+                <p>payment vendor: {order.vendor}</p>
+                <p>status: <span className={`${order.status === 'complete' ? 'text-success': 'test-primary'}`}>{order.status}</span></p>
+                <p>amount: ${usd(order.amount)}</p>
+                <p>created: {format(order.createdAt)}</p>
+                <p>updated: {format(order.updatedAt)}</p>
+              </Card>
+            ))}
+          </>
+      }
     </>
   )
 }

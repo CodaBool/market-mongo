@@ -27,8 +27,7 @@ email `codabool@pm.me` or just do a pull request
 - Give the lambda more memory in serverless.yml
 
 ### redux-persist failed to create sync storage. falling back to noop storage.
-- use-shopping-cart is working on this issue as top priority
-- Mean time ignore or comment out the login node_modules/use-shopping-cart/dis/react.js line 3030
+- use-shopping-cart is working on this issue
 
 ### Callback or Authentication issues
 - The app uses a fork of next-auth
@@ -47,7 +46,7 @@ Runtime Environment Variables Issues
 
 # Developer Notes
 ## TODO
-- debug userUser collection being made
+- debug userUser collection being made -> fixed but don't know why
 - login
   - autofill email on failed attempt -> should be fixed, needs testing on dev
 - email verification -> working local

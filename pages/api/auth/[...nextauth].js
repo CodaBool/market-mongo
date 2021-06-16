@@ -120,7 +120,7 @@ export default (req, res) => {
         return Promise.resolve(session)
       },
       jwt: async (token, user, acc, profile, isNewUser) => {
-        console.log('---> jwt', token)
+        // console.log('---> jwt', token)
 
         let email = token.email?.toLowerCase().trim()
         if (user) {
@@ -146,7 +146,7 @@ export default (req, res) => {
       },
       async signIn(user, acc, profile) {
         // console.log('raw', user, acc, profile)
-        console.log('---> signIn')
+        // console.log('---> signIn')
 
         // ensure a stripe customer is attached
 

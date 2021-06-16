@@ -13,9 +13,9 @@ export default applyMiddleware(async (req, res) => {
     // const products = await Product.find()
     // const order = await Order.findById('cs_test_b1DvHTx2hr95Hql6AiYYLBv00tFxN1QgDO2un302UIrBe7UyD5pducWYeR')
     // const valid = itemsValidation(products, order.items, 301)
-    const users = await User.find()
+    // const users = await User.find()
     // const userUsers = await userUser.find()
-    console.log('users', users)
+    // console.log('users', users)
     // console.log('userUsers', userUsers)
 
     // console.log(session)
