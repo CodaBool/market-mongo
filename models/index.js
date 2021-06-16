@@ -19,6 +19,8 @@ const userSchema = new Schema({
     type: String,
     trim: true
   },
+  image: String,
+  name: String,
   customerId: String,
   admin: { 
     type: Boolean, 
@@ -165,6 +167,7 @@ const tokenSchema = new Schema({
   },
 })
 
+// export const userUser = mongoose.models.userUser || mongoose.model('userUser', userSchema)
 export const User = mongoose.models.user || mongoose.model('user', userSchema)
 export const Order = mongoose.models.order || mongoose.model('order', orderSchema)
 export const Review = mongoose.models.review || mongoose.model('review', reviewSchema)

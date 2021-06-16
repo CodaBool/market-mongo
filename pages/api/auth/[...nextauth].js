@@ -106,7 +106,7 @@ export default (req, res) => {
       // The second argument can be used to pass custom models and schemas
       {
         models: {
-          User: { model: UserModelTypeORM, schema: UserSchemaTypeORM },
+          aUser: { model: UserModelTypeORM, schema: UserSchemaTypeORM },
           // User: { model: User, schema: userSchema },
         },
       }

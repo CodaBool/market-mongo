@@ -1,7 +1,8 @@
 import Button from 'react-bootstrap/Button'
 import Alert from 'react-bootstrap/Alert'
 import { useRouter } from 'next/router'
-import { useSession, getSession } from 'coda-auth/client'
+import { useSession, getSession, signIn } from 'coda-auth/client'
+import { Load } from '../../components/Load'
 
 // serverside
 import { connectDB, jparse } from '../../util/db'
@@ -12,6 +13,11 @@ export default function index({ user }) {
   // const [session, loading] = useSession()
 
   console.log('user', user)
+
+  if (!user) {
+    signIn()
+    return <Load />
+  }
   
   return (
     <>

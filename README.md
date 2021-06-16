@@ -52,6 +52,9 @@ Runtime Environment Variables Issues
   - autofill email on failed attempt -> should be fixed, needs testing on dev
 - email verification -> working local
 - product review
+  - review editing
+  - admin publish
+  - require verification
 - receipts
 - return???
 - landing page
