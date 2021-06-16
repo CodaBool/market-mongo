@@ -120,7 +120,7 @@ export default (req, res) => {
         return Promise.resolve(session)
       },
       jwt: async (token, user, acc, profile, isNewUser) => {
-        // console.log('---> jwt')
+        console.log('---> jwt', token)
 
         let email = token.email?.toLowerCase().trim()
         if (user) {

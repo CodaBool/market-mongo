@@ -40,7 +40,9 @@ export async function getServerSideProps(context) {
   const jwt = await getSession(context)
   if (!jwt) return { props: { } }
   await connectDB()
+  console.log('jwt', jwt)
   const user = await User.findById(jwt.id)
+  if (!user) return { props: { } }
   user.password = undefined
   return { props: { user: jparse(user) } }
 }
