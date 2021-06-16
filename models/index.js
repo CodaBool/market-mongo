@@ -97,29 +97,30 @@ const productSchema = new Schema({
     type: String,
     required: true
   },
-  price: {
-    type: Number,
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true
-  },
-  name: {
-    type: String,
-    default: null
-  },
-  description: {
-    type: String,
-    default: null
-  },
+  variants: [{
+    name: String,
+    images: [String],
+    price: {
+      type: Number,
+      required: true
+    },
+    default: {
+      type: Boolean,
+      default: false
+    },
+    quantity: {
+      type: Number,
+      required: true
+    }
+  }],
+  coverImg: String,
   currency: {
     type: String,
     default: 'USD'
   },
-  images: {
-    type: [String],
-    default: []
+  description: {
+    type: String,
+    default: null
   },
   active: {
     type: Boolean,

@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import axios from 'axios'
 // import { signIn } from 'coda-auth/dist/client'
 import { useSession, signIn } from 'coda-auth/client'
 import { useRouter } from 'next/router'
@@ -7,8 +6,6 @@ import { useRouter } from 'next/router'
 export default function Index({ time }) {
   const [session, loading] = useSession()
   const router = useRouter()
-
-
 
   useEffect(() => {
   }, [])
@@ -36,6 +33,7 @@ export default function Index({ time }) {
       <span className="text-danger ml-4">Build Time: </span><span> {time}</span> */}
       <br/>
       <span className="text-warning ml-4">Build ID: </span><span> {process.env.BUILD_ID}</span>
+      
     </div>
   )
 }

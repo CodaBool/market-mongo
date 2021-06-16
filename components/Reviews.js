@@ -62,7 +62,7 @@ export default function Reviews({ buildTimeReviews, productId, session }) {
 
   return (
     <>
-      {/* <button onClick={updateData} className="my-4">Refresh Reviews</button> */}
+      <button onClick={updateData} className="my-4">Refresh Reviews</button>
       {reviews.length > 0 && reviews.map(review => (
         <Review key={review._id} review={review} />
       ))}

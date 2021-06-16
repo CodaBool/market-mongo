@@ -34,11 +34,11 @@ export default applyMiddleware(async (req, res) => {
       const allReviews = await Review.find({ productId: query.productId })
       const reviews = allReviews.filter(review => {
         if (review.published) return true
-        console.log('is author', String(review.author) === session.id, 'with session id', session.id)
+        // console.log('is author', String(review.author) === session.id, 'with session id', session.id)
         if (String(review.author) === session.id) return true
       })
-      console.log('reviews', reviews)
-      console.log('returning', reviews.length, 'reviews')
+      // console.log('reviews', reviews)
+      // console.log('returning', reviews.length, 'reviews')
       res.status(200).json(reviews)
     } else {
       throw `Cannot use ${method} method for this route`

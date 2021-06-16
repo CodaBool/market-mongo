@@ -8,6 +8,7 @@ import { useSession } from 'coda-auth/client'
 export default function Navigation() {
   const [session, loading] = useSession()
   const router = useRouter()
+  console.log('email', session?.user?.email)
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg">

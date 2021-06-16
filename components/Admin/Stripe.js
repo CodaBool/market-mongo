@@ -23,7 +23,7 @@ export default function admin() {
   const [uid, setUid] = useState('')
   const debounce = useDebounce(uid, 1000)
   const [modalData, setModalData] = useState({})
-  const { handleSubmit, control, register, watch, setValue, getValues, reset } = useForm()
+  const { handleSubmit, formState:{ errors }, setError, clearErrors, control, getValues, register, reset, setValue, watch } = useForm()
   
   useEffect(() => setUid(watch('u-id')), [watch])
   useEffect(() => fillData(uid), [debounce])
@@ -116,10 +116,9 @@ export default function admin() {
             <Row className="m-2">
               {products && products.map(product => (
                 <Card key={product.id} className="m-2" style={{maxWidth: '250px'}}>
-                  <BoxImg imageUrl={product.images[0]} alt={product.name} small />
+                  <BoxImg imageUrl={product.coverImg} alt={product.name} small />
                   <Button href={`https://dashboard.stripe.com/test/products/${product.id}/edit`} target="_blank" variant="outline-primary" className="my-2 mx-4">Edit Image</Button>
                   <h6><strong>ID: </strong> {product.id}</h6>
-                  {product.images[0] && <h6><strong>Image: </strong> {product.images[0].slice(31)}</h6>}
                   <h6><strong>Name: </strong> {product.name}</h6>
                   <h6><strong>description: </strong> {product.description}</h6>
                   <h6><strong>active: </strong> <p className={`${product.active ? 'text-success' : 'text-danger'} d-inline`}>{product.active ? 'Active' : 'Archived'}</p></h6>
@@ -137,43 +136,42 @@ export default function admin() {
         <Accordion.Collapse eventKey="1" className="expandable">
           <Form onSubmit={handleSubmit(onUpdateSubmit)}>
             <Card.Body>
-              <Form.Group>
-                <Form.Label>ID</Form.Label>
-                <Controller 
-                  as={<Form.Control />} 
-                  control={control} 
-                  name="u-id"
-                  defaultValue=""
-                  placeholder="prod_12345678912345"
-                  required
-                />
-              </Form.Group>
               <>
-                <Form.Group>
-                  <Form.Label>Name</Form.Label>
-                  <Controller 
-                    as={<Form.Control />} 
-                    control={control} 
-                    name="u-name"
+                {errors['u-id'] && <p className="text-danger text-center">Error</p>}
+                <div className="in-group">
+                  <input 
+                    className="material"
+                    type="text"
+                    {...register("u-id")}
                     defaultValue=""
-                    placeholder="Name"
+                    required
                   />
-                </Form.Group>
+                  <span className="bar"></span>
+                  <label className="in-label">Product ID</label>
+                </div>
+                {errors['u-name'] && <p className="text-danger text-center">Error</p>}
+                <div className="in-group">
+                  <input 
+                    className="material"
+                    type="text"
+                    {...register("u-name")}
+                    defaultValue=""
+                    required
+                  />
+                  <span className="bar"></span>
+                  <label className="in-label">Name</label>
+                </div>
                 <Form.Label>Active</Form.Label>
-                <select className="form-control" ref={register} defaultValue="" name="u-active">
+                <select className="form-control mb-4" {...register("u-active")} defaultValue="">
                   {['true', 'false'].map((option, index) => <option key={index}>{option}</option>)}
                 </select>
-                <Form.Group>
-                  <Form.Label>Description</Form.Label>
-                  <Controller 
-                    as={<Form.Control as="textarea" />} 
-                    control={control} 
-                    name="u-description"
-                    rows="5"
-                    defaultValue=""
-                    placeholder="Description"
-                  />
-                </Form.Group>
+                {errors['u-description'] && <p className="text-danger text-center">Error</p>}
+                <textarea 
+                  {...register("u-description")}
+                  className="form-control"
+                  placeholder="Description"
+                  rows="5"
+                />
                 <Row className="my-4">
                   <Button href={`https://dashboard.stripe.com/test/products/${uid}/edit`} target="_blank" variant="outline-primary" className="mx-auto" style={{width: '97%'}}>
                     Edit Image
@@ -198,32 +196,29 @@ export default function admin() {
           <Accordion.Collapse eventKey="2" className="expandable">
             <Form onSubmit={handleSubmit(onCreateSubmit)}>
               <Card.Body>
-                <Form.Group>
-                  <Form.Label>Name</Form.Label>
-                  <Controller 
-                    as={<Form.Control />} 
-                    control={control} 
-                    name="c-name"
+                {errors['c-name'] && <p className="text-danger text-center">Error</p>}
+                <div className="in-group">
+                  <input 
+                    className="material"
+                    type="text"
+                    {...register("c-name")}
                     defaultValue=""
-                    placeholder="Name"
                     required
-                    />
-                </Form.Group>
+                  />
+                  <span className="bar"></span>
+                  <label className="in-label">Name</label>
+                </div>
                 <Form.Label>Active</Form.Label>
-                <select className="form-control" ref={register} defaultValue="" name="c-active">
+                <select className="form-control mb-4" {...register("c-active")} defaultValue="">
                   {['true', 'false'].map((option, index) => <option key={index}>{option}</option>)}
                 </select>
-                <Form.Group>
-                  <Form.Label>Description</Form.Label>
-                  <Controller 
-                    as={<Form.Control as="textarea" />} 
-                    control={control} 
-                    name="c-description"
-                    rows="5"
-                    defaultValue=""
-                    placeholder="Description"
-                  />
-                </Form.Group>
+                {errors['c-description'] && <p className="text-danger text-center">Error</p>}
+                <textarea 
+                  {...register("c-description")}
+                  className="form-control"
+                  placeholder="Description"
+                  rows="5"
+                />
                 <Row className="my-5">
                   <Button variant="success" type="submit" className="mx-auto" style={{width: '97%'}}>
                     Create Product

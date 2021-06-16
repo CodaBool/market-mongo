@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Toast from '../../components/UI/Toast'
 import BoxImg from '../../components/UI/BoxImg'
+import ProductImg from '../../components/UI/ProductImg'
 import Badge from 'react-bootstrap/Badge'
 import { useSession, signIn } from 'coda-auth/client'
 import { BagCheckFill } from 'react-bootstrap-icons'
@@ -24,6 +25,7 @@ export default function Item({ product, reviews, slug }) {
   const [showErr, setShowErr] = useState(false)
   const [showMaxErr, setShowMaxErr] = useState(false)
   const [overflow, setOverflow] = useState(0)
+  const [variant, setVariant] = useState(product.variants.find(variant => !!variant.default))
   const router = useRouter()
   const quantity = useRef(null)
 
@@ -33,7 +35,7 @@ export default function Item({ product, reviews, slug }) {
       return
     }
     const selectedQuantity = Number(quantity.current.value)
-    const item = { name: product.name, description: product.description, id: product._id, price: Number(product.price), image: product.images[0]}
+    const item = { name: variant.name, description: product.description, id: product._id, price: Number(variant.price), image: variant.images[0]}
     if (cartDetails[product._id]) { // in cart
       if (cartDetails[product._id].quantity + selectedQuantity > MAX_DUP_ITEMS) { // BUST
         const overflow = cartDetails[product._id].quantity + selectedQuantity - MAX_DUP_ITEMS
@@ -60,17 +62,18 @@ export default function Item({ product, reviews, slug }) {
     }
   }
 
-  // useEffect(() => {
-  //   console.log('new', cartDetails)
-  // }, [cartDetails])
-
   return (
     <>
       <Card key={product._id} className="p-3">
         <Row>
           <Col className="p-0">
-            <BoxImg imageUrl={product.images[0]} alt={product.name} />
+            <ProductImg variants={product.variants} alt={product.name} coverImg={product.coverImg} />
             <p className="text-center">option picker placeholder</p>
+            <select className="form-control my-2" onChange={e => setVariant(e.target.value)}>
+              {product.variants.map(variant => variant.name).map((option, index) => (
+                <option key={index}>{option}</option>)
+              )}
+            </select>
           </Col>
           <Col>
             <h1>{product.name}</h1>
@@ -84,11 +87,11 @@ export default function Item({ product, reviews, slug }) {
             <div className="" style={{width: '200px'}}>
               <Row>
                 <Col sm={6} className="text-center">
-                  {usdPretty(product.price)}
+                  {usdPretty(variant.price)}
                 </Col>
                 <Col className="my-auto" sm={6}>
                   <select className="form-control" name="quantity" defaultValue="1" ref={quantity}>
-                    {genQuanArr(product.quantity).map((option, index) => <option key={index}>{option}</option>)}
+                    {genQuanArr(variant.quantity).map((option, index) => <option key={index}>{option}</option>)}
                   </select>
                 </Col>
               </Row>

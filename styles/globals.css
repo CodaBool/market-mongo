@@ -118,11 +118,15 @@ main {
 }
 /* Products */
 
-/* X Icon in Cart */
+/* X Icon in Chart */
 .x-icon:hover {
   cursor: pointer;
   color: rgb(184, 36, 36);
   filter: drop-shadow(0 0 2px #fd9d99);
+  animation: spin 0.1s linear;
+}
+.spin-on-hover:hover {
+  cursor: pointer;
   animation: spin 0.1s linear;
 }
 @keyframes spin { 
@@ -263,12 +267,18 @@ main {
   text-shadow: 0 0 8px #ffd5003b;
 }
 
+/* Admin */
+.hover-effect:hover {
+  filter: drop-shadow(0 0 2px black);
+  opacity: .9;
+  transition: .1s opacity;
+  cursor: pointer;
+}
+
 /* Review Img */
 .review-avatar {
   /* border-radius: 50%; */
 }
-
-
 @keyframes shine {
   0% { background-position: -800px 0; }
   100% { background-position: 800px 0; }
