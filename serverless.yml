@@ -18,9 +18,9 @@ serverless:
     # domain: ${domain.${stage}}
     timeout: 30 # 1-30
     memory: # 128-10240
-      defaultLambda: 644 #384 got err
-      apiLambda: 644 #448 got err
-      imageLambda: 644 #384
+      defaultLambda: 384 #384 got err
+      apiLambda: 448 #448 got err
+      imageLambda: 384 #384
     name:
       defaultLambda: ${name}-${stage}-default
       apiLambda: ${name}-${stage}-api
@@ -50,9 +50,9 @@ serverless:
         NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
         STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
         STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
-    cloudfront:
-      distributionId: E2VBCZKM1LBRSA
-      # aliases: ["${alias.${stage}}.codattest.com"]
-      defaults:
-        forward:
-          headers: [ Accept ] # Needed for image optimizer
+    # cloudfront:
+    #   distributionId: E2VBCZKM1LBRSA
+    #   # aliases: ["${alias.${stage}}.codattest.com"]
+    #   defaults:
+    #     forward:
+    #       headers: [ Accept ] # Needed for image optimizer

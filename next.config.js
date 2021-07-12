@@ -131,7 +131,7 @@ module.exports = {
     BUILD_ID: process.env.BUILD_ID,
   },
   images: {
-    domains: ['files.stripe.com', 'dev.codattest.com'],
+    domains: ['files.stripe.com', 'd1mh8rnwboj74a.cloudfront.net', 'market-mongo-dev.s3.us-east-1.amazonaws.com'],
   },
   async headers() {
     return [
