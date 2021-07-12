@@ -42,9 +42,10 @@ serverless:
         NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
         STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
         STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
-    # cloudfront:
-    #   distributionId: E2VBCZKM1LBRSA
-    #   # aliases: ["${alias.${stage}}.codattest.com"]
-    #   defaults:
-    #     forward:
-    #       headers: [ Accept ] # Needed for image optimizer
+    # comment out for 1st deploy, afterwhich copy ID from CloudFront in AWS
+    cloudfront:
+      distributionId: E1NO468W5ILW6C
+      # aliases: ["${alias.${stage}}.codattest.com"]
+      defaults:
+        forward:
+          headers: [ Accept ] # Needed for image optimizer
