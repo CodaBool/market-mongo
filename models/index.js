@@ -136,6 +136,11 @@ const reviewSchema = new Schema({
     min: 0,
     max: 5,
   },
+  variant: {
+    image: String,
+    name: String,
+    _id: mongoose.Schema.Types.ObjectId
+  },
   avatar: {
     type: String,
   },

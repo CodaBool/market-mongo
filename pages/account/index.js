@@ -39,6 +39,7 @@ export default function index({ user }) {
       <h1 className="display-4 my-4">Account</h1>
       <p>{user.email}</p>
       <Button variant="outline-primary" onClick={() => router.push('/account/orders')}>My Orders</Button>
+      <Button variant="outline-primary" onClick={() => router.push('/account/reviews')}>My Reviews</Button>
     </>
   )
 }

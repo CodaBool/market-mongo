@@ -106,7 +106,7 @@ module.exports = {
   },
   target: 'serverless',
   env: {
-    NEXT_PUBLIC_NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
+    // NEXT_PUBLIC_NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
     NEXT_PUBLIC_STRIPE_PK: process.env.NEXT_PUBLIC_STRIPE_PK,
     NEXT_PUBLIC_PAYPAL_ID: process.env.NEXT_PUBLIC_PAYPAL_ID,
     STRIPE_API_ALLOW_LIST: process.env.STRIPE_API_ALLOW_LIST,

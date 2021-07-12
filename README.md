@@ -46,14 +46,12 @@ Runtime Environment Variables Issues
 
 # Developer Notes
 ## TODO
-- debug userUser collection being made -> fixed but don't know why
 - login
   - autofill email on failed attempt -> should be fixed, needs testing on dev
 - email verification -> working local
 - product review
   - review editing
   - admin publish
-  - require verification
 - receipts
 - return???
 - landing page
@@ -62,9 +60,6 @@ Runtime Environment Variables Issues
   - color
   - pictures
   - description
-
-## Bugs
-- navigation sometimes does not pickup session
 
 ## OAuth Providers
 - Github

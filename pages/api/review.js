@@ -1,6 +1,6 @@
 import applyMiddleware from '../../util'
 import { getSession } from 'coda-auth/client'
-import { Review, Order, User } from '../../models'
+import { Review, Order, User, Product } from '../../models'
 
 export default applyMiddleware(async (req, res) => {
   try {
@@ -17,7 +17,7 @@ export default applyMiddleware(async (req, res) => {
 
       // verify first review written for this product
       const userReviews = await Review.find({ author: session.id })
-      const reviewExists = userReviews.find(review => review.productId === body.productId)
+      const reviewExists = userReviews.find(review => review.productId === body.productId && !review.archived)
       if (reviewExists) throw 'A review for this product already exists'
 
       // verify an this product has been ordered
@@ -34,6 +34,11 @@ export default applyMiddleware(async (req, res) => {
         content: body.content,
         stars: body.rating,
         avatar: session.user.image,
+        variant: {
+          image: body.variant.images[0],
+          name: body.variant.name,
+          _id: body.variant._id
+        },
         title: body.title,
       })
       // console.log('review', review)
@@ -48,6 +53,26 @@ export default applyMiddleware(async (req, res) => {
       // console.log('reviews', reviews)
       // console.log('returning', reviews.length, 'reviews')
       res.status(200).json(reviews)
+    } else if (method === 'PUT') {
+
+      if (!body._id) throw 'No review id provided'
+
+      const review = await Review.findById(body._id)
+
+      if (!review) throw 'No review found by that id'
+      
+      console.log('request from', session.id)
+      console.log('review author is', review.author)
+
+      // verify that this is the review owner
+      if (session.id !== String(review.author)) throw 'The review provided is not under your account'
+
+      // edit the review status
+      review.published = false
+      review.archived = true
+      await review.save()
+
+      res.status(200).json(review)
     } else {
       throw `Cannot use ${method} method for this route`
     }

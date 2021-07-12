@@ -9,12 +9,12 @@ import Stars from './UI/Stars'
 import Review from './UI/Review'
 import ToastCustom from './UI/Toast'
 
-export default function Reviews({ buildTimeReviews, productId, session }) {
+export default function Reviews({ buildTimeReviews, productId, session, variants }) {
   const { handleSubmit, formState:{ errors }, setError, clearErrors, control, getValues, register, reset } = useForm()
   const [reviews, setReviews] = useState(buildTimeReviews)
   const [showForm, setShowForm] = useState(false)
-  const [toast, setToast] = useState(null)
-  const [success, setSuccess] = useState(null)
+  const [toast, setToast] = useState()
+  const [success, setSuccess] = useState()
   const [rating, setRating] = useState(0)
 
   const onSubmit = data => {
@@ -22,7 +22,11 @@ export default function Reviews({ buildTimeReviews, productId, session }) {
       setError('rating')
       return
     }
-    axios.post('/api/review', {...data, rating, productId})
+    
+    // find the selected variant
+    const variant = variants.find(variant => variant.name === data.variant)
+
+    axios.post('/api/review', {...data, rating, productId, variant})
       .then(res => {
         console.log(res.data)
         updateData()
@@ -70,7 +74,11 @@ export default function Reviews({ buildTimeReviews, productId, session }) {
         ?
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Card className="rounded shadow p-4">
+              <p className="text-muted">To post a review you must have ordered the product and have verified your email.</p>
               <X className="x-icon" onClick={() => setShowForm(false)} style={{position: 'absolute', right: '10px', top: '10px'}} size={42}/>
+              <select className="form-control mb-2" {...register("variant")} defaultValue={variants[0].name || ''}>
+                {variants.map(variant => variant.name).map((option, index) => <option key={index}>{option}</option>)}
+              </select>
               {errors.rating && <p className="text-danger">Please Select a star rating out of 5</p>}
               <Stars rating={rating} setRating={setRating} />
               {errors.title && <p className="text-danger">Please keep your title under 75 characters</p>}
@@ -88,7 +96,7 @@ export default function Reviews({ buildTimeReviews, productId, session }) {
               {errors.content && <p className="text-danger">Please keep your review under 3000 characters</p>}
               <textarea 
                 className="form-control" 
-                placeholder="Write your review here" 
+                placeholder="Review Details" 
                 rows="3"
                 {...register("content", { maxLength: 2999 })}
               />

@@ -60,16 +60,18 @@ export default function Review({ review }) {
                 {comment.status}
               </p>
             } */}
+            <p className="text-muted">{review.variant.name}</p>
             {review.content}
           </Card.Body>
           <Card.Footer className="text-muted">
             {format(review.createdAt)}
-            <span className={`${review.published === false ? 'text-warning' : ''} ml-2 mt-1`}>
-              {!review.published && 'Processing'}
-            </span>
-            <span className={`${review.archived === true ? 'text-danger' : ''} ml-2 mt-1`}>
-              {review.archived && 'Archived'}
-            </span>
+            {review.archived 
+              ? <span className="text-danger ml-2 mt-1">Deleted</span>
+              : <span className={`${review.published ? 'text-success': 'text-warning'} ml-2 mt-1`}>
+                  {review.published ? 'Public' : 'Processing'}
+                  {review.archived &&  'Deleted'}
+                </span>
+            }
           </Card.Footer>
         </Card>
       </Col>

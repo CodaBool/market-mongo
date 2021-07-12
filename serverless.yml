@@ -5,9 +5,9 @@ domain:
   dev: ['dev', codattest.com]
   prod: codattest.com
 
-url:
-  dev: https://dev.codattest.com 
-  prod: https://www.codattest.com
+# url:
+#   dev: https://dev.codattest.com 
+#   prod: https://www.codattest.com
 
 serverless:
   component: '@sls-next/serverless-component@1.19.0'
@@ -15,7 +15,7 @@ serverless:
     useServerlessTraceTarget: true
     publicDirectoryCache: false
     bucketName: ${name}-${stage}
-    domain: ${domain.${stage}}
+    # domain: ${domain.${stage}}
     timeout: 30 # 1-30
     memory: # 128-10240
       defaultLambda: 384 #384 got err
@@ -29,7 +29,7 @@ serverless:
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
-        NEXT_PUBLIC_NEXTAUTH_URL: ${url.${stage}}
+        # NEXT_PUBLIC_NEXTAUTH_URL: ${url.${stage}}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
@@ -50,9 +50,9 @@ serverless:
         NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
         STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
         STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
-    cloudfront:
-      distributionId: EIWEPBSNER5B3
-      # aliases: ["${alias.${stage}}.codattest.com"]
-      defaults:
-        forward:
-          headers: [ Accept ] # Needed for image optimizer
+    # cloudfront:
+    #   distributionId: EIWEPBSNER5B3
+    #   # aliases: ["${alias.${stage}}.codattest.com"]
+    #   defaults:
+    #     forward:
+    #       headers: [ Accept ] # Needed for image optimizer

@@ -108,7 +108,7 @@ export default function Item({ product, reviews, slug }) {
       </Card>
       <Card className="p-5">
         <h1>Reviews</h1>
-        <Reviews buildTimeReviews={reviews} productId={slug} session={session} />
+        <Reviews buildTimeReviews={reviews} productId={slug} session={session} variants={product.variants} />
       </Card>
       <div className="toastHolder" style={{position: 'fixed', top: '80px', right: '10px'}}>
         <Toast show={showSucc} setShow={setShowSucc} title='Product Added' body={<>
