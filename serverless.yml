@@ -10,7 +10,7 @@ domain:
 #   prod: https://www.codattest.com
 
 serverless:
-  component: '@sls-next/serverless-component@1.19.0'
+  component: '@sls-next/serverless-component@3.1.0'
   inputs:
     useServerlessTraceTarget: true
     publicDirectoryCache: false
@@ -29,7 +29,7 @@ serverless:
       env:
         STRIPE_SK: ${env.STRIPE_SK}
         MONGODB_URI: ${env.MONGODB_URI}
-        # NEXT_PUBLIC_NEXTAUTH_URL: ${url.${stage}}
+        NEXT_PUBLIC_NEXTAUTH_URL: ${env.NEXT_PUBLIC_NEXTAUTH_URL}
         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
         NEXT_PUBLIC_STAGE: ${stage}
         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
@@ -50,9 +50,9 @@ serverless:
         NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
         STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
         STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
-    # cloudfront:
-    #   distributionId: EIWEPBSNER5B3
-    #   # aliases: ["${alias.${stage}}.codattest.com"]
-    #   defaults:
-    #     forward:
-    #       headers: [ Accept ] # Needed for image optimizer
+    cloudfront:
+      distributionId: E2VBCZKM1LBRSA
+      # aliases: ["${alias.${stage}}.codattest.com"]
+      defaults:
+        forward:
+          headers: [ Accept ] # Needed for image optimizer
