@@ -8,9 +8,6 @@ export default function Index({ time }) {
   const [session, loading] = useSession()
   const router = useRouter()
 
-  useEffect(() => {
-    console.log('NEXT_PUBLIC_NEXTAUTH_URL', process.env.NEXT_PUBLIC_NEXTAUTH_URL)
-  }, [])
   console.log('session', session)
 
   function test() {
@@ -35,7 +32,6 @@ export default function Index({ time }) {
       <span className="text-danger ml-4">Build Time: </span><span> {time}</span> */}
       <br/>
       <span className="text-warning ml-4">Build ID: </span><span> {process.env.BUILD_ID}</span>
-      <h1>test NEXTAUTH_URL = {process.env.NEXT_PUBLIC_NEXTAUTH_URL}</h1>
     </div>
   )
 }
