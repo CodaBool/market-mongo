@@ -113,7 +113,7 @@ export default applyMiddleware(async (req, res) => {
     // console.log('session', session)
     // if ()
     // if (!newUser1) throw 'no user found by that email'
-    res.status(200).json({msg: 'hi'})
+    res.status(200).json({msg: 'hi', envVars})
     // res.status(200).json({ resp, envVars, order: orders[0], intent, products })
   } catch (err) {
     console.log(err)

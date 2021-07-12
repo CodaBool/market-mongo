@@ -21,7 +21,7 @@
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.6.0",
-    "coda-auth": "^1.2.0",
+    "coda-auth": "^1.2.2",
     "formidable": "^1.2.2",
     "micro": "^9.3.4",
     "micro-cors": "^0.1.1",

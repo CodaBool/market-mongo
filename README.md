@@ -44,6 +44,9 @@ Runtime Environment Variables Issues
 ### [next-auth][warn][jwt_auto_generated_signing_key] 
 - requires configuration [docs](https://next-auth.js.org/warnings#jwt_auto_generated_signing_key)
 
+### Access Denied SQS
+add line `"Action": "sqs:*"` to role policy
+
 # Developer Notes
 ## TODO
 - login

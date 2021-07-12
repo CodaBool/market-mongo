@@ -32,6 +32,10 @@ export default function newLogin({ providers }) {
   }, [router.query.error])
 
   useEffect(() => {
+      console.log('providers, client', providers)
+  }, [])
+
+  useEffect(() => {
     if (option === 'password' && router.query.error === 'invalid') {
       setValue('email', router.query.email)
       try {
@@ -182,6 +186,7 @@ export default function newLogin({ providers }) {
 
 export async function getServerSideProps(context){
   const providers = await getProviders()
+  console.log('providers', providers)
   delete providers.credentials
   return { props: { providers } }
 }
