@@ -51,6 +51,11 @@ export default applyMiddleware(async (req, res) => {
     } else {
       envVars.NEXTAUTH_URL = 'MISSING'
     }
+    if (process.env.NEXT_PUBLIC_NEXTAUTH_URL) {
+      envVars.NEXT_PUBLIC_NEXTAUTH_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL
+    } else {
+      envVars.NEXT_PUBLIC_NEXTAUTH_URL = 'MISSING'
+    }
     if (process.env.NODE_ENV) {
       envVars.NODE_ENV = process.env.NODE_ENV
     } else {

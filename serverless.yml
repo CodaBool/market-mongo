@@ -1,14 +1,6 @@
 stage: ${env.STAGE}
 name: ${env.REPO}
 
-domain:
-  dev: ['dev', codattest.com]
-  prod: codattest.com
-
-# url:
-#   dev: https://dev.codattest.com 
-#   prod: https://www.codattest.com
-
 serverless:
   component: '@sls-next/serverless-component@3.1.0'
   inputs:
@@ -50,9 +42,9 @@ serverless:
         NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
         STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
         STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
-    # cloudfront:
-    #   distributionId: E2VBCZKM1LBRSA
-    #   # aliases: ["${alias.${stage}}.codattest.com"]
-    #   defaults:
-    #     forward:
-    #       headers: [ Accept ] # Needed for image optimizer
+    cloudfront:
+      distributionId: E2VBCZKM1LBRSA
+      # aliases: ["${alias.${stage}}.codattest.com"]
+      defaults:
+        forward:
+          headers: [ Accept ] # Needed for image optimizer
