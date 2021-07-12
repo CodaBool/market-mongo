@@ -1,6 +1,6 @@
 import { getSession } from 'coda-auth/client'
-import applyMiddleware from '../../../../util'
-import { Product } from '../../../../models'
+import applyMiddleware from '../../util'
+import { Product } from '../../models'
 
 export default applyMiddleware(async (req, res) => {
   try {
