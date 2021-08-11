@@ -1,105 +1,105 @@
-name: next-market
-on:
-  push:
-    branches: [dev, prod]
-jobs:
-  deploy:
-    if: "! contains(github.event.commits[0].message, '[no ci]')"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      # The stage is extracted from the branch name, since deploys are only ran on dev and prod branch
-      # WARNING: if deployments are done differently then this needs to be edited (hardcoded or from github event context)
-      - name: Extract Pipline Vars
-        # The repo name must be validated since it will be used in the S3 Bucket creation when saving Serverless state
-        # Repo name must follow S3 Naming conventions, no space + no uppercase
-        # Lower Cases the Repo name, Github already removes space
-        run: |
-          repo=${GITHUB_REPOSITORY#CodaBool/}
-          echo "##[set-output name=repo;]${repo,,}" 
-          echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
-          build=$(echo "${SHA:0:7}.${RUN_NUMBER}"|tr -d '"') # removes an annoying double quote
-          echo "##[set-output name=build;]${build}"
+# name: next-market
+# on:
+#   push:
+#     branches: [dev, prod]
+# jobs:
+#   deploy:
+#     if: "! contains(github.event.commits[0].message, '[no ci]')"
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       # The stage is extracted from the branch name, since deploys are only ran on dev and prod branch
+#       # WARNING: if deployments are done differently then this needs to be edited (hardcoded or from github event context)
+#       - name: Extract Pipline Vars
+#         # The repo name must be validated since it will be used in the S3 Bucket creation when saving Serverless state
+#         # Repo name must follow S3 Naming conventions, no space + no uppercase
+#         # Lower Cases the Repo name, Github already removes space
+#         run: |
+#           repo=${GITHUB_REPOSITORY#CodaBool/}
+#           echo "##[set-output name=repo;]${repo,,}" 
+#           echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
+#           build=$(echo "${SHA:0:7}.${RUN_NUMBER}"|tr -d '"') # removes an annoying double quote
+#           echo "##[set-output name=build;]${build}"
           
-        id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
-        env:
-          SHA: ${{ toJSON(github.sha) }}
-          RUN_NUMBER: ${{ toJSON(github.run_number) }}
+#         id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
+#         env:
+#           SHA: ${{ toJSON(github.sha) }}
+#           RUN_NUMBER: ${{ toJSON(github.run_number) }}
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: us-east-1
 
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: '12'
+#       - uses: actions/setup-node@v2-beta
+#         with:
+#           node-version: '12'
 
-      - name: Get Stripe Allow List
-        id: allow # use ${{ steps.allow.outputs.ips_webhooks }} or ${{ steps.allow.outputs.ips_api }} for stripe allowlist
-        run: |
-          ips_webhooks=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
-          ips_api=$(curl https://stripe.com/files/ips/ips_api.json | jq '.API | join(",")')
-          echo "##[set-output name=ips_webhooks;]${ips_webhooks}"
-          echo "##[set-output name=ips_api;]${ips_api}"
+#       - name: Get Stripe Allow List
+#         id: allow # use ${{ steps.allow.outputs.ips_webhooks }} or ${{ steps.allow.outputs.ips_api }} for stripe allowlist
+#         run: |
+#           ips_webhooks=$(curl https://stripe.com/files/ips/ips_webhooks.json | jq '.WEBHOOKS | join(",")')
+#           ips_api=$(curl https://stripe.com/files/ips/ips_api.json | jq '.API | join(",")')
+#           echo "##[set-output name=ips_webhooks;]${ips_webhooks}"
+#           echo "##[set-output name=ips_api;]${ips_api}"
 
-      - name: Serverless AWS authentication
-        run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#       - name: Serverless AWS authentication
+#         run: npx serverless --component=serverless-next config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Install dependencies
-        run: npm ci
+#       - name: Install dependencies
+#         run: npm ci
 
-      - name: Download `.serverless` state from S3
-        run: |
-          aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
-          if [ ! $not_exist ]; then
-            aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
-          fi
+#       - name: Download `.serverless` state from S3
+#         run: |
+#           aws s3api head-object --bucket sls-state --key ${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless/_.json || not_exist=true
+#           if [ ! $not_exist ]; then
+#             aws s3 sync s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless .serverless --delete 
+#           fi
           
-      - name: Deploy app to AWS
-        run: | # WARNING: hack to reduce 250+ print lines from serverless. sed (remove) redundant prints -> logs to a file -> grep (search) for error -> exit if found
-          npx serverless 2>&1 | sed '/› Deploying\|aNA/d' | tee log_file
-          if grep -q 'error' log_file; then
-            exit 1
-          fi
-        env:
-          NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          STAGE: ${{ steps.extract.outputs.stage }}
-          REPO: ${{ steps.extract.outputs.repo }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          STRIPE_SK: ${{ secrets.STRIPE_SK }}
-          JWT_SIGNING_PK: ${{ secrets.JWT_SIGNING_PK }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
-          BUILD_ID: ${{ steps.extract.outputs.build }}
-          PAYPAL_WH: ${{ secrets.PAYPAL_WH }}
-          STRIPE_WH: ${{ secrets.STRIPE_WH }}
-          PAYPAL_SK: ${{ secrets.PAYPAL_SK }}
-          GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-          TWITTER_CLIENT_SECRET: ${{ secrets.TWITTER_CLIENT_SECRET }}
-          FB_CLIENT_SECRET: ${{ secrets.FB_CLIENT_SECRET }}
-          NEXT_PUBLIC_PAYPAL_ID: ${{ secrets.NEXT_PUBLIC_PAYPAL_ID }}
-          STRIPE_WH_ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
-          STRIPE_API_ALLOW_LIST: ${{ steps.allow.outputs.ips_api }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          NEXT_PUBLIC_NEXTAUTH_URL: ${{ secrets.NEXT_PUBLIC_NEXTAUTH_URL }}
+#       - name: Deploy app to AWS
+#         run: | # WARNING: hack to reduce 250+ print lines from serverless. sed (remove) redundant prints -> logs to a file -> grep (search) for error -> exit if found
+#           npx serverless 2>&1 | sed '/› Deploying\|aNA/d' | tee log_file
+#           if grep -q 'error' log_file; then
+#             exit 1
+#           fi
+#         env:
+#           NEXT_PUBLIC_STRIPE_PK: ${{ secrets.NEXT_PUBLIC_STRIPE_PK }}
+#           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+#           STAGE: ${{ steps.extract.outputs.stage }}
+#           REPO: ${{ steps.extract.outputs.repo }}
+#           MONGODB_URI: ${{ secrets.MONGODB_URI }}
+#           STRIPE_SK: ${{ secrets.STRIPE_SK }}
+#           JWT_SIGNING_PK: ${{ secrets.JWT_SIGNING_PK }}
+#           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+#           RECAPTCHA_SK: ${{ secrets.RECAPTCHA_SK }}
+#           BUILD_ID: ${{ steps.extract.outputs.build }}
+#           PAYPAL_WH: ${{ secrets.PAYPAL_WH }}
+#           STRIPE_WH: ${{ secrets.STRIPE_WH }}
+#           PAYPAL_SK: ${{ secrets.PAYPAL_SK }}
+#           GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
+#           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+#           DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+#           TWITTER_CLIENT_SECRET: ${{ secrets.TWITTER_CLIENT_SECRET }}
+#           FB_CLIENT_SECRET: ${{ secrets.FB_CLIENT_SECRET }}
+#           NEXT_PUBLIC_PAYPAL_ID: ${{ secrets.NEXT_PUBLIC_PAYPAL_ID }}
+#           STRIPE_WH_ALLOW_LIST: ${{ steps.allow.outputs.ips_webhooks }}
+#           STRIPE_API_ALLOW_LIST: ${{ steps.allow.outputs.ips_api }}
+#           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           NEXT_PUBLIC_NEXTAUTH_URL: ${{ secrets.NEXT_PUBLIC_NEXTAUTH_URL }}
 
-      - name: Upload `.serverless` state to S3
-        run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
+#       - name: Upload `.serverless` state to S3
+#         run: aws s3 sync .serverless s3://sls-state/${{ steps.extract.outputs.repo }}/${{ steps.extract.outputs.stage }}/.serverless --delete
 
-      # - name: 'Sending SMS Notification'
-      #   uses: twilio-labs/actions-sms@v1
-      #   with:
-      #     fromPhoneNumber: ${{ secrets.TWILIO_PHONE_NUMBER }}
-      #     toPhoneNumber: ${{ secrets.MY_PHONE_NUMBER }}
-      #     message: 'deployment success from market mongo. Twilio & Sprint/T-Mobile, you guys this is not spam. Do not block or you will be banned from my discord'
-      #   env:
-      #     TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-      #     TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
-      #     TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
+#       # - name: 'Sending SMS Notification'
+#       #   uses: twilio-labs/actions-sms@v1
+#       #   with:
+#       #     fromPhoneNumber: ${{ secrets.TWILIO_PHONE_NUMBER }}
+#       #     toPhoneNumber: ${{ secrets.MY_PHONE_NUMBER }}
+#       #     message: 'deployment success from market mongo. Twilio & Sprint/T-Mobile, you guys this is not spam. Do not block or you will be banned from my discord'
+#       #   env:
+#       #     TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+#       #     TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
+#       #     TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}

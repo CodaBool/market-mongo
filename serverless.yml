@@ -1,51 +1,51 @@
-stage: ${env.STAGE}
-name: ${env.REPO}
+# stage: ${env.STAGE}
+# name: ${env.REPO}
 
-serverless:
-  component: '@sls-next/serverless-component@3.1.0'
-  inputs:
-    useServerlessTraceTarget: true
-    publicDirectoryCache: false
-    bucketName: ${name}-${stage}
-    # domain: ${domain.${stage}}
-    timeout: 30 # 1-30
-    memory: # 128-10240
-      defaultLambda: 384 #384 got err
-      apiLambda: 448 #448 got err
-      imageLambda: 384 #384
-    name:
-      defaultLambda: ${name}-${stage}-default
-      apiLambda: ${name}-${stage}-api
-      imageLambda: ${name}-${stage}-image
-    build:
-      env:
-        STRIPE_SK: ${env.STRIPE_SK}
-        MONGODB_URI: ${env.MONGODB_URI}
-        NEXT_PUBLIC_NEXTAUTH_URL: ${env.NEXT_PUBLIC_NEXTAUTH_URL}
-        NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
-        NEXT_PUBLIC_STAGE: ${stage}
-        NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
-        JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
-        RECAPTCHA_SK: ${env.RECAPTCHA_SK}
-        BUILD_ID: ${env.BUILD_ID}
-        NODE_ENV: production
-        PAYPAL_WH: ${env.PAYPAL_WH}
-        STRIPE_WH: ${env.STRIPE_WH}
-        PAYPAL_SK: ${env.PAYPAL_SK}
-        GIT_CLIENT_SECRET: ${env.GIT_CLIENT_SECRET}
-        AWS_ACCESS_KEY_ID: ${env.AWS_ACCESS_KEY_ID}
-        AWS_SECRET_ACCESS_KEY: ${env.AWS_SECRET_ACCESS_KEY}
-        FB_CLIENT_SECRET: ${env.FB_CLIENT_SECRET}
-        GOOGLE_CLIENT_SECRET: ${env.GOOGLE_CLIENT_SECRET}
-        DISCORD_CLIENT_SECRET: ${env.DISCORD_CLIENT_SECRET}
-        TWITTER_CLIENT_SECRET: ${env.TWITTER_CLIENT_SECRET}
-        NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
-        STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
-        STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
-    # comment out for 1st deploy, afterwhich copy ID from CloudFront in AWS
-    cloudfront:
-      distributionId: E1NO468W5ILW6C
-      # aliases: ["${alias.${stage}}.codattest.com"]
-      defaults:
-        forward:
-          headers: [ Accept ] # Needed for image optimizer
+# serverless:
+#   component: '@sls-next/serverless-component@3.1.0'
+#   inputs:
+#     useServerlessTraceTarget: true
+#     publicDirectoryCache: false
+#     bucketName: ${name}-${stage}
+#     # domain: ${domain.${stage}}
+#     timeout: 30 # 1-30
+#     memory: # 128-10240
+#       defaultLambda: 384 #384 got err
+#       apiLambda: 448 #448 got err
+#       imageLambda: 384 #384
+#     name:
+#       defaultLambda: ${name}-${stage}-default
+#       apiLambda: ${name}-${stage}-api
+#       imageLambda: ${name}-${stage}-image
+#     build:
+#       env:
+#         STRIPE_SK: ${env.STRIPE_SK}
+#         MONGODB_URI: ${env.MONGODB_URI}
+#         NEXT_PUBLIC_NEXTAUTH_URL: ${env.NEXT_PUBLIC_NEXTAUTH_URL}
+#         NEXTAUTH_SECRET: ${env.NEXTAUTH_SECRET}
+#         NEXT_PUBLIC_STAGE: ${stage}
+#         NEXT_PUBLIC_STRIPE_PK: ${env.NEXT_PUBLIC_STRIPE_PK}
+#         JWT_SIGNING_PK: ${env.JWT_SIGNING_PK}
+#         RECAPTCHA_SK: ${env.RECAPTCHA_SK}
+#         BUILD_ID: ${env.BUILD_ID}
+#         NODE_ENV: production
+#         PAYPAL_WH: ${env.PAYPAL_WH}
+#         STRIPE_WH: ${env.STRIPE_WH}
+#         PAYPAL_SK: ${env.PAYPAL_SK}
+#         GIT_CLIENT_SECRET: ${env.GIT_CLIENT_SECRET}
+#         AWS_ACCESS_KEY_ID: ${env.AWS_ACCESS_KEY_ID}
+#         AWS_SECRET_ACCESS_KEY: ${env.AWS_SECRET_ACCESS_KEY}
+#         FB_CLIENT_SECRET: ${env.FB_CLIENT_SECRET}
+#         GOOGLE_CLIENT_SECRET: ${env.GOOGLE_CLIENT_SECRET}
+#         DISCORD_CLIENT_SECRET: ${env.DISCORD_CLIENT_SECRET}
+#         TWITTER_CLIENT_SECRET: ${env.TWITTER_CLIENT_SECRET}
+#         NEXT_PUBLIC_PAYPAL_ID: ${env.NEXT_PUBLIC_PAYPAL_ID}
+#         STRIPE_WH_ALLOW_LIST: ${env.STRIPE_WH_ALLOW_LIST}
+#         STRIPE_API_ALLOW_LIST: ${env.STRIPE_API_ALLOW_LIST}
+#     # comment out for 1st deploy, afterwhich copy ID from CloudFront in AWS
+#     cloudfront:
+#       distributionId: E1NO468W5ILW6C
+#       # aliases: ["${alias.${stage}}.codattest.com"]
+#       defaults:
+#         forward:
+#           headers: [ Accept ] # Needed for image optimizer
